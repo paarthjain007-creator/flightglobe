@@ -1,0 +1,201 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+/* ─── Theme Variables ─────────────────────────────────────────── */
+:root {
+  --bg-primary: #050a18;
+  --bg-secondary: #0a1628;
+  --accent: #60a5fa;
+  --accent-glow: rgba(96, 165, 250, 0.2);
+  --glass-bg: rgba(5, 10, 24, 0.65);
+  --glass-border: rgba(96, 165, 250, 0.15);
+  --text-primary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --globe-atmo: #1d4ed8;
+}
+
+[data-theme="cyberpunk"] {
+  --bg-primary: #0d0019;
+  --bg-secondary: #150028;
+  --accent: #c084fc;
+  --accent-glow: rgba(192, 132, 252, 0.2);
+  --glass-bg: rgba(13, 0, 25, 0.65);
+  --glass-border: rgba(192, 132, 252, 0.2);
+  --text-primary: #f0e6ff;
+  --text-muted: #a78bca;
+  --globe-atmo: #7c3aed;
+}
+
+[data-theme="sunset"] {
+  --bg-primary: #1a0a00;
+  --bg-secondary: #2d1000;
+  --accent: #fb923c;
+  --accent-glow: rgba(251, 146, 60, 0.2);
+  --glass-bg: rgba(26, 10, 0, 0.65);
+  --glass-border: rgba(251, 146, 60, 0.2);
+  --text-primary: #fff1e6;
+  --text-muted: #c4956e;
+  --globe-atmo: #ea580c;
+}
+
+[data-theme="slate"] {
+  --bg-primary: #1e2530;
+  --bg-secondary: #252f3e;
+  --accent: #94a3b8;
+  --accent-glow: rgba(148, 163, 184, 0.15);
+  --glass-bg: rgba(30, 37, 48, 0.70);
+  --glass-border: rgba(148, 163, 184, 0.15);
+  --text-primary: #e2e8f0;
+  --text-muted: #64748b;
+  --globe-atmo: #475569;
+}
+
+/* ─── Base Reset ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.6s ease;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+
+/* ─── Glassmorphism Base ──────────────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* ─── Accent Utilities ────────────────────────────────────────── */
+.accent-text { color: var(--accent); }
+.accent-bg { background: var(--accent); }
+.accent-border { border-color: var(--accent); }
+.accent-glow { box-shadow: 0 0 24px var(--accent-glow); }
+.accent-glow-sm { box-shadow: 0 0 12px var(--accent-glow); }
+
+/* ─── Glow Line ───────────────────────────────────────────────── */
+.glow-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.3;
+}
+
+/* ─── Status Colors ───────────────────────────────────────────── */
+.status-on-time { color: #4ade80; }
+.status-delayed { color: #f87171; }
+.status-boarding { color: #fbbf24; }
+.status-departed { color: #60a5fa; }
+
+/* ─── Animations ──────────────────────────────────────────────── */
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 var(--accent-glow); }
+  70%  { box-shadow: 0 0 0 8px rgba(0,0,0,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+}
+@keyframes slideUpFade {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-90px) scale(1.4); }
+}
+@keyframes scale-up {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-slide-left  { animation: slide-in-left  0.45s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.animate-slide-right { animation: slide-in-right 0.45s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.animate-slide-up    { animation: slide-in-up    0.35s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.animate-fade-in     { animation: fade-in        0.5s ease forwards; }
+.animate-scale-up    { animation: scale-up       0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.pulse-dot           { animation: pulse-ring 2.2s ease infinite; }
+
+/* ─── Scrollbar Hide ──────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.shimmer {
+  background: linear-gradient(90deg, var(--glass-bg) 25%, rgba(255,255,255,0.04) 50%, var(--glass-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ─── Globe Canvas ────────────────────────────────────────────── */
+.globe-container {
+  position: absolute;
+  inset: 0;
+  transition: background 0.6s ease;
+}
+.globe-container canvas { display: block !important; }
+
+/* ─── Panel Scroll ────────────────────────────────────────────── */
+.panel-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+/* ─── Glass Input ─────────────────────────────────────────────── */
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+}
+.glass-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.glass-input::placeholder { color: var(--text-muted); opacity: 1; }
+
+/* ─── Dropdown ────────────────────────────────────────────────── */
+.dropdown-item {
+  background: transparent;
+  transition: background 0.15s;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+}
+.dropdown-item:hover { background: rgba(255,255,255,0.06); }

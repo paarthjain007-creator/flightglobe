@@ -1,0 +1,18 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+
+# Proxy /api/traffic to the serverless Netlify function
+[[redirects]]
+  from = "/api/traffic"
+  to = "/.netlify/functions/traffic"
+  status = 200
+
+# SPA fallback routing for React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

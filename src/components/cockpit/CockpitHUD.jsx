@@ -1,0 +1,113 @@
+import React from "react";
+import { Compass, Navigation, Shield, X, Gauge, ArrowUpRight } from "lucide-react";
+
+export function CockpitHUD({
+  origin,
+  destination,
+  progress = 0.5,
+  heading = 78,
+  altitudeFt = 36000,
+  speedKmh = 860,
+  onExitCockpit,
+}) {
+  const speedKnots = Math.round(speedKmh * 0.539957);
+  const altitudeM = Math.round(altitudeFt * 0.3048);
+  const progressPct = Math.round(progress * 100);
+
+  return (
+    <div
+      id="cockpit-hud-overlay"
+      className="fixed inset-0 z-40 pointer-events-none flex flex-col justify-between p-4 sm:p-6 select-none"
+    >
+      {/* Top HUD Bar */}
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        {/* Left Telemetry Box */}
+        <div
+          className="glass px-4 py-2.5 rounded-2xl border border-cyan-400/30 text-xs font-mono space-y-1 shadow-2xl pointer-events-auto"
+          style={{ background: "rgba(5, 10, 25, 0.85)" }}
+        >
+          <div className="flex items-center gap-2 text-cyan-400 font-bold">
+            <Gauge size={14} />
+            <span>AIRSPEED</span>
+          </div>
+          <div className="text-xl font-black text-white">
+            {speedKnots} <span className="text-xs text-cyan-300">KTS</span> ({speedKmh} km/h)
+          </div>
+        </div>
+
+        {/* Center Compass & Route Header */}
+        <div
+          className="glass px-6 py-2.5 rounded-2xl border border-cyan-400/40 text-center shadow-2xl pointer-events-auto"
+          style={{ background: "rgba(5, 10, 25, 0.88)" }}
+        >
+          <div className="text-[10px] text-cyan-400 font-bold tracking-widest uppercase mb-0.5">
+            COCKPIT FIRST-PERSON HUD
+          </div>
+          <div className="text-base font-black text-white flex items-center justify-center gap-2">
+            <span>{origin?.iata || "DEP"}</span>
+            <ArrowUpRight size={14} className="text-cyan-400" />
+            <span>{destination?.iata || "ARR"}</span>
+          </div>
+          <div className="flex items-center justify-center gap-1.5 text-xs text-cyan-300 font-mono mt-0.5">
+            <Compass size={12} />
+            <span>HDG {heading}°</span>
+          </div>
+        </div>
+
+        {/* Right Telemetry Box & Exit CTA */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <div
+            className="glass px-4 py-2.5 rounded-2xl border border-cyan-400/30 text-xs font-mono space-y-1 shadow-2xl"
+            style={{ background: "rgba(5, 10, 25, 0.85)" }}
+          >
+            <div className="flex items-center gap-2 text-cyan-400 font-bold">
+              <Navigation size={14} />
+              <span>ALTITUDE</span>
+            </div>
+            <div className="text-xl font-black text-white">
+              {altitudeFt.toLocaleString()} <span className="text-xs text-cyan-300">FT</span> ({altitudeM.toLocaleString()}m)
+            </div>
+          </div>
+
+          <button
+            onClick={onExitCockpit}
+            className="p-3 rounded-2xl bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30 transition-all cursor-pointer shadow-lg"
+            title="Exit Cockpit View"
+          >
+            <X size={18} />
+          </button>
+        </div>
+      </div>
+
+      {/* Central Crosshair & Artificial Horizon Indicator */}
+      <div className="relative flex-1 flex items-center justify-center pointer-events-none">
+        {/* Pitch ladder & horizon crosshair */}
+        <div className="relative w-64 h-64 flex items-center justify-center opacity-75">
+          {/* Outer Ring */}
+          <div className="absolute inset-0 rounded-full border border-cyan-400/30 animate-pulse" />
+
+          {/* Crosshair Horizontal Bars */}
+          <div className="w-48 h-px bg-cyan-400 shadow-[0_0_10px_#00f0ff]" />
+          <div className="h-20 w-px bg-cyan-400 absolute shadow-[0_0_10px_#00f0ff]" />
+
+          {/* Center Target Box */}
+          <div className="w-8 h-8 border border-cyan-400 rounded-md absolute shadow-[0_0_15px_#00f0ff]" />
+        </div>
+      </div>
+
+      {/* Bottom Progress Bar */}
+      <div className="w-full max-w-xl mx-auto glass p-3.5 rounded-2xl border border-cyan-400/30 shadow-2xl space-y-2 pointer-events-auto" style={{ background: "rgba(5, 10, 25, 0.88)" }}>
+        <div className="flex items-center justify-between text-xs font-mono font-bold text-cyan-300">
+          <span>Enroute Flight Progress</span>
+          <span>{progressPct}%</span>
+        </div>
+        <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-cyan-500/30">
+          <div
+            className="h-full bg-cyan-400 transition-all duration-300 shadow-[0_0_12px_#00f0ff]"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
