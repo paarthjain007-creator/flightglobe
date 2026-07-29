@@ -56,7 +56,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
   useEffect(() => {
     handleSearch();
-  }, [origin?.iata, destination?.iata, currency, travelClass]);
+  }, [origin?.iata, destination?.iata, departureDate, currency, travelClass]);
 
   const filteredOffers = offers
     .filter((offer) => {
