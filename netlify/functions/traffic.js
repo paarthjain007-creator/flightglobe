@@ -1,12 +1,33 @@
 /**
  * Netlify Serverless Function for OpenSky Network ADS-B Telemetry.
- * Proxies OpenSky API calls directly on Netlify without needing a separate backend server.
+ * Proxies OpenSky API calls directly on Netlify with real airline brand mappings.
  */
 
 let cachedPlanes = [];
 let cacheTimestamp = 0;
 const CACHE_TTL_MS = 12_000;
 const OPENSKY_URL = "https://opensky-network.org/api/states/all";
+
+const REAL_AIRLINE_ICAO_MAP = {
+  ETD: { name: "Etihad Airways", logo: "🇦🇪", country: "United Arab Emirates" },
+  UAE: { name: "Emirates", logo: "🇦🇪", country: "United Arab Emirates" },
+  AIC: { name: "Air India", logo: "🇮🇳", country: "India" },
+  SWR: { name: "SWISS International Air Lines", logo: "🇨🇭", country: "Switzerland" },
+  DLH: { name: "Lufthansa", logo: "🇩🇪", country: "Germany" },
+  BAW: { name: "British Airways", logo: "🇬🇧", country: "United Kingdom" },
+  QTR: { name: "Qatar Airways", logo: "🇶🇦", country: "Qatar" },
+  SIA: { name: "Singapore Airlines", logo: "🇸🇬", country: "Singapore" },
+  QFA: { name: "Qantas", logo: "🇦🇺", country: "Australia" },
+  AFR: { name: "Air France", logo: "🇫🇷", country: "France" },
+  DAL: { name: "Delta Air Lines", logo: "🇺🇸", country: "United States" },
+  UAL: { name: "United Airlines", logo: "🇺🇸", country: "United States" },
+  AAL: { name: "American Airlines", logo: "🇺🇸", country: "United States" },
+  JAL: { name: "Japan Airlines", logo: "🇯🇵", country: "Japan" },
+  ANA: { name: "All Nippon Airways (ANA)", logo: "🇯🇵", country: "Japan" },
+  THY: { name: "Turkish Airlines", logo: "🇹🇷", country: "Turkey" },
+  CPA: { name: "Cathay Pacific", logo: "🇭🇰", country: "Hong Kong" },
+  VIR: { name: "Virgin Atlantic", logo: "🇬🇧", country: "United Kingdom" },
+};
 
 function buildOpenSkyUrl() {
   const user = process.env.OPENSKY_USER;
@@ -22,17 +43,21 @@ function buildOpenSkyUrl() {
 
 function normaliseState(sv) {
   const [
-    icao24, callsign, originCountry, , ,
+    icao24, rawCallsign, originCountry, , ,
     longitude, latitude, baroAltitude, onGround,
     velocity, trueTrack,
   ] = sv;
 
   if (latitude == null || longitude == null) return null;
 
+  const callsignStr = (rawCallsign || "").trim() || icao24 || "N/A";
+  const icaoPrefix = callsignStr.slice(0, 3).toUpperCase();
+  const airlineMeta = REAL_AIRLINE_ICAO_MAP[icaoPrefix];
+
   return {
     icao24: icao24 || "??????",
-    callsign: (callsign || "").trim() || icao24 || "N/A",
-    originCountry: originCountry || "Unknown",
+    callsign: callsignStr,
+    originCountry: airlineMeta ? airlineMeta.name : (originCountry || "Unknown"),
     lat: parseFloat(latitude),
     lng: parseFloat(longitude),
     altitude: baroAltitude != null ? Math.round(parseFloat(baroAltitude) * 3.28084) : null,
@@ -42,25 +67,22 @@ function normaliseState(sv) {
   };
 }
 
-const AIRLINES = [
-  ["DAL", "Delta"], ["UAL", "United"], ["BAW", "British"], ["AFR", "Air France"],
-  ["DLH", "Lufthansa"], ["SIA", "Singapore"], ["QFA", "Qantas"], ["UAE", "Emirates"],
-  ["AAL", "American"], ["KAL", "Korean Air"], ["ANA", "ANA"], ["JAL", "JAL"],
-  ["THY", "Turkish"], ["ETH", "Ethiopian"], ["MSR", "EgyptAir"],
-];
-
 function generateFallbackTraffic(count = 15) {
+  const airlines = Object.keys(REAL_AIRLINE_ICAO_MAP);
+
   return Array.from({ length: count }, (_, i) => {
-    const airline = AIRLINES[i % AIRLINES.length];
+    const code = airlines[i % airlines.length];
+    const brand = REAL_AIRLINE_ICAO_MAP[code];
+
     return {
-      icao24: `FAKE${i.toString(16).padStart(4, "0").toUpperCase()}`,
-      callsign: `${airline[0]}${100 + Math.floor(Math.random() * 9900)}`,
-      originCountry: airline[1],
-      lat: (Math.random() - 0.5) * 160,
-      lng: (Math.random() - 0.5) * 360,
-      altitude: 25000 + Math.floor(Math.random() * 15000),
-      velocity: 420 + Math.floor(Math.random() * 100),
-      trueTrack: Math.random() * 360,
+      icao24: `A8${i.toString(16).padStart(4, "0").toUpperCase()}`,
+      callsign: `${code}${101 + Math.floor(Math.random() * 899)}`,
+      originCountry: brand.name,
+      lat: (Math.random() - 0.5) * 140,
+      lng: (Math.random() - 0.5) * 340,
+      altitude: 28000 + Math.floor(Math.random() * 12000),
+      velocity: 430 + Math.floor(Math.random() * 80),
+      trueTrack: Math.floor(Math.random() * 360),
       onGround: false,
       _synthetic: true,
     };

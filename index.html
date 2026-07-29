@@ -2,16 +2,51 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/globe.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="FlightGlobe — Interactive 3D flight path visualizer with real-time weather, currency conversion, and expense estimation." />
-    <meta name="keywords" content="flight tracker, 3D globe, travel planner, airport map, flight visualization" />
-    <meta property="og:title" content="FlightGlobe — 3D Travel Visualizer" />
-    <meta property="og:description" content="Plan your flights with an interactive 3D globe, live weather, and expense estimates." />
-    <title>FlightGlobe — 3D Travel Visualizer</title>
+    <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/lucide-react/lucide/main/icons/globe.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="theme-color" content="#050a18" />
+
+    <!-- Primary SEO Meta Tags -->
+    <title>FlightGlobe — Live 3D Global Flight Visualizer & GDS Booking Engine</title>
+    <meta name="title" content="FlightGlobe — Live 3D Global Flight Visualizer & GDS Booking Engine" />
+    <meta name="description" content="Experience real-time global ADS-B flight tracking, multi-airline GDS price comparison, AI Travel Copilot, Cockpit view, and 3D WebGL spatial route planning." />
+    <meta name="keywords" content="flight tracker, live ADS-B, 3D globe, flight visualizer, Emirates, Etihad, Air India, Lufthansa, Swiss, Amadeus GDS, travel planner" />
+    <meta name="author" content="FlightGlobe Tech" />
+
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://flightglobe.netlify.app/" />
+    <meta property="og:title" content="FlightGlobe — Live 3D Global Flight Visualizer & GDS Booking Engine" />
+    <meta property="og:description" content="Track live flights across the globe with 3D WebGL visuals, real-time ADS-B radar, AI Copilot, and multi-airline booking comparison." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="FlightGlobe — Live 3D Global Flight Visualizer" />
+    <meta property="twitter:description" content="Track live flights across the globe with 3D WebGL visuals, real-time ADS-B radar, and multi-airline booking." />
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "FlightGlobe",
+        "operatingSystem": "Web Browser, iOS, Android, Desktop",
+        "applicationCategory": "TravelApplication",
+        "description": "Interactive 3D flight tracking, live ADS-B air traffic radar, and multi-airline GDS booking engine.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Loader2, Zap, Cpu } from "lucide-react";
+import { ArrowRight, Loader2, Zap, Cpu, MapPin, SlidersHorizontal, X } from "lucide-react";
 import GlobeViewer from "../components/Globe/GlobeViewer";
 import LeftPanel from "../components/panels/LeftPanel";
 import FeaturePanel from "../components/panels/FeaturePanel";
@@ -44,6 +44,10 @@ export default function Explore() {
   // Cockpit First-Person Mode state
   const [isCockpitView, setIsCockpitView] = useState(false);
   const [cockpitProgress, setCockpitProgress] = useState(0.45);
+
+  // Mobile Drawer Toggle States
+  const [mobileRouteOpen, setMobileRouteOpen] = useState(false);
+  const [mobileFeatureOpen, setMobileFeatureOpen] = useState(false);
 
   const validWps    = waypoints.filter(Boolean);
   const hasRoute    = validWps.length >= 2;
@@ -147,7 +151,7 @@ export default function Explore() {
       className="relative overflow-hidden"
       style={{ height: "calc(100vh - 56px)", marginTop: "56px" }}
     >
-      {/* 3D Globe with Live Radar, 4D Schedules, Cockpit Camera & Wind Particles */}
+      {/* 3D Globe Canvas */}
       <GlobeViewer
         waypoints={validWps}
         liveFlights={liveFlights}
@@ -159,9 +163,9 @@ export default function Explore() {
         cockpitProgress={cockpitProgress}
       />
 
-      {/* Left Panel — Airport search & route builder */}
+      {/* Desktop Left Panel */}
       {!isCockpitView && (
-        <aside className="absolute left-4 top-1/2 -translate-y-1/2 z-30">
+        <aside className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 z-30">
           <LeftPanel
             waypoints={waypoints}
             onWaypointsChange={handleWaypointsChange}
@@ -170,9 +174,9 @@ export default function Explore() {
         </aside>
       )}
 
-      {/* Right Feature Panel — All major features prominently displayed */}
+      {/* Desktop Right Feature Panel */}
       {!isCockpitView && !isARModeActive && (
-        <aside className="absolute right-4 top-1/2 -translate-y-1/2 z-30">
+        <aside className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 z-30">
           <FeaturePanel
             hasRoute={hasRoute}
             showWindVectors={showWindVectors}
@@ -190,7 +194,7 @@ export default function Explore() {
       )}
 
       {/* FPS & Performance Status Indicator */}
-      <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
+      <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
         <div className="glass px-2.5 py-1 rounded-xl text-[10px] font-mono flex items-center gap-1 text-slate-400">
           <Cpu size={10} className="text-cyan-400" />
           <span>{fps} FPS</span>
@@ -199,6 +203,81 @@ export default function Explore() {
           )}
         </div>
       </div>
+
+      {/* Mobile Floating Action Trigger Bar (Phone screens) */}
+      {!isCockpitView && !isARModeActive && (
+        <div className="md:hidden absolute top-3 right-3 z-30 flex items-center gap-2">
+          <button
+            onClick={() => {
+              playClick();
+              setMobileRouteOpen(true);
+              setMobileFeatureOpen(false);
+            }}
+            className="glass px-3 py-1.5 rounded-xl text-xs font-bold text-cyan-300 flex items-center gap-1.5 cursor-pointer shadow-lg"
+          >
+            <MapPin size={13} />
+            <span>Route</span>
+          </button>
+
+          <button
+            onClick={() => {
+              playClick();
+              setMobileFeatureOpen(true);
+              setMobileRouteOpen(false);
+            }}
+            className="glass px-3 py-1.5 rounded-xl text-xs font-bold text-purple-300 flex items-center gap-1.5 cursor-pointer shadow-lg"
+          >
+            <SlidersHorizontal size={13} />
+            <span>Features</span>
+          </button>
+        </div>
+      )}
+
+      {/* Mobile Left Panel Modal Drawer */}
+      {mobileRouteOpen && (
+        <div className="md:hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md p-4 flex flex-col justify-end animate-fade-in">
+          <div className="relative glass rounded-3xl p-4 max-h-[85vh] overflow-y-auto space-y-3">
+            <button
+              onClick={() => setMobileRouteOpen(false)}
+              className="absolute top-3 right-3 p-1.5 rounded-full glass text-slate-400 hover:text-white"
+            >
+              <X size={16} />
+            </button>
+            <LeftPanel
+              waypoints={waypoints}
+              onWaypointsChange={handleWaypointsChange}
+              workerResult={result}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Feature Panel Modal Drawer */}
+      {mobileFeatureOpen && (
+        <div className="md:hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md p-4 flex flex-col justify-end animate-fade-in">
+          <div className="relative glass rounded-3xl p-4 max-h-[85vh] overflow-y-auto space-y-3">
+            <button
+              onClick={() => setMobileFeatureOpen(false)}
+              className="absolute top-3 right-3 p-1.5 rounded-full glass text-slate-400 hover:text-white"
+            >
+              <X size={16} />
+            </button>
+            <FeaturePanel
+              hasRoute={hasRoute}
+              showWindVectors={showWindVectors}
+              onToggleWind={() => { playClick(); setShowWindVectors((v) => !v); }}
+              is4DModeEnabled={is4DModeEnabled}
+              onToggle4D={() => { playClick(); setIs4DModeEnabled((v) => !v); }}
+              isCockpitView={isCockpitView}
+              onEnterCockpit={() => { playClick(); setIsCockpitView(true); setMobileFeatureOpen(false); }}
+              onEnterAR={() => { playClick(); startARSession(); setArModalOpen(true); setMobileFeatureOpen(false); }}
+              activeOverlayLayer={activeOverlayLayer}
+              onToggleOverlay={toggleOverlay}
+              isARModeActive={isARModeActive}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Cockpit HUD Overlay */}
       {isCockpitView && (
@@ -232,13 +311,13 @@ export default function Explore() {
             maxTimeMs={maxTimeMs}
           />
         ) : (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3">
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3 w-full px-4 max-w-sm">
             {hasRoute && (
               <button
                 id="calculate-trip-btn"
                 onClick={handleCalculate}
                 disabled={!canCalculate}
-                className="flex items-center gap-2.5 px-7 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100 shadow-2xl"
+                className="w-full flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100 shadow-2xl"
                 style={{
                   background: canCalculate ? "var(--accent)" : "var(--glass-bg)",
                   color: canCalculate ? "var(--bg-primary)" : "var(--text-muted)",
@@ -252,16 +331,6 @@ export default function Explore() {
                   <><Zap size={15} /> Calculate Trip Insights <ArrowRight size={15} /></>
                 )}
               </button>
-            )}
-
-            {!hasRoute && (
-              <div
-                className="glass rounded-full px-5 py-2.5 flex items-center gap-2 text-xs"
-                style={{ color: "var(--text-muted)" }}
-              >
-                <span>🌍</span>
-                <span>Search airports on the left · Toggle features on the right</span>
-              </div>
             )}
           </div>
         )
