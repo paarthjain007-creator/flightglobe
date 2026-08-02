@@ -33,7 +33,7 @@ export function getPresetPrompts() {
 
 export async function processCopilotPrompt(userPrompt) {
   // Simulate AI network processing latency
-  await new Promise((res) => setTimeout(res, 1000));
+  await new Promise((res) => setTimeout(res, 800));
 
   const lower = userPrompt.toLowerCase();
 
@@ -58,40 +58,69 @@ export async function processCopilotPrompt(userPrompt) {
     }
   }
 
-  // Dynamic NLP airport search extraction
-  const foundAirports = [];
-  const words = lower.split(/[\s,.-]+/);
+  // NLP Intent Extraction
+  let originQuery = null;
+  let destQuery = null;
 
-  // Direct IATA matching
-  for (const ap of AIRPORTS) {
-    if (words.includes(ap.iata.toLowerCase()) || lower.includes(ap.city.toLowerCase()) || lower.includes(ap.country.toLowerCase())) {
-      if (!foundAirports.some((existing) => existing && existing.iata === ap.iata)) {
-        foundAirports.push(ap);
+  const fromToMatch = lower.match(/from\s+([a-z\s]+?)\s+to\s+([a-z\s]+)/i);
+  if (fromToMatch) {
+    originQuery = fromToMatch[1].trim();
+    destQuery = fromToMatch[2].trim();
+  } else {
+    const toMatch = lower.match(/(?:to|for)\s+([a-z\s]+)/i);
+    if (toMatch) destQuery = toMatch[1].trim();
+  }
+
+  async function fetchAirport(q) {
+    try {
+      const res = await fetch(`http://localhost:3001/api/airports/search?q=${encodeURIComponent(q)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.results && data.results.length > 0) return data.results[0];
+      }
+    } catch (err) {
+      console.warn("Copilot API fallback:", err);
+    }
+    // Local fallback
+    const local = searchAirports(q);
+    return local.length > 0 ? local[0] : null;
+  }
+
+  let finalWaypoints = [];
+  
+  if (originQuery && destQuery) {
+    const o = await fetchAirport(originQuery);
+    const d = await fetchAirport(destQuery);
+    if (o) finalWaypoints.push(o);
+    if (d) finalWaypoints.push(d);
+  } else if (destQuery) {
+    // Only destination mentioned, assume default origin or user's current origin (handled in component)
+    const d = await fetchAirport(destQuery);
+    if (d) finalWaypoints.push(d);
+  } else {
+    // Fallback: word search
+    const words = lower.split(/[\s,.-]+/);
+    for (const ap of AIRPORTS) {
+      if (words.includes(ap.iata.toLowerCase()) || lower.includes(ap.city.toLowerCase()) || lower.includes(ap.country.toLowerCase())) {
+        if (!finalWaypoints.some((existing) => existing && existing.iata === ap.iata)) {
+          finalWaypoints.push(ap);
+        }
       }
     }
   }
 
-  // Fallback defaults if fewer than 2 airports matched
-  if (foundAirports.length < 2) {
-    if (foundAirports.length === 1) {
-      // Add a complementary destination hub
-      const complement = AIRPORTS.find((a) => a && a.iata !== foundAirports[0].iata && (a.currency !== foundAirports[0].currency || a.country !== foundAirports[0].country));
-      if (complement) foundAirports.push(complement);
-    } else {
-      // Default curated route: JFK -> LHR -> SIN
-      foundAirports.push(
-        AIRPORTS.find((a) => a.iata === "JFK"),
-        AIRPORTS.find((a) => a.iata === "LHR"),
-        AIRPORTS.find((a) => a.iata === "SIN")
-      );
-    }
+  if (finalWaypoints.length === 0) {
+    return {
+      success: false,
+      title: "Navigation Error",
+      summary: "I couldn't identify the flight route from your prompt. Could you specify the origin and destination clearly (e.g. 'flights from Paris to Tokyo')?",
+      waypoints: [],
+      insights: []
+    };
   }
 
-  // Filter out any potential undefined elements and cap at 5 airports
-  const finalWaypoints = foundAirports.filter(Boolean).slice(0, 5);
-
   const title = `${finalWaypoints[0]?.city || "Origin"} to ${finalWaypoints[finalWaypoints.length - 1]?.city || "Destination"} Custom Journey`;
-  const summary = `AI-generated multi-leg trajectory covering ${finalWaypoints.length} global destinations based on your travel goals.`;
+  const summary = `AI-generated trajectory covering ${finalWaypoints.length} destination${finalWaypoints.length > 1 ? 's' : ''} based on your request.`;
 
   return {
     success: true,

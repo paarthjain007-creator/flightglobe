@@ -206,10 +206,27 @@ export default function NimbusCopilot() {
       const res = await processCopilotPrompt(query);
       const waypoints = res.waypoints || [];
 
-      if (waypoints.length >= 2) {
-        setSearchOrigin(waypoints[0]);
-        setSearchDestination(waypoints[waypoints.length - 1]);
-        setWaypoints(waypoints);
+      if (waypoints.length >= 1) {
+        let newOrigin = waypoints.length >= 2 ? waypoints[0] : searchOrigin;
+        let newDest = waypoints[waypoints.length - 1];
+
+        if (newOrigin && newDest && newOrigin.iata === newDest.iata) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `nimbus-err-${Date.now()}`,
+              sender: "nimbus",
+              text: "Oops! ☁️ Your origin and destination appear to be the same. Could you clarify your intended flight route?",
+              timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+            },
+          ]);
+          setIsThinking(false);
+          return;
+        }
+
+        setSearchOrigin(newOrigin);
+        setSearchDestination(newDest);
+        setWaypoints(waypoints.length >= 2 ? waypoints : [newOrigin, newDest]);
       }
 
       setMessages((prev) => [
