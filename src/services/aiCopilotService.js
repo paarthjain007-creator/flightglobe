@@ -58,7 +58,7 @@ export async function processCopilotPrompt(userPrompt) {
     }
   }
 
-  // NLP Intent Extraction
+  // STAGE A: NLP Intent Extraction
   let originQuery = null;
   let destQuery = null;
 
@@ -69,6 +69,9 @@ export async function processCopilotPrompt(userPrompt) {
   } else {
     const toMatch = lower.match(/(?:to|for)\s+([a-z\s]+)/i);
     if (toMatch) destQuery = toMatch[1].trim();
+    
+    const fromMatch = lower.match(/from\s+([a-z\s]+)/i);
+    if (fromMatch) originQuery = fromMatch[1].trim();
   }
 
   async function fetchAirport(q) {
@@ -86,51 +89,21 @@ export async function processCopilotPrompt(userPrompt) {
     return local.length > 0 ? local[0] : null;
   }
 
-  let finalWaypoints = [];
+  // STAGE B: Fuzzy Resolution Engine
+  let resolvedOrigin = null;
+  let resolvedDestination = null;
+
+  if (originQuery) {
+    resolvedOrigin = await fetchAirport(originQuery);
+  }
   
-  if (originQuery && destQuery) {
-    const o = await fetchAirport(originQuery);
-    const d = await fetchAirport(destQuery);
-    if (o) finalWaypoints.push(o);
-    if (d) finalWaypoints.push(d);
-  } else if (destQuery) {
-    // Only destination mentioned, assume default origin or user's current origin (handled in component)
-    const d = await fetchAirport(destQuery);
-    if (d) finalWaypoints.push(d);
-  } else {
-    // Fallback: word search
-    const words = lower.split(/[\s,.-]+/);
-    for (const ap of AIRPORTS) {
-      if (words.includes(ap.iata.toLowerCase()) || lower.includes(ap.city.toLowerCase()) || lower.includes(ap.country.toLowerCase())) {
-        if (!finalWaypoints.some((existing) => existing && existing.iata === ap.iata)) {
-          finalWaypoints.push(ap);
-        }
-      }
-    }
+  if (destQuery) {
+    resolvedDestination = await fetchAirport(destQuery);
   }
-
-  if (finalWaypoints.length === 0) {
-    return {
-      success: false,
-      title: "Navigation Error",
-      summary: "I couldn't identify the flight route from your prompt. Could you specify the origin and destination clearly (e.g. 'flights from Paris to Tokyo')?",
-      waypoints: [],
-      insights: []
-    };
-  }
-
-  const title = `${finalWaypoints[0]?.city || "Origin"} to ${finalWaypoints[finalWaypoints.length - 1]?.city || "Destination"} Custom Journey`;
-  const summary = `AI-generated trajectory covering ${finalWaypoints.length} destination${finalWaypoints.length > 1 ? 's' : ''} based on your request.`;
 
   return {
     success: true,
-    title,
-    summary,
-    waypoints: finalWaypoints,
-    insights: [
-      `🎯 Matched ${finalWaypoints.length} destination hubs from your query`,
-      "🌐 Route mapped on 3D Globe with live Haversine telemetry",
-      "🌿 Smart Carbon offset calculated automatically"
-    ]
+    resolvedOrigin,
+    resolvedDestination
   };
 }

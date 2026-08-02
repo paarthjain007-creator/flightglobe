@@ -218,23 +218,92 @@ let cachedGlobalAirports = [];
   }
 })();
 
+const CITY_ALIASES = {
+  "bombay": "BOM",
+  "madras": "MAA",
+  "calcutta": "CCU",
+  "peking": "PEK",
+  "saigon": "SGN",
+  "rangoon": "RGN",
+  "batavia": "CGK",
+  "canton": "CAN"
+};
+
+const HUB_MAP = {
+  "lon": "LHR",
+  "london": "LHR",
+  "nyc": "JFK",
+  "new york": "JFK",
+  "tyo": "HND",
+  "tokyo": "HND",
+  "was": "IAD",
+  "washington": "IAD",
+  "par": "CDG",
+  "paris": "CDG",
+  "sao": "GRU",
+  "sao paulo": "GRU",
+  "bue": "EZE",
+  "buenos aires": "EZE"
+};
+
+function levenshteinDistance(a, b) {
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) == a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
 export function searchGlobalAirports(query) {
   if (!query || query.length < 2) return [];
   const q = query.toLowerCase().trim();
 
-  // Exact IATA match
+  // 1. Alias & Hub check
+  const aliasIata = CITY_ALIASES[q] || HUB_MAP[q];
+  if (aliasIata) {
+    const hubMatches = cachedGlobalAirports.filter(a => a.iata.toUpperCase() === aliasIata);
+    if (hubMatches.length > 0) return hubMatches;
+  }
+
+  // 2. Exact IATA match
   const exactIata = cachedGlobalAirports.filter(a => a.iata.toLowerCase() === q);
+  if (exactIata.length > 0) return exactIata;
   
-  // Prefix IATA match
+  // 3. Prefix IATA match
   const prefixIata = cachedGlobalAirports.filter(a => a.iata.toLowerCase().startsWith(q) && a.iata.toLowerCase() !== q);
   
-  // City, Name, Country match
+  // 4. City, Name, Country match
   const others = cachedGlobalAirports.filter(a => 
     !a.iata.toLowerCase().startsWith(q) &&
     (a.city.toLowerCase().includes(q) || a.name.toLowerCase().includes(q) || a.country.toLowerCase().includes(q))
   );
 
-  const combined = [...exactIata, ...prefixIata, ...others];
+  let combined = [...exactIata, ...prefixIata, ...others];
+
+  // 5. Fuzzy Match Fallback (Levenshtein) if few results
+  if (combined.length === 0 && q.length > 3) {
+    const fuzzyMatches = cachedGlobalAirports
+      .map(a => {
+        const cityDist = levenshteinDistance(q, a.city.toLowerCase());
+        const nameDist = levenshteinDistance(q, a.name.toLowerCase());
+        return { airport: a, dist: Math.min(cityDist, nameDist) };
+      })
+      .filter(m => m.dist <= 2) // Max 2 typos
+      .sort((a, b) => a.dist - b.dist)
+      .map(m => m.airport);
+    combined = fuzzyMatches;
+  }
   
   // Deduplicate
   const seen = new Set();

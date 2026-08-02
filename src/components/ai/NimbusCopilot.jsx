@@ -204,40 +204,77 @@ export default function NimbusCopilot() {
     // Default Copilot NLP engine processing
     try {
       const res = await processCopilotPrompt(query);
-      const waypoints = res.waypoints || [];
+      
+      const nimbusReply = (text) => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `nimbus-${Date.now()}`,
+            sender: "nimbus",
+            text,
+            timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+          },
+        ]);
+        setIsThinking(false);
+      };
 
-      if (waypoints.length >= 1) {
-        let newOrigin = waypoints.length >= 2 ? waypoints[0] : searchOrigin;
-        let newDest = waypoints[waypoints.length - 1];
-
-        if (newOrigin && newDest && newOrigin.iata === newDest.iata) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `nimbus-err-${Date.now()}`,
-              sender: "nimbus",
-              text: "Oops! ☁️ Your origin and destination appear to be the same. Could you clarify your intended flight route?",
-              timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
-            },
-          ]);
-          setIsThinking(false);
-          return;
-        }
-
-        setSearchOrigin(newOrigin);
-        setSearchDestination(newDest);
-        setWaypoints(waypoints.length >= 2 ? waypoints : [newOrigin, newDest]);
+      if (res.waypoints) {
+        const waypoints = res.waypoints;
+        setSearchOrigin(waypoints[0]);
+        setSearchDestination(waypoints[waypoints.length - 1]);
+        setWaypoints(waypoints);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `nimbus-${Date.now()}`,
+            sender: "nimbus",
+            title: res.title,
+            text: res.summary,
+            insights: res.insights || [],
+            waypoints,
+            timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+          },
+        ]);
+        setIsThinking(false);
+        return;
       }
+
+      const { resolvedOrigin, resolvedDestination } = res;
+
+      if (!resolvedOrigin && !resolvedDestination) {
+        return nimbusReply("I couldn't detect your departure or destination cities. Try asking like: 'Fly from Paris to Tokyo' or 'LAX to LHR'.");
+      }
+
+      if (resolvedOrigin && !resolvedDestination) {
+        return nimbusReply(`I see you're starting from ${resolvedOrigin.city} (${resolvedOrigin.iata}). Where would you like to fly to?`);
+      }
+
+      if (!resolvedOrigin && resolvedDestination) {
+        return nimbusReply(`I found your destination: ${resolvedDestination.city} (${resolvedDestination.iata}). What city are you departing from?`);
+      }
+
+      if (resolvedOrigin.iata === resolvedDestination.iata) {
+        return nimbusReply(`Your origin and destination are both set to ${resolvedOrigin.city}. Please select two different cities!`);
+      }
+
+      // Valid route detected
+      setSearchOrigin(resolvedOrigin);
+      setSearchDestination(resolvedDestination);
+      setWaypoints([resolvedOrigin, resolvedDestination]);
 
       setMessages((prev) => [
         ...prev,
         {
           id: `nimbus-${Date.now()}`,
           sender: "nimbus",
-          title: res.title,
-          text: res.summary,
-          insights: res.insights || [],
-          waypoints,
+          title: `${resolvedOrigin.city} to ${resolvedDestination.city} Custom Journey`,
+          text: `AI-generated trajectory covering 2 destinations based on your request.`,
+          insights: [
+            "🎯 Matched 2 destination hubs from your query",
+            "🌐 Route mapped on 3D Globe with live Haversine telemetry",
+            "🌿 Smart Carbon offset calculated automatically"
+          ],
+          waypoints: [resolvedOrigin, resolvedDestination],
           timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
