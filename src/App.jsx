@@ -9,6 +9,7 @@ import Copilot from "./pages/Copilot";
 import Passport from "./pages/Passport";
 import RadarPage from "./pages/RadarPage";
 import OfflineToast from "./components/ui/OfflineToast";
+import GlobalCopilotFloatingWidget from "./components/ai/GlobalCopilotFloatingWidget";
 import { useStore } from "./store/useStore";
 
 export default function App() {
@@ -39,6 +40,9 @@ export default function App() {
           <Route path="*" element={<Navigate to="/explore" replace />} />
         </Routes>
       </main>
+
+      {/* Global Omnipresent AI Copilot Floating Widget */}
+      <GlobalCopilotFloatingWidget />
 
       {/* Global Launch Footer */}
       <Footer />
