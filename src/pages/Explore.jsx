@@ -132,6 +132,24 @@ export default function Explore() {
     setWaypoints(newWps);
   }
 
+  const handleGlobePointClick = useCallback((point) => {
+    if (point && point.isBgAirport) {
+      if (waypoints.length < 10) {
+        // Build new airport object
+        const newAirport = {
+          iata: point.iata,
+          name: point.name || point.city,
+          city: point.city,
+          country: point.country,
+          lat: point.lat,
+          lng: point.lng,
+          timezone: point.timezone,
+        };
+        handleWaypointsChange([...waypoints, newAirport]);
+      }
+    }
+  }, [waypoints, playRouteAdd]);
+
   function toggleOverlay(layer) {
     playClick();
     setActiveOverlayLayer(activeOverlayLayer === layer ? "none" : layer);
@@ -161,6 +179,7 @@ export default function Explore() {
         showWindVectors={activeWindVectors}
         isCockpitView={isCockpitView}
         cockpitProgress={cockpitProgress}
+        onPointClick={handleGlobePointClick}
       />
 
       {/* Desktop Left Panel */}

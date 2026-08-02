@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Search, MapPin, X } from "lucide-react";
-import { searchAirports } from "../../data/airports";
+import { Search, MapPin, X, Globe, Loader2 } from "lucide-react";
+import { searchAirports, getAirportByIata } from "../../data/airports";
 
-export default function AirportSearch({ label, value, onChange, onClear, placeholder = "Search airports…", id }) {
+export default function AirportSearch({ label, value, onChange, onClear, placeholder = "Search global airports…", id }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -23,16 +24,59 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const q = query.trim();
+    if (!q || q === (value ? `${value.iata} — ${value.city}` : "")) return;
+
+    const delayDebounceFn = setTimeout(async () => {
+      if (q.length >= 2) {
+        setLoading(true);
+        // Start with local static fallback/cache
+        let matched = searchAirports(q);
+        
+        if (q.length === 3 && !matched.some((a) => a.iata.toUpperCase() === q.toUpperCase())) {
+          const customAirport = getAirportByIata(q);
+          matched = [customAirport, ...matched];
+        }
+        
+        setResults(matched);
+        setOpen(true);
+
+        // Fetch live from 28k massive proxy API
+        try {
+          const res = await fetch(`http://localhost:3001/api/airports/search?q=${encodeURIComponent(q)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.results && data.results.length > 0) {
+              const liveAirports = data.results;
+              const merged = [...liveAirports, ...matched];
+              const seen = new Set();
+              const finalResults = [];
+              for (const item of merged) {
+                if (!seen.has(item.iata)) {
+                  seen.add(item.iata);
+                  finalResults.push(item);
+                }
+              }
+              setResults(finalResults.slice(0, 10));
+            }
+          }
+        } catch (err) {
+          console.warn("Global API search failed", err);
+        }
+        
+        setLoading(false);
+      } else {
+        setResults([]);
+        setOpen(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [query, value]);
+
   function handleInput(e) {
-    const q = e.target.value;
-    setQuery(q);
-    if (q.length >= 1) {
-      setResults(searchAirports(q));
-      setOpen(true);
-    } else {
-      setResults([]);
-      setOpen(false);
-    }
+    setQuery(e.target.value);
     if (value) onChange(null);
   }
 
@@ -60,11 +104,19 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
       )}
 
       <div className="relative flex items-center">
-        <Search
-          size={14}
-          className="absolute left-3 pointer-events-none"
-          style={{ color: "var(--accent)" }}
-        />
+        {loading ? (
+          <Loader2
+            size={14}
+            className="absolute left-3 pointer-events-none animate-spin"
+            style={{ color: "var(--accent)" }}
+          />
+        ) : (
+          <Search
+            size={14}
+            className="absolute left-3 pointer-events-none"
+            style={{ color: "var(--accent)" }}
+          />
+        )}
         <input
           id={id}
           type="text"
@@ -89,17 +141,17 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
       {/* Dropdown */}
       {open && results.length > 0 && (
         <div
-          className="absolute z-50 mt-1.5 w-full rounded-xl overflow-hidden shadow-2xl animate-slide-up"
+          className="absolute z-50 mt-1.5 w-full rounded-xl overflow-hidden shadow-2xl animate-slide-up max-h-64 overflow-y-auto"
           style={{
             background: "var(--bg-secondary)",
             border: "1px solid var(--glass-border)",
           }}
         >
-          {results.map((airport, i) => (
+          {results.map((airport) => (
             <button
               key={airport.iata}
               id={`airport-option-${id}-${airport.iata}`}
-              className="dropdown-item w-full flex items-center gap-3 px-3 py-2.5 text-left"
+              className="dropdown-item w-full flex items-center gap-3 px-3 py-2.5 text-left border-b border-white/5 last:border-0 hover:bg-cyan-500/10 transition-colors"
               onClick={() => handleSelect(airport)}
             >
               <div
@@ -134,7 +186,7 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
             style={{ background: "var(--accent)" }}
           />
           <span className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
-            {value.name}
+            {value.name} ({value.country})
           </span>
         </div>
       )}

@@ -33,7 +33,7 @@ export function getPresetPrompts() {
 
 export async function processCopilotPrompt(userPrompt) {
   // Simulate AI network processing latency
-  await new Promise((res) => setTimeout(res, 1200));
+  await new Promise((res) => setTimeout(res, 1000));
 
   const lower = userPrompt.toLowerCase();
 
@@ -65,7 +65,7 @@ export async function processCopilotPrompt(userPrompt) {
   // Direct IATA matching
   for (const ap of AIRPORTS) {
     if (words.includes(ap.iata.toLowerCase()) || lower.includes(ap.city.toLowerCase()) || lower.includes(ap.country.toLowerCase())) {
-      if (!foundAirports.some((existing) => existing.iata === ap.iata)) {
+      if (!foundAirports.some((existing) => existing && existing.iata === ap.iata)) {
         foundAirports.push(ap);
       }
     }
@@ -75,7 +75,7 @@ export async function processCopilotPrompt(userPrompt) {
   if (foundAirports.length < 2) {
     if (foundAirports.length === 1) {
       // Add a complementary destination hub
-      const complement = AIRPORTS.find((a) => a.iata !== foundAirports[0].iata && (a.currency !== foundAirports[0].currency || a.country !== foundAirports[0].country));
+      const complement = AIRPORTS.find((a) => a && a.iata !== foundAirports[0].iata && (a.currency !== foundAirports[0].currency || a.country !== foundAirports[0].country));
       if (complement) foundAirports.push(complement);
     } else {
       // Default curated route: JFK -> LHR -> SIN
@@ -87,10 +87,10 @@ export async function processCopilotPrompt(userPrompt) {
     }
   }
 
-  // Cap at 5 airports
-  const finalWaypoints = foundAirports.slice(0, 5);
+  // Filter out any potential undefined elements and cap at 5 airports
+  const finalWaypoints = foundAirports.filter(Boolean).slice(0, 5);
 
-  const title = `${finalWaypoints[0].city} to ${finalWaypoints[finalWaypoints.length - 1].city} Custom Journey`;
+  const title = `${finalWaypoints[0]?.city || "Origin"} to ${finalWaypoints[finalWaypoints.length - 1]?.city || "Destination"} Custom Journey`;
   const summary = `AI-generated multi-leg trajectory covering ${finalWaypoints.length} global destinations based on your travel goals.`;
 
   return {

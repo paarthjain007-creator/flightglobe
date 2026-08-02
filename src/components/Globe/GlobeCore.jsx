@@ -20,14 +20,8 @@ const NIGHT_TEXTURE = "//unpkg.com/three-globe/example/img/earth-night.jpg";
 const BUMP_TEXTURE  = "//unpkg.com/three-globe/example/img/earth-topology.png";
 const DARK_TEXTURE  = "//unpkg.com/three-globe/example/img/earth-dark.jpg";
 
-const BG_DOTS = [
-  { lat: 40.64, lng: -73.77 }, { lat: 51.47, lng: -0.45 }, { lat: 49.01, lng: 2.54 },
-  { lat: 25.25, lng: 55.36 },  { lat: 1.36, lng: 103.99 },  { lat: 35.55, lng: 139.78 },
-  { lat: -33.95, lng: 151.18 },{ lat: 22.31, lng: 113.92 }, { lat: 33.94, lng: -118.41 },
-  { lat: 48.35, lng: 11.79 },  { lat: 19.09, lng: 72.87 },  { lat: 28.57, lng: 77.10 },
-  { lat: 37.62, lng: -122.38 },{ lat: -23.44, lng: -46.47 },{ lat: 41.28, lng: 28.75 },
-  { lat: 50.04, lng: 8.56 },   { lat: 41.80, lng: 12.24 }, { lat: -26.14, lng: 28.25 },
-];
+// Dynamically sample ~120 real airports to act as interactive background dots
+const INTERACTIVE_BG_AIRPORTS = AIRPORTS.filter((a, i) => i % 2 === 0).slice(0, 120);
 
 function hexToRgba(hex6, alpha) {
   const r = parseInt(hex6.slice(1, 3), 16);
@@ -64,6 +58,14 @@ function buildArcs(waypoints, arcColorTint) {
 }
 
 function buildPoints(waypoints, liveFlights = [], simulated4DFlights = [], arcColor) {
+  const bgPts = INTERACTIVE_BG_AIRPORTS.map((ap) => ({
+    ...ap,
+    color: "rgba(255,255,255,0.25)",
+    r: 0.35,
+    isBgAirport: true,
+    label: `<div style="background:rgba(10,15,30,0.85);padding:4px 8px;border-radius:8px;font-size:11px;color:#fff;border:1px solid rgba(255,255,255,0.15)"><b>${ap.iata}</b> - ${ap.city}, ${ap.country}<br/><span style="color:#60a5fa;font-size:9px">Click to add to route</span></div>`
+  }));
+
   const waypointPts = (waypoints || [])
     .map((ap, i) => {
       if (!ap) return null;
@@ -111,7 +113,7 @@ function buildPoints(waypoints, liveFlights = [], simulated4DFlights = [], arcCo
     `
   }));
 
-  return [...BG_DOTS, ...waypointPts, ...flightPts, ...sim4DPts];
+  return [...bgPts, ...waypointPts, ...flightPts, ...sim4DPts];
 }
 
 function buildRings(waypoints, warningRings = []) {
@@ -150,6 +152,7 @@ export default function GlobeCore({
   showWindVectors = false,
   isCockpitView = false,
   cockpitProgress = 0.5,
+  onPointClick,
 }) {
   const globeRef = useRef(null);
   const cfg = THEME_CONFIG[theme] || THEME_CONFIG.space;
@@ -277,6 +280,11 @@ export default function GlobeCore({
         pointRadius={(d) => (d.is4DFlight ? 0.55 : d.isLiveFlight ? 0.45 : d.r || 0.16)}
         pointLabel="label"
         pointsMerge={false}
+        onPointClick={(point) => {
+          if (point.isBgAirport || point.isWaypoint) {
+             if (onPointClick) onPointClick(point);
+          }
+        }}
         ringsData={rings}
         ringLat="lat"
         ringLng="lng"

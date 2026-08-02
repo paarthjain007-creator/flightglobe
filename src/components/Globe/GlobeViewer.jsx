@@ -12,6 +12,7 @@ export default function GlobeViewer({
   showWindVectors = false,
   isCockpitView = false,
   cockpitProgress = 0.5,
+  onPointClick,
 }) {
   return (
     <Suspense fallback={<GlobeLoader />}>
@@ -24,6 +25,7 @@ export default function GlobeViewer({
         showWindVectors={showWindVectors}
         isCockpitView={isCockpitView}
         cockpitProgress={cockpitProgress}
+        onPointClick={onPointClick}
       />
     </Suspense>
   );

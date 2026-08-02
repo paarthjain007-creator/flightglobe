@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { getTrafficData } from "./proxy.js";
-
+import { getTrafficData, getLiveExchangeRates, searchGlobalAirports } from "./proxy.js";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -19,6 +18,24 @@ app.get("/api/traffic", async (_req, res) => {
   }
 });
 
+// ── GET /api/rates ───────────────────────────────────────────────────────────
+app.get("/api/rates", async (_req, res) => {
+  try {
+    const rates = await getLiveExchangeRates();
+    res.json({ status: "ok", rates, base: "USD", ts: Date.now() });
+  } catch (err) {
+    console.error("[server] /api/rates error:", err);
+    res.status(500).json({ error: "Exchange rates unavailable" });
+  }
+});
+
+// ── GET /api/airports/search ─────────────────────────────────────────────────
+app.get("/api/airports/search", (req, res) => {
+  const query = req.query.q || "";
+  const results = searchGlobalAirports(query);
+  res.json({ status: "ok", results, count: results.length });
+});
+
 // ── GET /api/health ──────────────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", ts: Date.now() });
@@ -26,5 +43,7 @@ app.get("/api/health", (_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`\n  🛫  FlightGlobe Proxy Server`);
-  console.log(`  ➜   http://localhost:${PORT}/api/traffic\n`);
+  console.log(`  ➜   http://localhost:${PORT}/api/traffic`);
+  console.log(`  ➜   http://localhost:${PORT}/api/rates`);
+  console.log(`  ➜   http://localhost:${PORT}/api/airports/search\n`);
 });
