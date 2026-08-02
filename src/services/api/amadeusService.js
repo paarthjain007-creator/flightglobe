@@ -167,7 +167,7 @@ function normalizeAmadeusResponse(data, targetCurrency = "USD") {
       })),
     }));
 
-    const rawTotalUSD = parseFloat(offer.price?.grandTotal || offer.price?.total || "450");
+    const rawTotalUSD = parseFloat(offer.price?.grandTotal || offer.price?.total || "0");
     const convertedTotal = Math.round(rawTotalUSD * currConf.rate);
     const convertedBase = Math.round(convertedTotal * 0.78);
     const convertedTaxes = Math.round(convertedTotal * 0.14);
