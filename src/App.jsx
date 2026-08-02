@@ -9,7 +9,7 @@ import Copilot from "./pages/Copilot";
 import Passport from "./pages/Passport";
 import RadarPage from "./pages/RadarPage";
 import OfflineToast from "./components/ui/OfflineToast";
-import GlobalCopilotFloatingWidget from "./components/ai/GlobalCopilotFloatingWidget";
+import NimbusCopilot from "./components/ai/NimbusCopilot";
 import { useStore } from "./store/useStore";
 
 export default function App() {
@@ -41,8 +41,8 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* Global Omnipresent AI Copilot Floating Widget */}
-      <GlobalCopilotFloatingWidget />
+      {/* Global Omnipresent AI Assistant: Nimbus ☁️ */}
+      <NimbusCopilot />
 
       {/* Global Launch Footer */}
       <Footer />
