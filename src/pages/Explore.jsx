@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Loader2, Zap, Cpu, MapPin, SlidersHorizontal, X } from "lucide-react";
+import { ArrowRight, Loader2, Zap, Cpu, MapPin, SlidersHorizontal, X, Eye, EyeOff } from "lucide-react";
 import GlobeViewer from "../components/Globe/GlobeViewer";
 import LeftPanel from "../components/panels/LeftPanel";
 import FeaturePanel from "../components/panels/FeaturePanel";
@@ -25,6 +25,8 @@ export default function Explore() {
   const addStamp      = useStore((s) => s.addStamp);
   const activeOverlayLayer = useStore((s) => s.activeOverlayLayer ?? "none");
   const setActiveOverlayLayer = useStore((s) => s.setActiveOverlayLayer);
+  const cinematicMode = useStore((s) => s.cinematicMode);
+  const setCinematicMode = useStore((s) => s.setCinematicMode);
 
   // FPS & Performance monitor hook
   const { fps, isLowPerformanceMode } = usePerformanceMonitor();
@@ -135,7 +137,6 @@ export default function Explore() {
   const handleGlobePointClick = useCallback((point) => {
     if (point && point.isBgAirport) {
       if (waypoints.length < 10) {
-        // Build new airport object
         const newAirport = {
           iata: point.iata,
           name: point.name || point.city,
@@ -182,8 +183,23 @@ export default function Explore() {
         onPointClick={handleGlobePointClick}
       />
 
-      {/* Desktop Left Panel */}
-      {!isCockpitView && (
+      {/* Cinematic Mode Toggle Button */}
+      <div className="absolute top-3 right-3 z-40">
+        <button
+          onClick={() => setCinematicMode(!cinematicMode)}
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-lg flex items-center gap-1.5 ${
+            cinematicMode
+              ? "bg-amber-400 text-slate-950 hover:bg-amber-300"
+              : "glass text-cyan-300 hover:text-white border border-cyan-500/30"
+          }`}
+        >
+          {cinematicMode ? <EyeOff size={13} /> : <Eye size={13} />}
+          <span>{cinematicMode ? "Exit Cinematic" : "Cinematic Mode"}</span>
+        </button>
+      </div>
+
+      {/* Desktop Left Panel (Hidden when Cinematic Mode or Cockpit View active) */}
+      {!isCockpitView && !cinematicMode && (
         <aside className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 z-30">
           <LeftPanel
             waypoints={waypoints}
@@ -193,8 +209,8 @@ export default function Explore() {
         </aside>
       )}
 
-      {/* Desktop Right Feature Panel */}
-      {!isCockpitView && !isARModeActive && (
+      {/* Desktop Right Feature Panel (Hidden when Cinematic Mode active) */}
+      {!isCockpitView && !isARModeActive && !cinematicMode && (
         <aside className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 z-30">
           <FeaturePanel
             hasRoute={hasRoute}
@@ -213,19 +229,21 @@ export default function Explore() {
       )}
 
       {/* FPS & Performance Status Indicator */}
-      <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
-        <div className="glass px-2.5 py-1 rounded-xl text-[10px] font-mono flex items-center gap-1 text-slate-400">
-          <Cpu size={10} className="text-cyan-400" />
-          <span>{fps} FPS</span>
-          {isLowPerformanceMode && (
-            <span className="text-amber-400 font-bold ml-1">· Auto-Tuned</span>
-          )}
+      {!cinematicMode && (
+        <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
+          <div className="glass px-2.5 py-1 rounded-xl text-[10px] font-mono flex items-center gap-1 text-slate-400">
+            <Cpu size={10} className="text-cyan-400" />
+            <span>{fps} FPS</span>
+            {isLowPerformanceMode && (
+              <span className="text-amber-400 font-bold ml-1">· Auto-Tuned</span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Mobile Floating Action Trigger Bar (Phone screens) */}
-      {!isCockpitView && !isARModeActive && (
-        <div className="md:hidden absolute top-3 right-3 z-30 flex items-center gap-2">
+      {/* Mobile Floating Action Trigger Bar */}
+      {!isCockpitView && !isARModeActive && !cinematicMode && (
+        <div className="md:hidden absolute top-3 right-32 z-30 flex items-center gap-2">
           <button
             onClick={() => {
               playClick();
@@ -253,7 +271,7 @@ export default function Explore() {
       )}
 
       {/* Mobile Left Panel Modal Drawer */}
-      {mobileRouteOpen && (
+      {mobileRouteOpen && !cinematicMode && (
         <div className="md:hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md p-4 flex flex-col justify-end animate-fade-in">
           <div className="relative glass rounded-3xl p-4 max-h-[85vh] overflow-y-auto space-y-3">
             <button
@@ -272,7 +290,7 @@ export default function Explore() {
       )}
 
       {/* Mobile Feature Panel Modal Drawer */}
-      {mobileFeatureOpen && (
+      {mobileFeatureOpen && !cinematicMode && (
         <div className="md:hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md p-4 flex flex-col justify-end animate-fade-in">
           <div className="relative glass rounded-3xl p-4 max-h-[85vh] overflow-y-auto space-y-3">
             <button
@@ -319,8 +337,8 @@ export default function Explore() {
         />
       )}
 
-      {/* Bottom CTA & 4D Timeline Scrubber */}
-      {!isCockpitView && !isARModeActive && (
+      {/* Bottom CTA & 4D Timeline Scrubber (Hidden in Cinematic Mode) */}
+      {!isCockpitView && !isARModeActive && !cinematicMode && (
         is4DModeEnabled ? (
           <TimelineScrubber
             simulatedTimeMs={simulatedTimeMs}
