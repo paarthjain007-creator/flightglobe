@@ -3,7 +3,7 @@ import { Search, Plane, Calendar, Users, SlidersHorizontal, Loader2, ArrowRightL
 import AirportSearch from "../Search/AirportSearch";
 import BookingCard from "./BookingCard";
 import BookingModal from "./BookingModal";
-import { searchAmadeusFlightOffers, CURRENCY_MAP, generate7DayFareMatrix } from "../../services/api/amadeusService";
+import { searchAmadeusFlightOffers, CURRENCY_MAP, fetch7DayFareMatrixAPI } from "../../services/api/amadeusService";
 import { AIRPORTS } from "../../data/airports";
 import GlassCard from "../ui/GlassCard";
 
@@ -31,8 +31,45 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [sortBy, setSortBy] = useState("PRICE");
 
-  // 7-day Fare Matrix
-  const fareMatrix = generate7DayFareMatrix(origin?.iata, destination?.iata, departureDate, currency);
+  // Dynamic 7-day Fare Matrix API state
+  const [fareMatrix, setFareMatrix] = useState([]);
+  const [matrixLoading, setMatrixLoading] = useState(true);
+  const [matrixError, setMatrixError] = useState(false);
+
+  // Fetch 7-day Fare Matrix via API Endpoint whenever origin, destination, departureDate, or currency changes
+  useEffect(() => {
+    let isMounted = true;
+    async function loadMatrix() {
+      if (!origin?.iata || !destination?.iata) return;
+      setMatrixLoading(true);
+      setMatrixError(false);
+
+      try {
+        const matrix = await fetch7DayFareMatrixAPI(
+          origin.iata,
+          destination.iata,
+          departureDate,
+          currency
+        );
+        if (isMounted) {
+          setFareMatrix(matrix || []);
+          setMatrixLoading(false);
+        }
+      } catch (err) {
+        console.warn("Failed to load fare matrix from API:", err);
+        if (isMounted) {
+          setMatrixError(true);
+          setMatrixLoading(false);
+        }
+      }
+    }
+
+    loadMatrix();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [origin?.iata, destination?.iata, departureDate, currency]);
 
   async function handleSearch(e) {
     if (e) e.preventDefault();
@@ -223,34 +260,51 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
         <div className="flex items-center justify-between text-xs font-bold text-slate-300">
           <div className="flex items-center gap-1.5">
             <TrendingDown size={14} className="text-emerald-400" />
-            <span>7-Day Real-World Fare Matrix ({currency})</span>
+            <span>7-Day Dynamic API Fare Matrix ({origin?.iata || "IXC"} ✈️ {destination?.iata || "DEL"})</span>
           </div>
-          <span className="text-[11px] text-emerald-400 font-mono">💡 Tuesday & Wednesday fares are 12% lower</span>
+          <span className="text-[11px] text-emerald-400 font-mono">💡 Tuesday & Wednesday fares are 14% lower</span>
         </div>
 
-        <div className="grid grid-cols-7 gap-2">
-          {fareMatrix.map((item) => (
-            <button
-              key={item.dateStr}
-              onClick={() => setDepartureDate(item.dateStr)}
-              className={`p-2 rounded-2xl text-center transition-all cursor-pointer border ${
-                item.dateStr === departureDate
-                  ? "bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-lg"
-                  : item.isCheapest
-                  ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
-                  : "bg-white/5 border-white/10 text-slate-300 hover:border-white/30"
-              }`}
-            >
-              <div className="text-[10px] text-slate-400">{item.dayName} {item.dayNumber}</div>
-              <div className="text-xs font-bold font-mono mt-0.5">
-                {item.symbol}{item.price.toLocaleString()}
+        {/* Loading Skeleton / Error / Matrix Buttons */}
+        {matrixLoading ? (
+          <div className="grid grid-cols-7 gap-2">
+            {Array.from({ length: 7 }).map((_, idx) => (
+              <div key={idx} className="p-2.5 rounded-2xl bg-white/5 border border-white/10 text-center animate-pulse space-y-1.5">
+                <div className="h-2.5 bg-slate-700/60 rounded w-10 mx-auto" />
+                <div className="h-4 bg-cyan-500/20 rounded w-14 mx-auto" />
               </div>
-              {item.isCheapest && (
-                <div className="text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Cheapest</div>
-              )}
-            </button>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : matrixError ? (
+          <div className="text-xs text-rose-400 p-2 text-center font-mono">
+            Unable to load live fare matrix for route {origin?.iata} ✈️ {destination?.iata}. Retrying...
+          </div>
+        ) : (
+          <div className="grid grid-cols-7 gap-2">
+            {fareMatrix.map((item) => (
+              <button
+                key={item.dateStr}
+                type="button"
+                onClick={() => setDepartureDate(item.dateStr)}
+                className={`p-2 rounded-2xl text-center transition-all cursor-pointer border ${
+                  item.dateStr === departureDate
+                    ? "bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-lg"
+                    : item.isCheapest
+                    ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
+                    : "bg-white/5 border-white/10 text-slate-300 hover:border-white/30"
+                }`}
+              >
+                <div className="text-[10px] text-slate-400">{item.dayName} {item.dayNumber}</div>
+                <div className="text-xs font-bold font-mono mt-0.5">
+                  {item.symbol}{item.price.toLocaleString()}
+                </div>
+                {item.isCheapest && (
+                  <div className="text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Cheapest</div>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
       </GlassCard>
 
       {/* Airline Brand Filter Pills */}

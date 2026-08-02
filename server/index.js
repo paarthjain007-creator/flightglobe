@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { getTrafficData, getLiveExchangeRates, searchGlobalAirports } from "./proxy.js";
+import { getTrafficData, getLiveExchangeRates, searchGlobalAirports, get7DayFareMatrixData } from "./proxy.js";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -29,6 +29,18 @@ app.get("/api/rates", async (_req, res) => {
   }
 });
 
+// ── GET /api/fares/matrix ────────────────────────────────────────────────────
+app.get("/api/fares/matrix", (req, res) => {
+  try {
+    const { origin, destination, departureDate, currency } = req.query;
+    const data = get7DayFareMatrixData(origin, destination, departureDate, currency);
+    res.json(data);
+  } catch (err) {
+    console.error("[server] /api/fares/matrix error:", err);
+    res.status(500).json({ error: "Fare matrix unavailable", matrix: [] });
+  }
+});
+
 // ── GET /api/airports/search ─────────────────────────────────────────────────
 app.get("/api/airports/search", (req, res) => {
   const query = req.query.q || "";
@@ -45,5 +57,6 @@ app.listen(PORT, () => {
   console.log(`\n  🛫  FlightGlobe Proxy Server`);
   console.log(`  ➜   http://localhost:${PORT}/api/traffic`);
   console.log(`  ➜   http://localhost:${PORT}/api/rates`);
+  console.log(`  ➜   http://localhost:${PORT}/api/fares/matrix`);
   console.log(`  ➜   http://localhost:${PORT}/api/airports/search\n`);
 });
