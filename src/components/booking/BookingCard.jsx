@@ -114,10 +114,11 @@ export default function BookingCard({ offer, onSelectOffer }) {
 
           <button
             onClick={() => onSelectOffer(offer)}
-            className="px-4 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 bg-gradient-to-r from-cyan-400 to-cyan-500 text-slate-950 hover:from-cyan-300 hover:to-cyan-400 transition-all cursor-pointer shadow-lg shadow-cyan-400/20 active:scale-95"
+            aria-label={`Book flight with ${offer.validatingAirlineName} for ${formattedTotal}`}
+            className="px-4 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 bg-gradient-to-r from-cyan-400 to-cyan-500 text-slate-950 hover:from-cyan-300 hover:to-cyan-400 transition-all cursor-pointer shadow-lg shadow-cyan-400/20 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900"
           >
             <span>Book Flight</span>
-            <ArrowRight size={14} />
+            <ArrowRight size={14} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -127,33 +128,35 @@ export default function BookingCard({ offer, onSelectOffer }) {
         <button
           type="button"
           onClick={() => setDetailsOpen(!detailsOpen)}
-          className="text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1 text-[11px] font-semibold cursor-pointer"
+          aria-expanded={detailsOpen}
+          aria-controls="fare-breakdown"
+          className="text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1 text-[11px] font-semibold cursor-pointer focus:outline-none focus:ring-1 focus:ring-cyan-400 rounded"
         >
-          <Info size={12} />
-          <span>Fare & Tax Breakdown</span>
-          {detailsOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          <Info size={12} aria-hidden="true" />
+          <span>Fare &amp; Tax Breakdown</span>
+          {detailsOpen ? <ChevronUp size={12} aria-hidden="true" /> : <ChevronDown size={12} aria-hidden="true" />}
         </button>
 
         <span className="text-[10px] text-emerald-400 font-mono">⚡ Instant GDS E-Ticket Confirmation</span>
       </div>
 
       {detailsOpen && (
-        <div className="p-3 rounded-2xl bg-slate-950/60 border border-white/10 text-xs space-y-2 animate-slide-up">
+        <div id="fare-breakdown" className="p-3 rounded-2xl bg-slate-950/60 border border-white/10 text-xs space-y-2 animate-slide-up" role="region" aria-label="Fare and tax breakdown">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-300 font-mono text-[11px]">
             <div>
-              <span className="text-slate-500 block text-[9px]">Base Airfare</span>
+              <span className="text-slate-400 block text-[9px]">Base Airfare</span>
               <span className="font-bold text-white">{formattedBase}</span>
             </div>
             <div>
-              <span className="text-slate-500 block text-[9px]">Govt & Airport Taxes</span>
+              <span className="text-slate-400 block text-[9px]">Govt &amp; Airport Taxes</span>
               <span className="font-bold text-white">{formattedFees}</span>
             </div>
             <div>
-              <span className="text-slate-500 block text-[9px]">Cabin Class</span>
+              <span className="text-slate-400 block text-[9px]">Cabin Class</span>
               <span className="font-bold text-cyan-300">{offer.price.cabinClass}</span>
             </div>
             <div>
-              <span className="text-slate-500 block text-[9px]">Baggage Included</span>
+              <span className="text-slate-400 block text-[9px]">Baggage Included</span>
               <span className="font-bold text-emerald-400">{offer.baggageAllowance}</span>
             </div>
           </div>

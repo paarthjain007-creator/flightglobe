@@ -6,6 +6,7 @@ import BookingModal from "./BookingModal";
 import { searchAmadeusFlightOffers, CURRENCY_MAP, fetch7DayFareMatrixAPI } from "../../services/api/amadeusService";
 import { AIRPORTS } from "../../data/airports";
 import GlassCard from "../ui/GlassCard";
+import { FlightResultsSkeleton } from "../ui/FlightSkeletonLoader";
 
 export default function FlightSearchEngine({ initialOrigin, initialDestination }) {
   const [origin, setOrigin] = useState(initialOrigin || AIRPORTS[0]);
@@ -378,26 +379,30 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
         </div>
       </div>
 
-      {/* Offers Results List */}
-      {filteredOffers.length === 0 ? (
-        <GlassCard className="p-12 text-center space-y-3">
-          <div className="text-4xl">✈️</div>
-          <h3 className="text-base font-bold text-white">No Flight Fares Found for Filter</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            Try switching airline filters or selecting a different departure date.
-          </p>
-        </GlassCard>
-      ) : (
-        <div className="space-y-3">
-          {filteredOffers.map((offer) => (
-            <BookingCard
-              key={offer.id}
-              offer={offer}
-              onSelectOffer={setSelectedOffer}
-            />
-          ))}
-        </div>
-      )}
+      {/* Offers Results List — ARIA live region ensures screen readers announce updates */}
+      <div aria-live="polite" aria-label="Flight search results">
+        {loading ? (
+          <FlightResultsSkeleton count={4} />
+        ) : filteredOffers.length === 0 ? (
+          <GlassCard className="p-12 text-center space-y-3">
+            <div className="text-4xl" role="img" aria-label="Airplane">✈️</div>
+            <h3 className="text-base font-bold text-white">No Flight Fares Found for Filter</h3>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              Try switching airline filters or selecting a different departure date.
+            </p>
+          </GlassCard>
+        ) : (
+          <div className="space-y-3">
+            {filteredOffers.map((offer) => (
+              <BookingCard
+                key={offer.id}
+                offer={offer}
+                onSelectOffer={setSelectedOffer}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Booking Checkout Handoff Modal */}
       {selectedOffer && (

@@ -39,6 +39,20 @@ export default function Explore() {
 
   // Local route & view states
   const [waypoints, setWaypoints] = useState(() => storedWps || []);
+
+  /**
+   * FIX #1: Global State Sync — AI to 3D Globe
+   * When Nimbus dispatches a new route to Zustand (e.g. DEL -> BOM),
+   * this effect reactively syncs it to the local Globe state,
+   * automatically unmounting the previous route visual (e.g. CCU -> BOM).
+   * The storedWps subscription fires any time Nimbus calls setWaypoints().
+   */
+  useEffect(() => {
+    if (storedWps && storedWps.length > 0) {
+      setWaypoints(storedWps);
+    }
+  }, [storedWps]);
+
   const [radarEnabled, setRadarEnabled] = useState(true);
   const [is4DModeEnabled, setIs4DModeEnabled] = useState(false);
   const [showWindVectors, setShowWindVectors] = useState(true);
