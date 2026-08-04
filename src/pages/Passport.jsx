@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe2, Trash2, Plane, MapPin } from "lucide-react";
 import { useStore } from "../store/useStore";
+import { readStampsFromLocalStorage } from "../hooks/usePassportStamps";
 
 const PALETTES = [
   { border: "#60a5fa", text: "#60a5fa", bg: "rgba(96,165,250,0.08)"  },
@@ -128,6 +129,21 @@ export default function Passport() {
   const stamps      = useStore((s) => s.stamps);
   const removeStamp = useStore((s) => s.removeStamp);
   const clearStamps = useStore((s) => s.clearStamps);
+  const addStamp    = useStore((s) => s.addStamp);
+
+  // TASK 1: Hydrate from localStorage on mount — merges any stamps not yet in Zustand
+  useEffect(() => {
+    const lsStamps = readStampsFromLocalStorage();
+    lsStamps.forEach((s) => addStamp(s));
+
+    // Listen for real-time stamp additions from the booking confirmation
+    function onStampAdded(e) {
+      addStamp(e.detail);
+    }
+    window.addEventListener("passport:stamp-added", onStampAdded);
+    return () => window.removeEventListener("passport:stamp-added", onStampAdded);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const uniqueDests = Array.from(new Set((stamps || []).map((s) => s.destination.iata)));
 

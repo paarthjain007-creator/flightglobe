@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { X, CheckCircle2, ShieldCheck, CreditCard, ExternalLink, Luggage, Printer, Ticket, Check } from "lucide-react";
 import { createDuffelBookingHandoff } from "../../services/api/duffelService";
+import { usePassportStamps } from "../../hooks/usePassportStamps";
+import { useStore } from "../../store/useStore";
 
 const SEAT_OPTIONS = ["12A (Window)", "12B (Middle)", "12C (Aisle)", "14A (Window)", "14F (Window)", "18C (Aisle)", "22D (Extra Legroom)"];
 
@@ -11,6 +13,10 @@ export default function BookingModal({ offer, onClose }) {
   const [selectedSeat, setSelectedSeat] = useState(SEAT_OPTIONS[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingResult, setBookingResult] = useState(null);
+
+  // TASK 1: Passport stamp hook — saves to localStorage + Zustand on confirmed booking
+  const addStampToStore = useStore((s) => s.addStamp);
+  const { saveStamp } = usePassportStamps(addStampToStore);
 
   if (!offer) return null;
 
@@ -29,6 +35,34 @@ export default function BookingModal({ offer, onClose }) {
     const res = await createDuffelBookingHandoff(offer, { firstName, lastName, email, seat: selectedSeat });
     setBookingResult(res);
     setIsSubmitting(false);
+
+    // TASK 1: Persist stamp to localStorage + Zustand after confirmed booking
+    if (res && offer?.itineraries?.length > 0) {
+      const segments = offer.itineraries[0]?.segments || [];
+      const firstSeg = segments[0];
+      const lastSeg  = segments[segments.length - 1];
+
+      saveStamp({
+        id: Date.now(),
+        timestamp: Date.now(),
+        date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+        origin: {
+          iata:    firstSeg?.departure?.iataCode || "???",
+          city:    firstSeg?.departure?.iataCode || "Unknown",
+          country: offer.validatingAirlineName || "",
+        },
+        destination: {
+          iata:    lastSeg?.arrival?.iataCode || "???",
+          city:    lastSeg?.arrival?.iataCode || "Unknown",
+          country: offer.validatingAirlineName || "",
+        },
+        airline:    offer.validatingAirlineName,
+        cabinClass: offer.price?.cabinClass,
+        pricePaid:  offer.price?.total,
+        currency:   offer.price?.currency,
+        pnr:        res.bookingReference,
+      });
+    }
   }
 
   function handlePrintBoardingPass() {

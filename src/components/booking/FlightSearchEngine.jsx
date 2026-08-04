@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Search, Plane, Calendar, Users, SlidersHorizontal, Loader2, ArrowRightLeft, ShieldCheck, Filter, DollarSign, Key, Info, TrendingDown, Check } from "lucide-react";
 import AirportSearch from "../Search/AirportSearch";
 import BookingCard from "./BookingCard";
@@ -7,6 +7,7 @@ import { searchAmadeusFlightOffers, CURRENCY_MAP, fetch7DayFareMatrixAPI } from 
 import { AIRPORTS } from "../../data/airports";
 import GlassCard from "../ui/GlassCard";
 import { FlightResultsSkeleton } from "../ui/FlightSkeletonLoader";
+import { useFlightDeepLink } from "../../hooks/useFlightDeepLink";
 
 export default function FlightSearchEngine({ initialOrigin, initialDestination }) {
   const [origin, setOrigin] = useState(initialOrigin || AIRPORTS[0]);
@@ -72,7 +73,8 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
     };
   }, [origin?.iata, destination?.iata, departureDate, currency]);
 
-  async function handleSearch(e) {
+  // Stable search function for the deep-link hook to call on mount
+  const handleSearch = useCallback(async (e) => {
     if (e) e.preventDefault();
     if (!origin || !destination) return;
 
@@ -90,11 +92,22 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
     setOffers(results);
     setLoading(false);
-  }
+  }, [origin, destination, departureDate, adults, travelClass, currency, customKey, customSecret]);
 
   useEffect(() => {
     handleSearch();
   }, [origin?.iata, destination?.iata, departureDate, currency, travelClass]);
+
+  // TASK 2: Deep-linking — syncs ?from=DEL&to=BOM with URL and hydrates state on mount
+  useFlightDeepLink({
+    origin,
+    destination,
+    departureDate,
+    setOrigin,
+    setDestination,
+    setDepartureDate,
+    triggerSearch: handleSearch,
+  });
 
   const filteredOffers = offers
     .filter((offer) => {
