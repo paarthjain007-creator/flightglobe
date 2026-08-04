@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Loader2, Zap, Cpu, MapPin, SlidersHorizontal, X, Eye, EyeOff } from "lucide-react";
 import GlobeViewer from "../components/Globe/GlobeViewer";
