@@ -29,21 +29,23 @@ export function useFlightDeepLink({
   triggerSearch,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const didMountRef = useRef(false);
+  const isHydratedRef = useRef(false);
 
-  // ACTION 2: On mount, read URL params and hydrate state + trigger search
+  // Step 1 & 3: Read URL once on mount, hydrate state, and trigger search
   useEffect(() => {
+    if (typeof window === "undefined" || isHydratedRef.current) return;
+
     const fromCode = searchParams.get("from")?.toUpperCase();
-    const toCode   = searchParams.get("to")?.toUpperCase();
+    const toCode = searchParams.get("to")?.toUpperCase();
     const dateParam = searchParams.get("date");
 
-    let changed = false;
+    let hydrated = false;
 
     if (fromCode) {
       const found = AIRPORTS.find((a) => a.iata === fromCode);
       if (found) {
         setOrigin(found);
-        changed = true;
+        hydrated = true;
       }
     }
 
@@ -51,7 +53,7 @@ export function useFlightDeepLink({
       const found = AIRPORTS.find((a) => a.iata === toCode);
       if (found) {
         setDestination(found);
-        changed = true;
+        hydrated = true;
       }
     }
 
@@ -59,25 +61,24 @@ export function useFlightDeepLink({
       setDepartureDate(dateParam);
     }
 
-    // Auto-trigger search if both locations were hydrated from URL
-    if (changed && fromCode && toCode) {
-      // Defer one tick so state setters have resolved
-      setTimeout(() => triggerSearch(), 50);
+    isHydratedRef.current = true;
+
+    if (hydrated && fromCode && toCode && triggerSearch) {
+      triggerSearch();
     }
-
-    didMountRef.current = true;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount only
+  }, []);
 
-  // ACTION 1: Whenever origin/destination/date changes (after mount), push to URL
-  useEffect(() => {
-    if (!didMountRef.current) return;
-
+  // Step 1: Update URL parameters ONLY when user triggers search/changes route after initial hydration
+  const syncUrlParams = (newOrigin, newDest, newDate) => {
+    if (typeof window === "undefined") return;
     const params = {};
-    if (origin?.iata)      params.from = origin.iata;
-    if (destination?.iata) params.to   = destination.iata;
-    if (departureDate)     params.date  = departureDate;
+    if (newOrigin?.iata) params.from = newOrigin.iata;
+    if (newDest?.iata) params.to = newDest.iata;
+    if (newDate) params.date = newDate;
 
-    setSearchParams(params, { replace: false }); // push = true → enables back/fwd navigation
-  }, [origin?.iata, destination?.iata, departureDate]); // eslint-disable-line
+    setSearchParams(params, { replace: true });
+  };
+
+  return { syncUrlParams };
 }

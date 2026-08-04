@@ -23,19 +23,22 @@ const LS_KEY = "flightglobe_passport_stamps";
  * @returns {PassportStamp[]}
  */
 export function readStampsFromLocalStorage() {
+  if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(LS_KEY);
     return raw ? JSON.parse(raw) : [];
-  } catch {
+  } catch (err) {
+    console.warn("[usePassportStamps] Failed to parse localStorage stamps:", err);
     return [];
   }
 }
 
 /**
- * Writes stamps array to localStorage.
+ * Writes stamps array to localStorage safely.
  * @param {PassportStamp[]} stamps
  */
 export function writeStampsToLocalStorage(stamps) {
+  if (typeof window === "undefined") return;
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(stamps));
   } catch (err) {

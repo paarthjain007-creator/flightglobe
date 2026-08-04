@@ -94,12 +94,8 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
     setLoading(false);
   }, [origin, destination, departureDate, adults, travelClass, currency, customKey, customSecret]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [origin?.iata, destination?.iata, departureDate, currency, travelClass]);
-
   // TASK 2: Deep-linking — syncs ?from=DEL&to=BOM with URL and hydrates state on mount
-  useFlightDeepLink({
+  const { syncUrlParams } = useFlightDeepLink({
     origin,
     destination,
     departureDate,
@@ -108,6 +104,12 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
     setDepartureDate,
     triggerSearch: handleSearch,
   });
+
+  useEffect(() => {
+    if (origin?.iata && destination?.iata) {
+      syncUrlParams(origin, destination, departureDate);
+    }
+  }, [origin?.iata, destination?.iata, departureDate]);
 
   const filteredOffers = offers
     .filter((offer) => {
