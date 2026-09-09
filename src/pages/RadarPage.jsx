@@ -3,7 +3,7 @@ import Globe from "react-globe.gl";
 import { useLiveTraffic } from "../hooks/useLiveTraffic";
 import FlightTooltip from "../components/radar/FlightTooltip";
 import RadarStats from "../components/radar/RadarStats";
-import { Layers, Filter, ZoomIn, ZoomOut, Shuffle, Crosshair } from "lucide-react";
+import { Layers, Filter, ZoomIn, ZoomOut, Shuffle, Crosshair, Radio } from "lucide-react";
 import { useStore } from "../store/useStore";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
 
