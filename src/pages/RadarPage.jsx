@@ -131,12 +131,17 @@ export default function RadarPage() {
     setShuffleSeed((s) => s + 1);
   }
 
+  const handleMouseMove = useCallback((e) => {
+    setHoverPos({ x: e.clientX, y: e.clientY });
+  }, []);
+
   return (
     <div
       id="radar-page"
       ref={containerRef}
       className="relative overflow-hidden"
       style={{ height: `${dims.h}px`, marginTop: "88px", background: themeConf.bg }}
+      onMouseMove={handleMouseMove}
       onClick={(e) => { if (e.target === containerRef.current) setSelectedPlane(null); }}
     >
       {/* ── Globe Canvas with Small Rotated Airplane Models ─────────────── */}
@@ -159,7 +164,7 @@ export default function RadarPage() {
           globeImageUrl={EARTH_TEXTURE}
           bumpImageUrl={EARTH_BUMP}
 
-          // Plane points
+          // Plane points (All up to 200 flights on GPU WebGL)
           pointsData={displayPlanes}
           pointLat={(d) => d.lat}
           pointLng={(d) => d.lng}
@@ -168,8 +173,8 @@ export default function RadarPage() {
           pointAltitude={0.005}
           pointResolution={6}
 
-          // Rotated Small Plane Icons (10 HTML elements = smooth 60 FPS)
-          htmlElementsData={displayPlanes}
+          // Rotated Small Plane Icons (Top 35 prominent flights = guaranteed 60 FPS)
+          htmlElementsData={displayPlanes.slice(0, Math.min(displayPlanes.length, 35))}
           htmlLat={(d) => d.lat}
           htmlLng={(d) => d.lng}
           htmlAltitude={0.018}
@@ -268,7 +273,7 @@ export default function RadarPage() {
       <RadarStats stats={{ ...stats, count: displayPlanes.length }} />
 
       {/* ── Top-right Controls ────────────────────────────────────────────── */}
-      <div className="absolute top-3 right-3 z-30 flex flex-col items-end gap-1.5 sm:gap-2">
+      <div className="absolute top-3 right-3 z-[201] pointer-events-auto flex flex-col items-end gap-1.5 sm:gap-2">
 
         {/* Traffic Density LOD Selector */}
         <div className="flex items-center gap-1 glass px-2 py-1.5 rounded-xl">

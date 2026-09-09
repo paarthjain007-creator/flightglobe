@@ -22,7 +22,7 @@ export default function RadarStats({ stats }) {
   return (
     <div
       id="radar-stats"
-      className="absolute bottom-28 sm:bottom-4 left-3 sm:left-4 z-30 glass rounded-2xl p-3 flex flex-col gap-2 min-w-[200px] max-w-[calc(100vw-24px)] border border-cyan-500/30 shadow-2xl transition-all"
+      className="absolute bottom-28 sm:bottom-4 left-3 sm:left-4 z-[201] pointer-events-auto glass rounded-2xl p-3 flex flex-col gap-2 min-w-[200px] max-w-[calc(100vw-24px)] border border-cyan-500/30 shadow-2xl transition-all"
     >
       {/* Drawer Header Toggle */}
       <button
