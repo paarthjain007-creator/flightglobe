@@ -26,7 +26,7 @@ export function MultiplayerCursors({ peers, reactions, onSendReaction }) {
                 style={{
                   background: "rgba(10, 15, 30, 0.85)",
                   border: `1px solid ${peer.color}`,
-                  color: "var(--text-primary)",
+                  color: "#F8FAFC",
                   fontSize: "10px",
                   backdropFilter: "blur(8px)",
                 }}
@@ -56,7 +56,7 @@ export function MultiplayerCursors({ peers, reactions, onSendReaction }) {
 
       {/* Floating Collaboration Bar */}
       <div className="fixed bottom-4 left-4 z-40 flex items-center gap-2 glass px-3.5 py-2 rounded-2xl border border-white/10 shadow-xl">
-        <div className="flex items-center gap-1 text-xs font-bold" style={{ color: "var(--accent)" }}>
+        <div className="flex items-center gap-1 text-xs font-bold" style={{ color: "#00F2FE" }}>
           <Users size={14} />
           <span>{peers.length + 1} Online</span>
         </div>

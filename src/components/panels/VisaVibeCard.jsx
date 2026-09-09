@@ -3,7 +3,7 @@ import { Shield, Music, Trophy, Utensils, Calendar } from "lucide-react";
 import GlassCard from "../ui/GlassCard";
 
 // Deterministic pseudo-random seeded by IATA string
-function seed(str) { return str.split("").reduce((a, c) => a + c.charCodeAt(0), 0); }
+function seed(str) { return String(str || "DEST").split("").reduce((a, c) => a + c.charCodeAt(0), 0); }
 function pick(arr, s, offset = 0) { return arr[(s + offset) % arr.length]; }
 
 const VISA_TYPES = [
@@ -49,20 +49,21 @@ function getEventDate(offset) {
 export default function VisaVibeCard({ destination }) {
   if (!destination) return null;
 
-  const visa   = getMockVisa(destination.iata);
-  const events = getMockEvents(destination.city, destination.iata);
-  const proc   = pick(PROCESSING, seed(destination.iata), 1);
-  const fee    = pick(FEES, seed(destination.iata), 2);
+  const destCode = destination.iata || destination.code || "DEST";
+  const visa   = getMockVisa(destCode);
+  const events = getMockEvents(destination.city, destCode);
+  const proc   = pick(PROCESSING, seed(destCode), 1);
+  const fee    = pick(FEES, seed(destCode), 2);
 
   return (
     <GlassCard className="p-4" animate="animate-slide-up">
       {/* Visa Section */}
       <div className="flex items-center gap-2 mb-3">
-        <Shield size={14} style={{ color: "var(--accent)" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+        <Shield size={14} style={{ color: "#00F2FE" }} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
           Visa & Vibe Check
         </span>
-        <span className="ml-auto text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--accent-glow)", color: "var(--accent)" }}>
+        <span className="ml-auto text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(0, 242, 254, 0.12)", color: "#00F2FE", border: "1px solid rgba(0, 242, 254, 0.25)" }}>
           Mock Data
         </span>
       </div>
@@ -75,20 +76,20 @@ export default function VisaVibeCard({ destination }) {
         <span className="text-2xl">{visa.icon}</span>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-bold" style={{ color: visa.color }}>{visa.label}</div>
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+          <div className="text-xs text-slate-400">
             For most passports · {destination.country}
           </div>
         </div>
         <div className="text-right flex-shrink-0">
-          <div className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>{fee}</div>
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>{proc}</div>
+          <div className="text-xs font-semibold" style={{ color: "#F8FAFC" }}>{fee}</div>
+          <div className="text-xs text-slate-400">{proc}</div>
         </div>
       </div>
 
       <div className="glow-line mb-3" />
 
       {/* Trending Events */}
-      <div className="text-xs font-semibold mb-2 uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+      <div className="text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">
         🔥 Trending in {destination.city}
       </div>
 
@@ -99,19 +100,19 @@ export default function VisaVibeCard({ destination }) {
             <div
               key={i}
               className="flex items-center gap-2.5 rounded-xl px-3 py-2 cursor-pointer transition-all hover:scale-[1.01]"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--glass-border)" }}
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
             >
               <div
                 className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)" }}
+                style={{ background: "rgba(0, 242, 254, 0.12)", border: "1px solid rgba(0, 242, 254, 0.25)" }}
               >
-                <Icon size={13} style={{ color: "var(--accent)" }} />
+                <Icon size={13} style={{ color: "#00F2FE" }} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium truncate" style={{ color: "var(--text-primary)" }}>{ev.name}</div>
-                <div className="text-xs" style={{ color: "var(--text-muted)" }}>{ev.date}</div>
+                <div className="text-xs font-medium truncate" style={{ color: "#F8FAFC" }}>{ev.name}</div>
+                <div className="text-xs text-slate-400">{ev.date}</div>
               </div>
-              <div className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent-glow)", color: "var(--accent)" }}>
+              <div className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: "rgba(0, 242, 254, 0.12)", color: "#00F2FE" }}>
                 →
               </div>
             </div>

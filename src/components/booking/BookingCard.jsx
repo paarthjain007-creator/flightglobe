@@ -1,9 +1,17 @@
-import React, { useState } from "react";
-import { Plane, Clock, ShieldCheck, ArrowRight, ChevronDown, ChevronUp, Luggage, TrendingDown, Info } from "lucide-react";
-import GlassCard from "../ui/GlassCard";
+import React, { useState, useCallback } from "react";
+import { Plane, Clock, ArrowRight, ChevronDown, ChevronUp, Luggage, ExternalLink, Check, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
+import { useStore } from "../../store/useStore";
+import { getAirportByIata } from "../../data/airports";
+import { getAirlineBookingUrl } from "../../services/airlineRedirects";
+import RedirectToast from "./RedirectToast";
+import BookingModal from "./BookingModal";
 
-export default function BookingCard({ offer, onSelectOffer }) {
+export default function BookingCard({ offer, departureDate, adults }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [redirectInfo, setRedirectInfo] = useState(null);
+  const setHoveredFlightPath = useStore((s) => s.setHoveredFlightPath);
 
   if (!offer || !offer.itineraries || offer.itineraries.length === 0) return null;
 
@@ -16,157 +24,277 @@ export default function BookingCard({ offer, onSelectOffer }) {
   const durationMins = itinerary.durationMinutes % 60;
   const isDirect = segments.length === 1;
 
-  const depDate = firstSeg ? new Date(firstSeg.departure.at) : new Date();
-  const arrDate = lastSeg ? new Date(lastSeg.arrival.at) : new Date();
+  const depDate = firstSeg?.departure?.at ? new Date(firstSeg.departure.at) : new Date();
+  const arrDate = lastSeg?.arrival?.at ? new Date(lastSeg.arrival.at) : new Date();
 
-  const symbol = offer.price.currencySymbol || "$";
-  const formattedTotal = `${symbol}${offer.price.total.toLocaleString()}`;
-  const formattedBase = `${symbol}${offer.price.base.toLocaleString()}`;
-  const formattedFees = `${symbol}${offer.price.fees.toLocaleString()}`;
+  const formatTime = (d) => {
+    try {
+      if (isNaN(d.getTime())) return "--:--";
+      return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+    } catch {
+      return "--:--";
+    }
+  };
+
+  const symbol = offer.price?.currencySymbol || "$";
+  const formattedTotal = `${symbol}${(offer.price?.total || 0).toLocaleString()}`;
+  const formattedBase = `${symbol}${(offer.price?.base || 0).toLocaleString()}`;
+  const formattedFees = `${symbol}${(offer.price?.fees || 0).toLocaleString()}`;
+
+  const airlineCode = offer.validatingAirlineCode;
+  const airlineName = offer.validatingAirlineName;
+
+  const handleMouseEnter = () => {
+    const pts = segments.map((s) => getAirportByIata(s.departure.iataCode)).filter(Boolean);
+    const lastDest = getAirportByIata(lastSeg?.arrival?.iataCode);
+    if (lastDest) pts.push(lastDest);
+    if (pts.length >= 2) setHoveredFlightPath(pts);
+  };
+
+  const handleMouseLeave = () => setHoveredFlightPath(null);
+
+  const handleBookRedirect = useCallback(() => {
+    const originIata = firstSeg?.departure?.iataCode;
+    const destIata = lastSeg?.arrival?.iataCode;
+
+    const { name, url } = getAirlineBookingUrl(airlineCode, {
+      origin: originIata,
+      destination: destIata,
+      date: departureDate || depDate.toISOString().split("T")[0],
+      passengers: adults || 1,
+      cabinClass: offer.price?.cabinClass || "economy",
+    });
+
+    setRedirectInfo({ name, url });
+  }, [airlineCode, firstSeg, lastSeg, departureDate, adults, offer.price?.cabinClass, depDate]);
+
+  const originAirport = getAirportByIata(firstSeg?.departure?.iataCode);
+  const destAirport = getAirportByIata(lastSeg?.arrival?.iataCode);
 
   return (
-    <GlassCard className="p-4 sm:p-5 hover:border-cyan-400/50 transition-all duration-300 group shadow-xl space-y-3" animate="animate-slide-up">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-
-        {/* Airline Info & Flight Number */}
-        <div className="flex items-center gap-3 min-w-[200px]">
-          <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-2xl shadow-inner flex-shrink-0">
-            {offer.validatingAirlineLogo || "✈️"}
-          </div>
-          <div>
-            <div className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors flex items-center gap-2">
-              <span>{offer.validatingAirlineName}</span>
-              {offer.price.isLowestFare && (
-                <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-emerald-400 text-slate-950 flex items-center gap-0.5">
-                  <TrendingDown size={9} /> Lowest Rate
-                </span>
-              )}
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ translateY: -1 }}
+        transition={{ duration: 0.2 }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className="rounded-2xl bg-slate-900/75 hover:bg-slate-900/90 border border-white/10 hover:border-cyan-400/40 p-4 sm:p-5 transition-all shadow-md hover:shadow-xl space-y-4"
+      >
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+          {/* 1. Airline Identity */}
+          <div className="flex items-center gap-3.5 min-w-[190px]">
+            <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl flex-shrink-0">
+              {offer.validatingAirlineLogo || "✈️"}
             </div>
-            <div className="text-xs text-slate-400 font-mono">
-              Flight {firstSeg?.number} · {offer.price.cabinClass}
-            </div>
-            {/* Baggage allowance */}
-            <div className="text-[10px] text-cyan-300 flex items-center gap-1 font-mono mt-0.5">
-              <Luggage size={11} />
-              <span>{offer.baggageAllowance || "1x 23kg Included"}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Departure -> Duration & Layover -> Arrival */}
-        <div className="flex-1 flex items-center justify-between gap-3 px-2">
-          {/* Departure */}
-          <div className="text-left">
-            <div className="text-base sm:text-lg font-black text-white">
-              {depDate.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })}
-            </div>
-            <div className="text-xs font-bold text-cyan-400">{firstSeg?.departure.iataCode}</div>
-          </div>
-
-          {/* Duration & Segment Milestones */}
-          <div className="flex-1 flex flex-col items-center px-3">
-            <div className="text-[10px] sm:text-[11px] text-slate-400 font-mono flex items-center gap-1 mb-1">
-              <Clock size={11} />
-              <span>{durationHours}h {durationMins}m</span>
-            </div>
-
-            {/* Flight Polyline Track */}
-            <div className="w-full flex items-center">
-              <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#00f0ff]" />
-              <div className="flex-1 h-0.5 bg-gradient-to-r from-cyan-400 via-purple-400 to-emerald-400 relative">
-                {!isDirect && (
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-amber-400 border border-slate-900 shadow-sm" title={`Layover: ${segments[0].arrival.iataCode}`} />
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-base font-bold text-white tracking-tight">{airlineName}</span>
+                {offer.price?.isLowestFare && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                    Lowest fare
+                  </span>
                 )}
               </div>
-              <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
-            </div>
-
-            <div className="text-[10px] font-semibold mt-1">
-              {isDirect ? (
-                <span className="text-emerald-400">Direct Non-stop</span>
-              ) : (
-                <span className="text-amber-400">
-                  1 Stop via {segments[0].arrival.iataCode}
-                </span>
-              )}
+              <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
+                <span>Flight {firstSeg?.number}</span>
+                <span>·</span>
+                <span className="capitalize">{offer.price?.cabinClass?.toLowerCase()}</span>
+              </div>
             </div>
           </div>
 
-          {/* Arrival */}
-          <div className="text-right">
-            <div className="text-base sm:text-lg font-black text-white">
-              {arrDate.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })}
+          {/* 2. Schedule & Flight Route */}
+          <div className="flex-1 flex items-center justify-between gap-4 max-w-md w-full">
+            {/* Departure */}
+            <div className="text-left">
+              <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                {formatTime(depDate)}
+              </div>
+              <div className="text-xs font-semibold text-cyan-400 mt-0.5">
+                {firstSeg?.departure?.iataCode}
+              </div>
             </div>
-            <div className="text-xs font-bold text-emerald-400">{lastSeg?.arrival.iataCode}</div>
+
+            {/* Flight Progress Bar */}
+            <div className="flex-1 flex flex-col items-center px-2">
+              <span className="text-[11px] font-medium text-slate-400 mb-1">
+                {durationHours}h {durationMins}m
+              </span>
+              <div className="w-full flex items-center gap-1.5">
+                <div className="h-[2px] flex-1 bg-white/20 rounded"></div>
+                <Plane size={13} className="text-slate-400 rotate-90 flex-shrink-0" />
+                <div className="h-[2px] flex-1 bg-white/20 rounded"></div>
+              </div>
+              <span className={`text-[11px] font-semibold mt-1 ${isDirect ? "text-emerald-400" : "text-amber-300"}`}>
+                {isDirect ? "Nonstop" : `1 stop (${segments[0]?.arrival?.iataCode})`}
+              </span>
+            </div>
+
+            {/* Arrival */}
+            <div className="text-right">
+              <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                {formatTime(arrDate)}
+              </div>
+              <div className="text-xs font-semibold text-emerald-400 mt-0.5">
+                {lastSeg?.arrival?.iataCode}
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Price & Booking Actions */}
+          <div className="flex items-center justify-between md:flex-col md:items-end gap-2 pt-3 md:pt-0 border-t md:border-t-0 border-white/10 flex-shrink-0">
+            <div className="text-left md:text-right">
+              <div className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                {formattedTotal}
+              </div>
+              <div className="text-[10px] text-slate-400">
+                total per traveler
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end gap-1.5">
+              <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                className="px-5 py-2 rounded-xl font-semibold text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 hover:from-cyan-300 hover:to-emerald-300 transition-all cursor-pointer shadow-md shadow-cyan-500/15 active:scale-95 whitespace-nowrap"
+              >
+                Select Flight
+              </button>
+
+              <button
+                type="button"
+                onClick={handleBookRedirect}
+                className="text-[11px] text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <span>or book on {(airlineName || "Airline").split(" ")[0]}</span>
+                <ExternalLink size={10} />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Price & Book Handoff CTA */}
-        <div className="flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-white/10">
-          <div className="text-left md:text-right">
-            <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              {formattedTotal}
-            </div>
-            <div className="text-[10px] text-slate-400 font-mono">
-              Real rate per adult (incl. taxes)
-            </div>
+        {/* Card Footer Bar */}
+        <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs flex-wrap gap-2">
+          <div className="flex items-center gap-3 text-[11px] text-slate-400 flex-wrap">
+            <span className="flex items-center gap-1">
+              <Luggage size={12} className="text-slate-400" />
+              <span>{offer.baggageAllowance || "1x 23kg included"}</span>
+            </span>
+            <span>·</span>
+            <span className="text-emerald-400">Free cancellation within 24h</span>
+            <span className="hidden sm:inline">·</span>
+            <span className="hidden sm:inline">Seat choice included</span>
           </div>
 
           <button
-            onClick={() => onSelectOffer(offer)}
-            aria-label={`Book flight with ${offer.validatingAirlineName} for ${formattedTotal}`}
-            className="px-4 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 bg-gradient-to-r from-cyan-400 to-cyan-500 text-slate-950 hover:from-cyan-300 hover:to-cyan-400 transition-all cursor-pointer shadow-lg shadow-cyan-400/20 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900"
+            type="button"
+            onClick={() => setDetailsOpen(!detailsOpen)}
+            className="text-xs font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-1 cursor-pointer ml-auto"
           >
-            <span>Book Flight</span>
-            <ArrowRight size={14} aria-hidden="true" />
+            <span>{detailsOpen ? "Hide details" : "Flight details"}</span>
+            {detailsOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
         </div>
-      </div>
 
-      {/* Expandable Detailed Rate & Fare Breakdown Bar */}
-      <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
-        <button
-          type="button"
-          onClick={() => setDetailsOpen(!detailsOpen)}
-          aria-expanded={detailsOpen}
-          aria-controls="fare-breakdown"
-          className="text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1 text-[11px] font-semibold cursor-pointer focus:outline-none focus:ring-1 focus:ring-cyan-400 rounded"
-        >
-          <Info size={12} aria-hidden="true" />
-          <span>Fare &amp; Tax Breakdown</span>
-          {detailsOpen ? <ChevronUp size={12} aria-hidden="true" /> : <ChevronDown size={12} aria-hidden="true" />}
-        </button>
+        {/* Comprehensive Segment & Fare Details Drawer */}
+        {detailsOpen && (
+          <div className="p-4 rounded-xl bg-slate-950/60 border border-white/5 text-xs space-y-4 animate-slide-up">
+            {/* Segments list */}
+            <div className="space-y-3">
+              <div className="text-xs font-semibold text-slate-300">Flight Route</div>
+              {segments.map((seg, idx) => {
+                const segDepAirport = getAirportByIata(seg.departure?.iataCode);
+                const segArrAirport = getAirportByIata(seg.arrival?.iataCode);
+                const segDep = new Date(seg.departure?.at || depDate);
+                const segArr = new Date(seg.arrival?.at || arrDate);
 
-        <span className="text-[10px] text-emerald-400 font-mono">⚡ Instant GDS E-Ticket Confirmation</span>
-      </div>
+                return (
+                  <div key={seg.id || idx} className="p-3 rounded-lg bg-white/[0.03] border border-white/5 space-y-2">
+                    <div className="flex items-center justify-between text-xs font-medium text-white flex-wrap gap-2">
+                      <span className="flex items-center gap-2">
+                        <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-slate-300">Leg {idx + 1}</span>
+                        <span>{segDepAirport?.city || seg.departure?.iataCode} ({seg.departure?.iataCode}) → {segArrAirport?.city || seg.arrival?.iataCode} ({seg.arrival?.iataCode})</span>
+                      </span>
+                      <span className="text-slate-400 text-[11px]">
+                        {seg.number} · {seg.aircraft || "Modern Jet"}
+                      </span>
+                    </div>
 
-      {detailsOpen && (
-        <div id="fare-breakdown" className="p-3 rounded-2xl bg-slate-950/60 border border-white/10 text-xs space-y-2 animate-slide-up" role="region" aria-label="Fare and tax breakdown">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-300 font-mono text-[11px]">
-            <div>
-              <span className="text-slate-400 block text-[9px]">Base Airfare</span>
-              <span className="font-bold text-white">{formattedBase}</span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-400 pt-1">
+                      <div>
+                        <span className="text-slate-500 block text-[10px]">Depart</span>
+                        <span className="text-slate-200 font-medium">{formatTime(segDep)} · {seg.departure?.terminal ? `Term ${seg.departure.terminal}` : "T1"}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block text-[10px]">Arrive</span>
+                        <span className="text-slate-200 font-medium">{formatTime(segArr)} · {seg.arrival?.terminal ? `Term ${seg.arrival.terminal}` : "T2"}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block text-[10px]">Duration</span>
+                        <span className="text-slate-200 font-medium">{Math.floor((seg.durationMinutes || 0) / 60)}h {(seg.durationMinutes || 0) % 60}m</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block text-[10px]">Carrier</span>
+                        <span className="text-slate-200 font-medium">{seg.airlineName || airlineName}</span>
+                      </div>
+                    </div>
+
+                    {/* Layover banner */}
+                    {idx < segments.length - 1 && (
+                      <div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] flex items-center gap-2">
+                        <Clock size={12} className="flex-shrink-0" />
+                        <span>Layover in {seg.arrival?.iataCode} ({segArrAirport?.city || "Transit"}) · Plane change</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <div>
-              <span className="text-slate-400 block text-[9px]">Govt &amp; Airport Taxes</span>
-              <span className="font-bold text-white">{formattedFees}</span>
+
+            {/* Price & Baggage Breakdown */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 border-t border-white/5">
+              <div className="p-2.5 rounded-lg bg-white/[0.02]">
+                <div className="text-slate-400 text-[10px]">Base Fare</div>
+                <div className="text-white font-semibold mt-0.5">{formattedBase}</div>
+              </div>
+              <div className="p-2.5 rounded-lg bg-white/[0.02]">
+                <div className="text-slate-400 text-[10px]">Taxes & Fees</div>
+                <div className="text-white font-semibold mt-0.5">{formattedFees}</div>
+              </div>
+              <div className="p-2.5 rounded-lg bg-white/[0.02]">
+                <div className="text-slate-400 text-[10px]">Baggage Allowance</div>
+                <div className="text-emerald-400 font-semibold mt-0.5">{offer.baggageAllowance || "1x 23kg included"}</div>
+              </div>
             </div>
-            <div>
-              <span className="text-slate-400 block text-[9px]">Cabin Class</span>
-              <span className="font-bold text-cyan-300">{offer.price.cabinClass}</span>
-            </div>
-            <div>
-              <span className="text-slate-400 block text-[9px]">Baggage Included</span>
-              <span className="font-bold text-emerald-400">{offer.baggageAllowance}</span>
+
+            {/* Included amenities */}
+            <div className="flex items-center gap-4 text-[11px] text-slate-400 pt-1">
+              <span className="flex items-center gap-1 text-emerald-400"><Check size={12} /> Standard Seat</span>
+              <span className="flex items-center gap-1 text-cyan-300"><Check size={12} /> Wi-Fi Onboard</span>
+              <span className="flex items-center gap-1 text-slate-300"><Check size={12} /> E-Boarding Pass</span>
             </div>
           </div>
+        )}
+      </motion.div>
 
-          <div className="text-[10px] text-slate-400 border-t border-white/10 pt-2 flex items-center justify-between">
-            <span>Aircraft: <strong className="text-white">{firstSeg?.aircraft}</strong></span>
-            <span>Flight No: <strong className="text-white">{firstSeg?.number}</strong></span>
-          </div>
-        </div>
+      {/* Seat Booking Modal */}
+      {modalOpen && (
+        <BookingModal
+          offer={offer}
+          onClose={() => setModalOpen(false)}
+        />
       )}
-    </GlassCard>
+
+      {/* Airline Redirect Overlay */}
+      {redirectInfo && (
+        <RedirectToast
+          airlineName={redirectInfo.name}
+          url={redirectInfo.url}
+          onDone={() => setRedirectInfo(null)}
+        />
+      )}
+    </>
   );
 }

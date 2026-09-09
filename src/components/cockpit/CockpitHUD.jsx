@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Compass, Navigation, Shield, X, Gauge, ArrowUpRight } from "lucide-react";
 
 export function CockpitHUD({
   origin,
   destination,
   progress = 0.5,
-  heading = 78,
+  heading,
   altitudeFt = 36000,
   speedKmh = 860,
   onExitCockpit,
@@ -13,6 +13,22 @@ export function CockpitHUD({
   const speedKnots = Math.round(speedKmh * 0.539957);
   const altitudeM = Math.round(altitudeFt * 0.3048);
   const progressPct = Math.round(progress * 100);
+
+  const calculatedHeading = useMemo(() => {
+    if (heading != null) return heading;
+    if (origin && destination) {
+      const oLat = ((origin.lat ?? 0) * Math.PI) / 180;
+      const dLat = ((destination.lat ?? 0) * Math.PI) / 180;
+      const oLng = origin.lng ?? origin.lon ?? 0;
+      const dLng = destination.lng ?? destination.lon ?? 0;
+      const deltaLng = ((dLng - oLng) * Math.PI) / 180;
+      const y = Math.sin(deltaLng) * Math.cos(dLat);
+      const x = Math.cos(oLat) * Math.sin(dLat) - Math.sin(oLat) * Math.cos(dLat) * Math.cos(deltaLng);
+      const deg = (Math.atan2(y, x) * 180) / Math.PI;
+      return Math.round((deg + 360) % 360);
+    }
+    return 78;
+  }, [heading, origin, destination]);
 
   return (
     <div
@@ -44,13 +60,13 @@ export function CockpitHUD({
             COCKPIT FIRST-PERSON HUD
           </div>
           <div className="text-base font-black text-white flex items-center justify-center gap-2">
-            <span>{origin?.iata || "DEP"}</span>
+            <span>{origin?.iata || origin?.code || "DEP"}</span>
             <ArrowUpRight size={14} className="text-cyan-400" />
-            <span>{destination?.iata || "ARR"}</span>
+            <span>{destination?.iata || destination?.code || "ARR"}</span>
           </div>
           <div className="flex items-center justify-center gap-1.5 text-xs text-cyan-300 font-mono mt-0.5">
             <Compass size={12} />
-            <span>HDG {heading}°</span>
+            <span>HDG {calculatedHeading}°</span>
           </div>
         </div>
 
@@ -111,3 +127,5 @@ export function CockpitHUD({
     </div>
   );
 }
+
+export default CockpitHUD;

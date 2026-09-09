@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { X, CheckCircle2, ShieldCheck, CreditCard, ExternalLink, Luggage, Printer, Ticket, Check } from "lucide-react";
 import { createDuffelBookingHandoff } from "../../services/api/duffelService";
+import { createBookingAPI } from "../../services/api/apiClient";
 import { usePassportStamps } from "../../hooks/usePassportStamps";
 import { useStore } from "../../store/useStore";
+
+import { AIRPORTS, getAirportByIata } from "../../data/airports";
 
 const SEAT_OPTIONS = ["12A (Window)", "12B (Middle)", "12C (Aisle)", "14A (Window)", "14F (Window)", "18C (Aisle)", "22D (Extra Legroom)"];
 
@@ -14,8 +17,9 @@ export default function BookingModal({ offer, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingResult, setBookingResult] = useState(null);
 
-  // TASK 1: Passport stamp hook — saves to localStorage + Zustand on confirmed booking
+  // Passport stamp hook — saves to localStorage + Zustand on confirmed booking
   const addStampToStore = useStore((s) => s.addStamp);
+  const addTrip = useStore((s) => s.addTrip);
   const { saveStamp } = usePassportStamps(addStampToStore);
 
   if (!offer) return null;
@@ -25,8 +29,8 @@ export default function BookingModal({ offer, onClose }) {
   const firstSeg = segments[0];
   const lastSeg = segments[segments.length - 1];
 
-  const symbol = offer.price.currencySymbol || "$";
-  const currencyCode = offer.price.currency || "USD";
+  const symbol = offer.price?.currencySymbol || "$";
+  const currencyCode = offer.price?.currency || "USD";
 
   async function handleSubmitBooking(e) {
     e.preventDefault();
@@ -36,30 +40,84 @@ export default function BookingModal({ offer, onClose }) {
     setBookingResult(res);
     setIsSubmitting(false);
 
-    // TASK 1: Persist stamp to localStorage + Zustand after confirmed booking
+    // Persist stamp & full trip to localStorage + Zustand + Backend API after confirmed booking
     if (res && offer?.itineraries?.length > 0) {
       const segments = offer.itineraries[0]?.segments || [];
       const firstSeg = segments[0];
       const lastSeg  = segments[segments.length - 1];
+      const bookingId = `T-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      const depIata = firstSeg?.departure?.iataCode || "JFK";
+      const arrIata = lastSeg?.arrival?.iataCode || "LHR";
+      const depAirport = getAirportByIata(depIata);
+      const arrAirport = getAirportByIata(arrIata);
+
+      const durationStr = itinerary?.durationMinutes
+        ? `${Math.floor(itinerary.durationMinutes / 60)}h ${itinerary.durationMinutes % 60}m`
+        : itinerary?.duration?.replace("PT", "").toLowerCase() || "7h 15m";
+
+      const depTime = firstSeg?.departure?.at ? firstSeg.departure.at.slice(11, 16) : "08:30";
+      const arrTime = lastSeg?.arrival?.at ? lastSeg.arrival.at.slice(11, 16) : "17:45";
+      const plane = firstSeg?.aircraft || "Boeing 787-9 Dreamliner";
+      const priceVal = offer.price?.total || 420;
+
+      const tripObj = {
+        id: bookingId,
+        flight: {
+          code: firstSeg?.number ? `${offer.validatingAirlineCode || "AI"}-${firstSeg.number}` : "FL-101",
+          airline: offer.validatingAirlineName || "FlightGlobe",
+          from: depIata,
+          to: arrIata,
+          dep: depTime,
+          arr: arrTime,
+          dur: durationStr,
+          plane,
+          price: priceVal,
+          currency: currencyCode,
+          currencySymbol: symbol,
+        },
+        origin: {
+          iata: depIata,
+          code: depIata,
+          city: depAirport?.city || depIata,
+        },
+        destination: {
+          iata: arrIata,
+          code: arrIata,
+          city: arrAirport?.city || arrIata,
+        },
+        totalPrice: priceVal,
+        currency: currencyCode,
+        currencySymbol: symbol,
+        seat: selectedSeat.split(" ")[0] || "3A",
+        gate: `${String.fromCharCode(65 + Math.floor(Math.random() * 4))}${Math.floor(1 + Math.random() * 24)}`,
+        terminal: firstSeg?.departure?.terminal || `T${Math.floor(1 + Math.random() * 3)}`,
+        group: selectedSeat.startsWith("1") || selectedSeat.startsWith("2") ? "A (Priority)" : "B",
+        bookingRef: res.bookingReference,
+        date: firstSeg?.departure?.at ? firstSeg.departure.at.slice(0, 10) : new Date().toISOString().split("T")[0],
+      };
+
+      addTrip(tripObj);
+      createBookingAPI(tripObj).catch(() => {});
 
       saveStamp({
         id: Date.now(),
         timestamp: Date.now(),
         date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
         origin: {
-          iata:    firstSeg?.departure?.iataCode || "???",
-          city:    firstSeg?.departure?.iataCode || "Unknown",
+          iata:    depIata,
+          city:    depAirport.city || depIata,
           country: offer.validatingAirlineName || "",
         },
         destination: {
-          iata:    lastSeg?.arrival?.iataCode || "???",
-          city:    lastSeg?.arrival?.iataCode || "Unknown",
+          iata:    arrIata,
+          city:    arrAirport.city || arrIata,
           country: offer.validatingAirlineName || "",
         },
         airline:    offer.validatingAirlineName,
-        cabinClass: offer.price?.cabinClass,
-        pricePaid:  offer.price?.total,
-        currency:   offer.price?.currency,
+        cabinClass: offer.price?.cabinClass || "Economy",
+        pricePaid:  priceVal,
+        currency:   currencyCode,
         pnr:        res.bookingReference,
       });
     }

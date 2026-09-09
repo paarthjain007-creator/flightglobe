@@ -2,16 +2,64 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  NODE_VERSION = "20"
+
 [functions]
   directory = "netlify/functions"
 
-# Proxy /api/traffic to the serverless Netlify function
+# 1. API Serverless Function Redirects
 [[redirects]]
   from = "/api/traffic"
   to = "/.netlify/functions/traffic"
   status = 200
 
-# SPA fallback routing for React Router
+[[redirects]]
+  from = "/api/rates"
+  to = "/.netlify/functions/rates"
+  status = 200
+
+[[redirects]]
+  from = "/api/fares/matrix"
+  to = "/.netlify/functions/fares"
+  status = 200
+
+[[redirects]]
+  from = "/api/airports/search"
+  to = "/.netlify/functions/airports"
+  status = 200
+
+[[redirects]]
+  from = "/api/bookings/*"
+  to = "/.netlify/functions/bookings/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/bookings"
+  to = "/.netlify/functions/bookings"
+  status = 200
+
+[[redirects]]
+  from = "/api/agent/chat"
+  to = "/.netlify/functions/agent"
+  status = 200
+
+[[redirects]]
+  from = "/api/user/*"
+  to = "/.netlify/functions/user/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/user"
+  to = "/.netlify/functions/user"
+  status = 200
+
+[[redirects]]
+  from = "/api/health"
+  to = "/.netlify/functions/health"
+  status = 200
+
+# 2. SPA fallback routing for React Router (Explore, Radar, Booking, Copilot, Dashboard, Passport)
 [[redirects]]
   from = "/*"
   to = "/index.html"

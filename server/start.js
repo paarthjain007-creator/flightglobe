@@ -8,16 +8,14 @@ import { spawn } from "child_process";
 console.log("\n🚀 Starting FlightGlobe Unified Full-Stack Environment...\n");
 
 // 1. Launch Express ADS-B Proxy Server (Port 3001)
-const serverProcess = spawn("node", ["server/index.js"], {
+const serverProcess = spawn(process.execPath, ["server/index.js"], {
   stdio: "inherit",
-  shell: true,
 });
 
 // 2. Launch Vite Dev Server (Port 5173)
-const viteProcess = spawn("npx", ["vite"], {
-  stdio: "inherit",
-  shell: true,
-});
+const viteProcess = process.platform === "win32"
+  ? spawn("cmd.exe", ["/c", "npx", "vite"], { stdio: "inherit" })
+  : spawn("npx", ["vite"], { stdio: "inherit" });
 
 function handleExit(code) {
   serverProcess.kill();

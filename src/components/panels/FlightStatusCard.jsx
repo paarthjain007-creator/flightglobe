@@ -40,12 +40,12 @@ export default function FlightStatusCard({ origin, destination }) {
   return (
     <GlassCard className="p-4" animate="animate-slide-up">
       <div className="flex items-center gap-2 mb-3">
-        <Plane size={14} style={{ color: "var(--accent)" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+        <Plane size={14} style={{ color: "#00F2FE" }} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
           Flight Status
         </span>
         <div className="ml-auto">
-          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--accent-glow)", color: "var(--accent)" }}>
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(0, 242, 254, 0.12)", color: "#00F2FE", border: "1px solid rgba(0, 242, 254, 0.25)" }}>
             Simulated
           </span>
         </div>
@@ -53,8 +53,8 @@ export default function FlightStatusCard({ origin, destination }) {
 
       {loading && (
         <div className="flex items-center gap-2 py-3 justify-center">
-          <Loader2 size={14} className="animate-spin" style={{ color: "var(--accent)" }} />
-          <span className="text-xs" style={{ color: "var(--text-muted)" }}>Loading status…</span>
+          <Loader2 size={14} className="animate-spin" style={{ color: "#00F2FE" }} />
+          <span className="text-xs text-slate-400">Loading status…</span>
         </div>
       )}
 
@@ -62,8 +62,8 @@ export default function FlightStatusCard({ origin, destination }) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>{status.flightNum}</div>
-              <div className="text-xs" style={{ color: "var(--text-muted)" }}>{status.airline}</div>
+              <div className="text-lg font-bold" style={{ color: "#F8FAFC" }}>{status.flightNum}</div>
+              <div className="text-xs text-slate-400">{status.airline}</div>
             </div>
             <StatusBadge status={status.status} />
           </div>
@@ -71,13 +71,13 @@ export default function FlightStatusCard({ origin, destination }) {
           <div className="glow-line" />
 
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--glass-border)" }}>
-              <div className="text-xs mb-0.5" style={{ color: "var(--text-muted)" }}>Departure</div>
-              <div className="font-semibold" style={{ color: "var(--text-primary)" }}>{status.depTime}</div>
+            <div className="rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+              <div className="text-xs mb-0.5 text-slate-400">Departure</div>
+              <div className="font-semibold" style={{ color: "#F8FAFC" }}>{status.depTime}</div>
             </div>
-            <div className="rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--glass-border)" }}>
-              <div className="text-xs mb-0.5" style={{ color: "var(--text-muted)" }}>Gate</div>
-              <div className="font-semibold" style={{ color: "var(--text-primary)" }}>{status.gate}</div>
+            <div className="rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+              <div className="text-xs mb-0.5 text-slate-400">Gate</div>
+              <div className="font-semibold" style={{ color: "#F8FAFC" }}>{status.gate}</div>
             </div>
           </div>
 

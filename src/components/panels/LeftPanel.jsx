@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
-import { Navigation2, Ruler, Clock, ArrowDown, Plane, Globe2, Plus, X, Milestone } from "lucide-react";
-import GlassCard from "../ui/GlassCard";
+import { Navigation2, Ruler, Clock, ArrowDown, Plane, Globe2, Plus, X, Milestone, Trash2 } from "lucide-react";
 import AirportSearch from "../Search/AirportSearch";
 import { estimateTicketCost } from "../../utils/flightCalc";
 
@@ -13,9 +12,9 @@ function LegSummary({ workerResult }) {
   const isMulti = legs.length > 1;
 
   return (
-    <div className="rounded-xl p-3 space-y-2 animate-slide-up" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--glass-border)" }}>
+    <div className="rounded-xl p-3 space-y-2 animate-slide-up" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
       {isMulti && (
-        <div className="text-xs font-semibold mb-1" style={{ color: "var(--text-muted)" }}>
+        <div className="text-xs font-semibold mb-1 text-slate-400">
           {legs.length}-Leg Journey
         </div>
       )}
@@ -24,35 +23,35 @@ function LegSummary({ workerResult }) {
         <div key={`${leg.from}-${leg.to}-${i}`} className="flex items-center gap-2 text-xs">
           <span className="font-bold" style={{ color: STOP_COLORS[i % STOP_COLORS.length] }}>{leg.from}</span>
           <div className="flex-1 flex items-center">
-            <div className="flex-1 h-px" style={{ background: "var(--glass-border)" }} />
-            <Plane size={10} className="mx-1" style={{ color: "var(--accent)" }} />
-            <div className="flex-1 h-px" style={{ background: "var(--glass-border)" }} />
+            <div className="flex-1 h-px" style={{ background: "rgba(255, 255, 255, 0.08)" }} />
+            <Plane size={10} className="mx-1 text-cyan-400" />
+            <div className="flex-1 h-px" style={{ background: "rgba(255, 255, 255, 0.08)" }} />
           </div>
           <span className="font-bold" style={{ color: STOP_COLORS[(i + 1) % STOP_COLORS.length] }}>{leg.to}</span>
-          <span className="tabular-nums text-right" style={{ color: "var(--text-muted)", minWidth: "52px" }}>
+          <span className="tabular-nums text-right text-slate-400" style={{ minWidth: "52px" }}>
             {leg.km.toLocaleString()} km
           </span>
         </div>
       ))}
 
       {/* Total row */}
-      <div className="pt-2" style={{ borderTop: "1px solid var(--glass-border)" }}>
+      <div className="pt-2" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
         <div className="grid grid-cols-2 gap-2">
           <div>
             <div className="flex items-center gap-1 mb-0.5">
-              <Ruler size={10} style={{ color: "var(--accent)" }} />
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>Total</span>
+              <Ruler size={10} className="text-cyan-400" />
+              <span className="text-xs text-slate-400">Total</span>
             </div>
-            <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+            <div className="text-sm font-bold" style={{ color: "#F8FAFC" }}>
               {totalKm.toLocaleString()} km
             </div>
           </div>
           <div>
             <div className="flex items-center gap-1 mb-0.5">
-              <Clock size={10} style={{ color: "var(--accent)" }} />
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>Est. Time</span>
+              <Clock size={10} className="text-cyan-400" />
+              <span className="text-xs text-slate-400">Est. Time</span>
             </div>
-            <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+            <div className="text-sm font-bold" style={{ color: "#F8FAFC" }}>
               {totalTime.hours}h {totalTime.minutes}m
             </div>
           </div>
@@ -119,31 +118,43 @@ export default function LeftPanel({ waypoints, onWaypointsChange, workerResult }
   }, [workerResult?.totalKm]);
 
   return (
-    <GlassCard
-      className="p-4 w-72 flex flex-col gap-3 animate-slide-left"
-      style={{ maxHeight: "calc(100vh - 100px)" }}
+    <div
+      className="glass-panel p-4 w-72 flex flex-col gap-3 animate-slide-left"
+      style={{ maxHeight: "calc(100dvh - 100px)", zIndex: 10 }}
     >
       {/* Header */}
       <div className="flex items-center gap-2.5">
         <div
           className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)" }}
+          style={{ background: "rgba(0, 242, 254, 0.12)", border: "1px solid rgba(0, 242, 254, 0.25)" }}
         >
-          <Globe2 size={15} style={{ color: "var(--accent)" }} />
+          <Globe2 size={15} style={{ color: "#00F2FE" }} />
         </div>
         <div>
-          <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>Route Planner</div>
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+          <div className="text-sm font-bold" style={{ color: "#F8FAFC" }}>Route Planner</div>
+          <div className="text-xs text-slate-400">
             {waypoints.filter(Boolean).length < 2 ? "Select airports to begin" : `${waypoints.filter(Boolean).length} stops`}
           </div>
         </div>
 
         {/* Multi-leg indicator */}
         {stops.length > 0 && (
-          <div className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded-full text-xs" style={{ background: "var(--accent-glow)", color: "var(--accent)", border: "1px solid var(--glass-border)" }}>
+          <div className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded-full text-xs" style={{ background: "rgba(0, 242, 254, 0.12)", color: "#00F2FE", border: "1px solid rgba(0, 242, 254, 0.25)" }}>
             <Milestone size={10} />
             Multi-leg
           </div>
+        )}
+
+        {/* Clear Route Button */}
+        {waypoints.filter(Boolean).length > 0 && (
+          <button
+            onClick={() => onWaypointsChange([])}
+            aria-label="Clear Route"
+            className="ml-auto p-1.5 rounded-full hover:bg-rose-500/20 text-rose-400/70 hover:text-rose-400 transition-colors cursor-pointer"
+            title="Clear Route"
+          >
+            <Trash2 size={14} />
+          </button>
         )}
       </div>
 
@@ -176,6 +187,7 @@ export default function LeftPanel({ waypoints, onWaypointsChange, workerResult }
               </span>
               <button
                 onClick={() => removeStop(i)}
+                aria-label={`Remove stop ${i + 1}`}
                 className="ml-auto p-0.5 rounded cursor-pointer hover:opacity-80 transition-opacity"
                 style={{ color: "#f87171" }}
                 title="Remove stop"
@@ -200,8 +212,8 @@ export default function LeftPanel({ waypoints, onWaypointsChange, workerResult }
             className="flex items-center justify-center gap-2 w-full py-2 rounded-xl text-xs font-medium cursor-pointer transition-all hover:opacity-90 active:scale-95"
             style={{
               background: "rgba(255,255,255,0.04)",
-              border: "1px dashed var(--glass-border)",
-              color: "var(--accent)",
+              border: "1px dashed rgba(255, 255, 255, 0.15)",
+              color: "#00F2FE",
             }}
           >
             <Plus size={12} />
@@ -214,9 +226,10 @@ export default function LeftPanel({ waypoints, onWaypointsChange, workerResult }
           <button
             id="swap-airports-btn"
             onClick={swapOriginDest}
+            aria-label="Swap origin and destination"
             disabled={waypoints.filter(Boolean).length < 2}
             className="p-2 rounded-full transition-all cursor-pointer hover:scale-110 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
-            style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)", color: "var(--accent)" }}
+            style={{ background: "rgba(0, 242, 254, 0.12)", border: "1px solid rgba(0, 242, 254, 0.25)", color: "#00F2FE" }}
             title="Reverse entire route"
           >
             <ArrowDown size={14} />
@@ -248,15 +261,15 @@ export default function LeftPanel({ waypoints, onWaypointsChange, workerResult }
               <div className="grid grid-cols-3 gap-1.5">
                 {[
                   { label: "Economy", key: "economy", color: "#4ade80" },
-                  { label: "Business", key: "business", color: "var(--accent)" },
+                  { label: "Business", key: "business", color: "#00F2FE" },
                   { label: "First", key: "first", color: "#fbbf24" },
                 ].map(({ label, key, color }) => (
                   <div
                     key={key}
                     className="rounded-xl px-2 py-2 text-center"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--glass-border)" }}
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
                   >
-                    <div className="text-xs mb-0.5" style={{ color: "var(--text-muted)" }}>{label}</div>
+                    <div className="text-xs mb-0.5 text-slate-400">{label}</div>
                     <div className="text-xs font-bold" style={{ color }}>${costs[key].toLocaleString()}</div>
                   </div>
                 ))}
@@ -268,13 +281,13 @@ export default function LeftPanel({ waypoints, onWaypointsChange, workerResult }
         {/* Empty state */}
         {!origin && !destination && (
           <div className="text-center py-4">
-            <Navigation2 size={24} className="mx-auto mb-2 opacity-30" style={{ color: "var(--accent)" }} />
-            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            <Navigation2 size={24} className="mx-auto mb-2 opacity-30" style={{ color: "#00F2FE" }} />
+            <p className="text-xs text-slate-400">
               Search airports to draw a flight path on the globe
             </p>
           </div>
         )}
       </div>
-    </GlassCard>
+    </div>
   );
 }

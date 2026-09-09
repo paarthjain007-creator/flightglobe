@@ -5,11 +5,11 @@ import { useWeather, weatherCodeToDescription, weatherCodeToEmoji } from "../../
 
 function StatBadge({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-center gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--glass-border)" }}>
-      <Icon size={12} style={{ color: "var(--accent)" }} />
+    <div className="flex items-center gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      <Icon size={12} style={{ color: "#00F2FE" }} />
       <div>
-        <div className="text-xs" style={{ color: "var(--text-muted)" }}>{label}</div>
-        <div className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{value}</div>
+        <div className="text-xs text-[#94A3B8]">{label}</div>
+        <div className="text-sm font-semibold text-[#F8FAFC]">{value}</div>
       </div>
     </div>
   );
@@ -23,20 +23,20 @@ export default function WeatherWidget({ airport }) {
   return (
     <GlassCard className="p-4" animate="animate-slide-up">
       <div className="flex items-center gap-2 mb-3">
-        <Cloud size={14} style={{ color: "var(--accent)" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+        <Cloud size={14} style={{ color: "#00F2FE" }} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
           Destination Weather
         </span>
       </div>
 
-      <div className="text-sm font-medium mb-3" style={{ color: "var(--text-primary)" }}>
+      <div className="text-sm font-medium mb-3 text-[#F8FAFC]">
         {airport.city}, {airport.country}
       </div>
 
       {loading && (
         <div className="flex items-center gap-2 py-4 justify-center">
-          <Loader2 size={16} className="animate-spin" style={{ color: "var(--accent)" }} />
-          <span className="text-xs" style={{ color: "var(--text-muted)" }}>Fetching weather…</span>
+          <Loader2 size={16} className="animate-spin" style={{ color: "#00F2FE" }} />
+          <span className="text-xs text-[#94A3B8]">Fetching weather…</span>
         </div>
       )}
 
@@ -51,15 +51,15 @@ export default function WeatherWidget({ airport }) {
           <div className="flex items-center gap-4 mb-4">
             <div className="text-5xl leading-none">{weatherCodeToEmoji(weather.weathercode, weather.isDay)}</div>
             <div>
-              <div className="text-3xl font-bold" style={{ color: "var(--accent)" }}>
+              <div className="text-3xl font-bold font-mono" style={{ color: "#00F2FE" }}>
                 {weather.temp}°C
               </div>
               {weather.feelsLike !== null && (
-                <div className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+                <div className="text-xs mt-0.5 text-[#94A3B8]">
                   Feels like {weather.feelsLike}°C
                 </div>
               )}
-              <div className="text-xs font-medium mt-1" style={{ color: "var(--text-primary)" }}>
+              <div className="text-xs font-medium mt-1 text-[#F8FAFC]">
                 {weatherCodeToDescription(weather.weathercode)}
               </div>
             </div>

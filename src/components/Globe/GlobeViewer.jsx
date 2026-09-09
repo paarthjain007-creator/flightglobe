@@ -13,6 +13,7 @@ export default function GlobeViewer({
   isCockpitView = false,
   cockpitProgress = 0.5,
   onPointClick,
+  hoveredFlightPath = null,
 }) {
   return (
     <Suspense fallback={<GlobeLoader />}>
@@ -26,6 +27,7 @@ export default function GlobeViewer({
         isCockpitView={isCockpitView}
         cockpitProgress={cockpitProgress}
         onPointClick={onPointClick}
+        hoveredFlightPath={hoveredFlightPath}
       />
     </Suspense>
   );

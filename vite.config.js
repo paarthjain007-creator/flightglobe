@@ -17,9 +17,10 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: 'https://raw.githubusercontent.com/lucide-react/lucide/main/icons/globe.svg',
+            src: '/favicon.svg',
             sizes: '192x192',
-            type: 'image/svg+xml'
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
           }
         ]
       },

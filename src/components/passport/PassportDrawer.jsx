@@ -41,19 +41,19 @@ function PassportStamp({ stamp, onRemove, index }) {
           <span className="text-xs font-bold" style={{ color: palette.text }}>
             {stamp.origin.iata}
           </span>
-          <Plane size={9} style={{ color: "var(--text-muted)" }} />
+          <Plane size={9} className="text-slate-400" />
           <span className="text-xs font-bold" style={{ color: palette.text }}>
             {stamp.destination.iata}
           </span>
         </div>
-        <div className="text-xs font-medium truncate" style={{ color: "var(--text-primary)" }}>
+        <div className="text-xs font-medium truncate" style={{ color: "#F8FAFC" }}>
           {stamp.destination.city}, {stamp.destination.country}
         </div>
-        <div className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+        <div className="text-xs mt-1 text-slate-400">
           {stamp.date}
         </div>
         {stamp.totalKm && (
-          <div className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+          <div className="text-xs mt-0.5 text-slate-400">
             {stamp.totalKm.toLocaleString()} km
             {stamp.co2Kg && ` · ${stamp.co2Kg} kg CO₂`}
           </div>
@@ -93,8 +93,8 @@ export default function PassportDrawer({ stamps, isOpen, onClose, onRemove, onCl
         className="fixed right-0 top-0 h-full z-50 flex flex-col"
         style={{
           width: "320px",
-          background: "var(--bg-secondary)",
-          borderLeft: "1px solid var(--glass-border)",
+          background: "#080C16",
+          borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
           boxShadow: "-8px 0 40px rgba(0,0,0,0.5)",
           transform: isOpen ? "translateX(0)" : "translateX(100%)",
           transition: "transform 0.35s cubic-bezier(0.23, 1, 0.32, 1)",
@@ -103,19 +103,19 @@ export default function PassportDrawer({ stamps, isOpen, onClose, onRemove, onCl
         {/* Header */}
         <div
           className="flex items-center gap-3 px-5 py-4 flex-shrink-0"
-          style={{ borderBottom: "1px solid var(--glass-border)" }}
+          style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }}
         >
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)" }}
+            style={{ background: "rgba(0, 242, 254, 0.12)", border: "1px solid rgba(0, 242, 254, 0.25)" }}
           >
-            <BookOpen size={16} style={{ color: "var(--accent)" }} />
+            <BookOpen size={16} style={{ color: "#00F2FE" }} />
           </div>
           <div>
-            <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+            <div className="text-sm font-bold" style={{ color: "#F8FAFC" }}>
               Digital Passport
             </div>
-            <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+            <div className="text-xs text-slate-400">
               {stamps.length} stamp{stamps.length !== 1 ? "s" : ""} collected
             </div>
           </div>
@@ -133,7 +133,7 @@ export default function PassportDrawer({ stamps, isOpen, onClose, onRemove, onCl
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ background: "rgba(255,255,255,0.06)", color: "var(--text-muted)" }}
+              style={{ background: "rgba(255,255,255,0.06)", color: "#94A3B8" }}
             >
               <X size={14} />
             </button>
@@ -145,10 +145,10 @@ export default function PassportDrawer({ stamps, isOpen, onClose, onRemove, onCl
           {stamps.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-3 py-12">
               <div className="text-5xl">🌍</div>
-              <div className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+              <div className="text-sm font-semibold" style={{ color: "#F8FAFC" }}>
                 No stamps yet
               </div>
-              <div className="text-xs leading-relaxed max-w-48" style={{ color: "var(--text-muted)" }}>
+              <div className="text-xs leading-relaxed max-w-48 text-slate-400">
                 Complete a route calculation to earn your first passport stamp
               </div>
             </div>
@@ -167,9 +167,9 @@ export default function PassportDrawer({ stamps, isOpen, onClose, onRemove, onCl
         {/* Footer */}
         <div
           className="px-5 py-3 flex-shrink-0 text-center"
-          style={{ borderTop: "1px solid var(--glass-border)" }}
+          style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}
         >
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+          <div className="text-xs text-slate-400">
             <MapPin size={10} className="inline mr-1" />
             Stamps saved locally in your browser
           </div>

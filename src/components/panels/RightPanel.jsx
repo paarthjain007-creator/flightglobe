@@ -21,15 +21,15 @@ export default function RightPanel({ origin, destination, workerResult, workerLo
       <div className="flex items-center gap-2">
         <div
           className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)" }}
+          style={{ background: "rgba(0, 242, 254, 0.12)", border: "1px solid rgba(0, 242, 254, 0.25)" }}
         >
-          <Info size={15} style={{ color: "var(--accent)" }} />
+          <Info size={15} style={{ color: "#00F2FE" }} />
         </div>
         <div>
-          <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+          <div className="text-sm font-bold" style={{ color: "#F8FAFC" }}>
             Destination Insights
           </div>
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+          <div className="text-xs text-slate-400">
             {destination ? `${destination.city}, ${destination.country}` : "Select a destination"}
           </div>
         </div>
@@ -44,10 +44,10 @@ export default function RightPanel({ origin, destination, workerResult, workerLo
         {!hasRoute && (
           <div className="text-center py-8">
             <div className="text-4xl mb-3">✈️</div>
-            <p className="text-sm font-medium mb-1" style={{ color: "var(--text-primary)" }}>
+            <p className="text-sm font-medium mb-1" style={{ color: "#F8FAFC" }}>
               Plan Your Journey
             </p>
-            <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            <p className="text-xs leading-relaxed text-slate-400">
               Select origin & destination to unlock weather, timezones, CO₂ tracking, visa info, and more
             </p>
           </div>

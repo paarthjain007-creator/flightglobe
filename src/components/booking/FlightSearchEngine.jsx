@@ -1,13 +1,20 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Search, Plane, Calendar, Users, SlidersHorizontal, Loader2, ArrowRightLeft, ShieldCheck, Filter, DollarSign, Key, Info, TrendingDown, Check } from "lucide-react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { Search, Plane, Calendar, Loader2, ArrowRightLeft, Filter, TrendingDown, Zap, Clock, ArrowUpRight, ChevronDown, ChevronUp } from "lucide-react";
 import AirportSearch from "../Search/AirportSearch";
 import BookingCard from "./BookingCard";
-import BookingModal from "./BookingModal";
 import { searchAmadeusFlightOffers, CURRENCY_MAP, fetch7DayFareMatrixAPI } from "../../services/api/amadeusService";
 import { AIRPORTS } from "../../data/airports";
 import GlassCard from "../ui/GlassCard";
 import { FlightResultsSkeleton } from "../ui/FlightSkeletonLoader";
 import { useFlightDeepLink } from "../../hooks/useFlightDeepLink";
+import { useStore } from "../../store/useStore";
+
+const SORT_OPTIONS = [
+  { id: "CHEAPEST",  label: "Cheapest",    icon: TrendingDown },
+  { id: "FASTEST",   label: "Fastest",     icon: Zap },
+  { id: "EARLIEST",  label: "Earliest",    icon: Clock },
+  { id: "DIRECT",    label: "Direct Only", icon: ArrowUpRight },
+];
 
 export default function FlightSearchEngine({ initialOrigin, initialDestination }) {
   const [origin, setOrigin] = useState(initialOrigin || AIRPORTS[0]);
@@ -20,46 +27,74 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
   const [travelClass, setTravelClass] = useState("ECONOMY");
   const [adults, setAdults] = useState(1);
   const [nonStopOnly, setNonStopOnly] = useState(false);
-  const [currency, setCurrency] = useState("USD");
-  const [selectedAirlineFilter, setSelectedAirlineFilter] = useState("ALL");
 
-  // Api Key Customizer Modal
-  const [apiModalOpen, setApiModalOpen] = useState(false);
-  const [customKey, setCustomKey] = useState("");
-  const [customSecret, setCustomSecret] = useState("");
+  // Global Currency Sync from Store
+  const storeCurrency = useStore((s) => s.currency);
+  const setStoreCurrency = useStore((s) => s.setCurrency);
+  const currency = storeCurrency || "USD";
+  const setCurrency = setStoreCurrency;
 
+  // State
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedOffer, setSelectedOffer] = useState(null);
-  const [sortBy, setSortBy] = useState("PRICE");
+  const [quickFilter, setQuickFilter] = useState("CHEAPEST");
+  const [selectedAirlineFilter, setSelectedAirlineFilter] = useState("ALL");
+  const [showCalendarMatrix, setShowCalendarMatrix] = useState(false);
+  const [showAirlineFilter, setShowAirlineFilter] = useState(false);
 
   // Dynamic 7-day Fare Matrix API state
   const [fareMatrix, setFareMatrix] = useState([]);
   const [matrixLoading, setMatrixLoading] = useState(true);
   const [matrixError, setMatrixError] = useState(false);
 
-  // Fetch 7-day Fare Matrix via API Endpoint whenever origin, destination, departureDate, or currency changes
+  const today = new Date().toISOString().split("T")[0];
+  const isSameAirport = !!(origin && destination && (origin.iata || origin.code) === (destination.iata || destination.code));
+
+  // Swap Origin and Destination
+  const handleSwapAirports = () => {
+    if (!origin || !destination) return;
+    const temp = origin;
+    setOrigin(destination);
+    setDestination(temp);
+  };
+
+  // Synchronize when initialOrigin or initialDestination change (guarded by IATA code comparison)
   useEffect(() => {
-    let isMounted = true;
+    if (initialOrigin && ((initialOrigin.iata || initialOrigin.code) !== (origin?.iata || origin?.code))) {
+      setOrigin(initialOrigin);
+    }
+  }, [initialOrigin, origin]);
+
+  useEffect(() => {
+    if (initialDestination && ((initialDestination.iata || initialDestination.code) !== (destination?.iata || destination?.code))) {
+      setDestination(initialDestination);
+    }
+  }, [initialDestination, destination]);
+
+  // Fetch 7-day Fare Matrix — AbortController prevents race conditions
+  useEffect(() => {
+    let abortCtrl = new AbortController();
     async function loadMatrix() {
-      if (!origin?.iata || !destination?.iata) return;
+      const origCode = origin?.iata || origin?.code;
+      const destCode = destination?.iata || destination?.code;
+      if (!origCode || !destCode || isSameAirport) return;
       setMatrixLoading(true);
       setMatrixError(false);
 
       try {
         const matrix = await fetch7DayFareMatrixAPI(
-          origin.iata,
-          destination.iata,
+          origCode,
+          destCode,
           departureDate,
           currency
         );
-        if (isMounted) {
+        if (!abortCtrl.signal.aborted) {
           setFareMatrix(matrix || []);
           setMatrixLoading(false);
         }
       } catch (err) {
-        console.warn("Failed to load fare matrix from API:", err);
-        if (isMounted) {
+        if (!abortCtrl.signal.aborted) {
+          console.warn("Failed to load fare matrix from API:", err);
           setMatrixError(true);
           setMatrixLoading(false);
         }
@@ -67,34 +102,31 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
     }
 
     loadMatrix();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [origin?.iata, destination?.iata, departureDate, currency]);
+    return () => { abortCtrl.abort(); };
+  }, [origin?.iata, origin?.code, destination?.iata, destination?.code, departureDate, currency, isSameAirport]);
 
   // Stable search function for the deep-link hook to call on mount
   const handleSearch = useCallback(async (e) => {
     if (e) e.preventDefault();
-    if (!origin || !destination) return;
+    const originIata = origin?.iata || origin?.code;
+    const destIata = destination?.iata || destination?.code;
+    if (!originIata || !destIata || isSameAirport) return;
 
     setLoading(true);
     const results = await searchAmadeusFlightOffers({
-      originIata: origin.iata,
-      destinationIata: destination.iata,
+      originIata,
+      destinationIata: destIata,
       departureDate,
       adults,
       travelClass,
       currency,
-      customKey: customKey.trim() || undefined,
-      customSecret: customSecret.trim() || undefined,
     });
 
     setOffers(results);
     setLoading(false);
-  }, [origin, destination, departureDate, adults, travelClass, currency, customKey, customSecret]);
+  }, [origin, destination, departureDate, adults, travelClass, currency, isSameAirport]);
 
-  // TASK 2: Deep-linking — syncs ?from=DEL&to=BOM with URL and hydrates state on mount
+  // Deep-linking — syncs ?from=DEL&to=BOM with URL and hydrates state on mount
   const { syncUrlParams } = useFlightDeepLink({
     origin,
     destination,
@@ -106,385 +138,418 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
   });
 
   useEffect(() => {
-    if (origin?.iata && destination?.iata) {
+    const origCode = origin?.iata || origin?.code;
+    const destCode = destination?.iata || destination?.code;
+    if (origCode && destCode && origCode !== destCode) {
       syncUrlParams(origin, destination, departureDate);
+      handleSearch();
     }
-  }, [origin?.iata, destination?.iata, departureDate]);
+  }, [origin, destination, departureDate, handleSearch, syncUrlParams]);
 
-  const filteredOffers = offers
-    .filter((offer) => {
-      if (nonStopOnly && offer.itineraries[0]?.segments.length > 1) return false;
-      if (selectedAirlineFilter !== "ALL" && offer.validatingAirlineCode !== selectedAirlineFilter) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      if (sortBy === "PRICE") return a.price.total - b.price.total;
-      if (sortBy === "DURATION") return (a.itineraries[0]?.durationMinutes || 0) - (b.itineraries[0]?.durationMinutes || 0);
-      return a.validatingAirlineName.localeCompare(b.validatingAirlineName);
-    });
+  const filteredOffers = useMemo(() => {
+    let result = [...offers];
+
+    // Airline filter
+    if (selectedAirlineFilter !== "ALL") {
+      result = result.filter((o) => o.validatingAirlineCode === selectedAirlineFilter);
+    }
+
+    // Non-stop checkbox filter
+    if (nonStopOnly) {
+      result = result.filter((o) => o.itineraries[0]?.segments.length === 1);
+    }
+
+    // Quick sort tab
+    switch (quickFilter) {
+      case "CHEAPEST":
+        result.sort((a, b) => a.price.total - b.price.total);
+        break;
+      case "FASTEST":
+        result.sort((a, b) => (a.itineraries[0]?.durationMinutes || 0) - (b.itineraries[0]?.durationMinutes || 0));
+        break;
+      case "EARLIEST": {
+        const getDepTime = (o) => new Date(o.itineraries[0]?.segments[0]?.departure?.at || 0).getTime();
+        result.sort((a, b) => getDepTime(a) - getDepTime(b));
+        break;
+      }
+      case "DIRECT":
+        result = result.filter((o) => o.itineraries[0]?.segments.length === 1);
+        result.sort((a, b) => a.price.total - b.price.total);
+        break;
+      default:
+        result.sort((a, b) => a.price.total - b.price.total);
+    }
+
+    return result;
+  }, [offers, selectedAirlineFilter, nonStopOnly, quickFilter]);
 
   const availableAirlines = Array.from(new Set(offers.map((o) => o.validatingAirlineCode))).map((code) => {
     const matched = offers.find((o) => o.validatingAirlineCode === code);
-    return { code, name: matched?.validatingAirlineName || code, logo: matched?.validatingAirlineLogo || "✈️" };
+    const count = offers.filter((o) => o.validatingAirlineCode === code).length;
+    return {
+      code,
+      name: matched?.validatingAirlineName || code,
+      logo: matched?.validatingAirlineLogo || "✈️",
+      count,
+    };
   });
 
   return (
-    <div id="flight-search-engine" className="space-y-6">
-      {/* Search Input & Rate Controls */}
-      <GlassCard className="p-5 sm:p-6 border border-cyan-500/30 shadow-2xl space-y-4">
+    <div id="flight-search-engine" className="space-y-5">
+      {/* ── Search Input Card ───────────────────────────────────── */}
+      <GlassCard className="p-4 sm:p-6 border border-white/10 shadow-xl space-y-4 !overflow-visible">
         
-        {/* Top Currency & API Settings Header */}
-        <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-white/10">
+        {/* Top utility row: Trip Type & Currency Switcher */}
+        <div className="flex items-center justify-between pb-3 border-b border-white/10 flex-wrap gap-2 text-xs">
+          <div className="flex items-center gap-2 text-slate-300 font-medium">
+            <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white">One-way</span>
+            <span className="text-slate-500">·</span>
+            <span className="text-slate-400">Direct bookings & live GDS inventory</span>
+          </div>
+
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-300">Display Rates In:</span>
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+            <span className="text-slate-400 text-xs hidden sm:inline">Currency:</span>
+            <div className="flex items-center gap-1 p-0.5 rounded-xl bg-white/5 border border-white/10">
               {Object.entries(CURRENCY_MAP).map(([code, conf]) => (
                 <button
                   key={code}
                   type="button"
                   onClick={() => setCurrency(code)}
-                  className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                  title={conf.name}
+                  className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1 ${
                     currency === code
-                      ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40"
-                      : "bg-white/5 text-slate-400 hover:text-white"
+                      ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  <span>{conf.flag}</span>
+                  <span className="text-[11px]">{conf.flag}</span>
                   <span>{code}</span>
                 </button>
               ))}
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => setApiModalOpen(true)}
-            className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1.5 cursor-pointer glass px-3 py-1.5 rounded-xl border border-cyan-400/30"
-          >
-            <Key size={13} />
-            <span>{customKey ? "Custom API Active" : "Connect Live GDS API Keys"}</span>
-          </button>
         </div>
 
+        {/* Search Inputs Form */}
         <form onSubmit={handleSearch} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
 
             {/* Origin Airport */}
-            <div>
-              <label className="text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1">
+            <div className="md:col-span-5 relative z-30">
+              <label className="text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
                 <Plane size={13} className="text-cyan-400" />
-                <span>Departure City / IATA</span>
+                <span>Departure City or Airport</span>
               </label>
               <AirportSearch
                 id="booking-origin-search"
                 value={origin}
                 onChange={setOrigin}
-                placeholder="Origin airport..."
+                placeholder="Where from?"
               />
             </div>
 
+            {/* Desktop Swap Button */}
+            <div className="hidden md:flex md:col-span-2 justify-center pb-1">
+              <button
+                type="button"
+                onClick={handleSwapAirports}
+                title="Swap Origin and Destination"
+                aria-label="Swap Origin and Destination"
+                className="w-10 h-10 rounded-full bg-slate-900 border border-white/15 text-slate-300 hover:text-cyan-300 hover:border-cyan-400/50 hover:bg-white/5 flex items-center justify-center transition-all cursor-pointer active:scale-90 active:rotate-180 shadow-md"
+              >
+                <ArrowRightLeft size={14} />
+              </button>
+            </div>
+
             {/* Destination Airport */}
-            <div>
-              <label className="text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1">
-                <Plane size={13} className="text-emerald-400 rotate-90" />
-                <span>Destination City / IATA</span>
+            <div className="md:col-span-5 relative z-20">
+              <label className="text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Plane size={13} className="text-emerald-400 rotate-90" />
+                  <span>Destination City or Airport</span>
+                </span>
+                {/* Mobile Swap Button */}
+                <button
+                  type="button"
+                  onClick={handleSwapAirports}
+                  className="md:hidden text-xs text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <ArrowRightLeft size={11} /> Swap
+                </button>
               </label>
               <AirportSearch
                 id="booking-dest-search"
                 value={destination}
                 onChange={setDestination}
-                placeholder="Destination airport..."
+                placeholder="Where to?"
               />
             </div>
+          </div>
 
+          {/* Second Row: Date, Class, Travelers & Search CTA */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 items-end pt-1">
+            
             {/* Departure Date */}
-            <div>
-              <label className="text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1">
+            <div className="md:col-span-4">
+              <label className="text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
                 <Calendar size={13} className="text-cyan-400" />
                 <span>Departure Date</span>
               </label>
               <input
                 type="date"
                 value={departureDate}
+                min={today}
                 onChange={(e) => setDepartureDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 focus:outline-none focus:border-cyan-400 text-white text-sm"
+                style={{ colorScheme: "dark" }}
               />
             </div>
 
-            {/* Cabin Class & Passengers */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-xs font-semibold text-slate-300 mb-1.5 block">Cabin</label>
-                <select
-                  value={travelClass}
-                  onChange={(e) => setTravelClass(e.target.value)}
-                  className="w-full px-2.5 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-xs text-white focus:outline-none focus:border-cyan-400"
-                >
-                  <option value="ECONOMY">Economy</option>
-                  <option value="PREMIUM_ECONOMY">Premium</option>
-                  <option value="BUSINESS">Business</option>
-                  <option value="FIRST">First</option>
-                </select>
-              </div>
+            {/* Cabin Class */}
+            <div className="md:col-span-3">
+              <label className="text-xs font-medium text-slate-300 mb-1.5 block">Cabin Class</label>
+              <select
+                value={travelClass}
+                onChange={(e) => setTravelClass(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-white text-sm focus:outline-none focus:border-cyan-400 cursor-pointer"
+                style={{ colorScheme: "dark" }}
+              >
+                <option value="ECONOMY">Economy</option>
+                <option value="PREMIUM_ECONOMY">Premium Economy</option>
+                <option value="BUSINESS">Business Class</option>
+                <option value="FIRST">First Class</option>
+              </select>
+            </div>
 
-              <div>
-                <label className="text-xs font-semibold text-slate-300 mb-1.5 block">Travelers</label>
-                <select
-                  value={adults}
-                  onChange={(e) => setAdults(Number(e.target.value))}
-                  className="w-full px-2.5 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono"
-                >
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <option key={n} value={n}>{n} Adult{n > 1 ? "s" : ""}</option>
-                  ))}
-                </select>
-              </div>
+            {/* Passengers */}
+            <div className="md:col-span-2">
+              <label className="text-xs font-medium text-slate-300 mb-1.5 block">Travelers</label>
+              <select
+                value={adults}
+                onChange={(e) => setAdults(Number(e.target.value))}
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-white text-sm focus:outline-none focus:border-cyan-400 cursor-pointer"
+                style={{ colorScheme: "dark" }}
+              >
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <option key={n} value={n}>{n} {n === 1 ? "Adult" : "Adults"}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Search CTA */}
+            <div className="sm:col-span-2 md:col-span-3">
+              <button
+                type="submit"
+                disabled={loading || isSameAirport}
+                className="w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 hover:from-cyan-300 hover:to-emerald-300 transition-all cursor-pointer shadow-lg shadow-cyan-500/15 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <><Loader2 size={16} className="animate-spin" /> Searching...</>
+                ) : (
+                  <><Search size={16} /> Search Flights</>
+                )}
+              </button>
             </div>
           </div>
 
-          {/* Filters Bar & Search Button */}
-          <div className="flex items-center justify-between pt-2 border-t border-white/10 flex-wrap gap-3">
-            <div className="flex items-center gap-4 text-xs font-semibold text-slate-300">
-              <label className="flex items-center gap-2 cursor-pointer hover:text-cyan-300 transition-colors">
-                <input
-                  type="checkbox"
-                  checked={nonStopOnly}
-                  onChange={(e) => setNonStopOnly(e.target.checked)}
-                  className="rounded border-slate-700 text-cyan-400 focus:ring-0 accent-cyan-400 cursor-pointer"
-                />
-                <span>Direct Non-stop Only</span>
-              </label>
+          {/* Validation Error */}
+          {isSameAirport && (
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+              <span>⚠️</span>
+              <span>Departure and destination airports cannot be the same.</span>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-7 py-3 rounded-2xl font-bold text-xs flex items-center gap-2 bg-gradient-to-r from-cyan-400 to-cyan-500 text-slate-950 hover:from-cyan-300 hover:to-cyan-400 transition-all cursor-pointer shadow-xl shadow-cyan-400/20 active:scale-95 disabled:opacity-50"
-            >
-              {loading ? (
-                <><Loader2 size={15} className="animate-spin" /> Querying GDS Rate Engine…</>
-              ) : (
-                <><Search size={15} /> Query Real-World Flight Rates</>
-              )}
-            </button>
-          </div>
+          )}
         </form>
       </GlassCard>
 
-      {/* 7-Day Fare Matrix Calendar Bar */}
-      <GlassCard className="p-4 border border-cyan-500/20 space-y-2">
-        <div className="flex items-center justify-between text-xs font-bold text-slate-300">
-          <div className="flex items-center gap-1.5">
-            <TrendingDown size={14} className="text-emerald-400" />
-            <span>7-Day Dynamic API Fare Matrix ({origin?.iata || "IXC"} ✈️ {destination?.iata || "DEL"})</span>
-          </div>
-          <span className="text-[11px] text-emerald-400 font-mono">💡 Tuesday & Wednesday fares are 14% lower</span>
-        </div>
+      {/* ── Clean Filter & Sort Controls Toolbar ─────────────────── */}
+      <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-md flex items-center justify-between flex-wrap gap-3">
+        
+        {/* Left: Results Count & Sort Tabs */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-sm font-semibold text-white">
+            {filteredOffers.length} {filteredOffers.length === 1 ? "flight" : "flights"} found
+          </span>
 
-        {/* Loading Skeleton / Error / Matrix Buttons */}
-        {matrixLoading ? (
-          <div className="grid grid-cols-7 gap-2">
-            {Array.from({ length: 7 }).map((_, idx) => (
-              <div key={idx} className="p-2.5 rounded-2xl bg-white/5 border border-white/10 text-center animate-pulse space-y-1.5">
-                <div className="h-2.5 bg-slate-700/60 rounded w-10 mx-auto" />
-                <div className="h-4 bg-cyan-500/20 rounded w-14 mx-auto" />
-              </div>
-            ))}
-          </div>
-        ) : matrixError ? (
-          <div className="text-xs text-rose-400 p-2 text-center font-mono">
-            Unable to load live fare matrix for route {origin?.iata} ✈️ {destination?.iata}. Retrying...
-          </div>
-        ) : (
-          <div className="grid grid-cols-7 gap-2">
-            {fareMatrix.map((item) => (
+          <div className="h-4 w-px bg-white/10 hidden sm:block" />
+
+          {/* Sort Buttons */}
+          <div className="flex items-center gap-1 p-0.5 rounded-xl bg-white/5 border border-white/10 overflow-x-auto no-scrollbar">
+            {SORT_OPTIONS.map(({ id, label, icon: Icon }) => (
               <button
-                key={item.dateStr}
+                key={id}
                 type="button"
-                onClick={() => setDepartureDate(item.dateStr)}
-                className={`p-2 rounded-2xl text-center transition-all cursor-pointer border ${
-                  item.dateStr === departureDate
-                    ? "bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-lg"
-                    : item.isCheapest
-                    ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
-                    : "bg-white/5 border-white/10 text-slate-300 hover:border-white/30"
+                onClick={() => setQuickFilter(id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+                  quickFilter === id
+                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm"
+                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
                 }`}
               >
-                <div className="text-[10px] text-slate-400">{item.dayName} {item.dayNumber}</div>
-                <div className="text-xs font-bold font-mono mt-0.5">
-                  {item.symbol}{item.price.toLocaleString()}
-                </div>
-                {item.isCheapest && (
-                  <div className="text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Cheapest</div>
-                )}
+                <Icon size={12} />
+                <span>{label}</span>
               </button>
             ))}
           </div>
-        )}
-      </GlassCard>
 
-      {/* Airline Brand Filter Pills */}
-      {availableAirlines.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
-            <Filter size={12} /> Airline Fleet:
-          </span>
+          {/* Direct flights checkbox */}
+          <label className="hidden lg:flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer hover:text-white transition-colors ml-1">
+            <input
+              type="checkbox"
+              checked={nonStopOnly}
+              onChange={(e) => setNonStopOnly(e.target.checked)}
+              className="rounded border-slate-700 text-cyan-400 focus:ring-0 accent-cyan-400 cursor-pointer"
+            />
+            <span>Nonstop only</span>
+          </label>
+        </div>
+
+        {/* Right: Drawer Expand Toggles for 7-Day Fare Matrix & Airline Fleet */}
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => setSelectedAirlineFilter("ALL")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              selectedAirlineFilter === "ALL"
-                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40"
-                : "glass text-slate-400 hover:text-white"
+            type="button"
+            onClick={() => setShowCalendarMatrix(!showCalendarMatrix)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 border ${
+              showCalendarMatrix
+                ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/50 shadow-sm"
+                : "bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:text-white"
             }`}
           >
-            All Carriers ({offers.length})
+            <TrendingDown size={13} className={showCalendarMatrix ? "text-cyan-300" : "text-emerald-400"} />
+            <span>7-Day Calendar</span>
+            {showCalendarMatrix ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+
+          {availableAirlines.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowAirlineFilter(!showAirlineFilter)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 border ${
+                showAirlineFilter || selectedAirlineFilter !== "ALL"
+                  ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/50 shadow-sm"
+                  : "bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:text-white"
+              }`}
+            >
+              <Filter size={13} className="text-cyan-400" />
+              <span>Airlines {selectedAirlineFilter !== "ALL" ? `(${selectedAirlineFilter})` : `(${availableAirlines.length})`}</span>
+              {showAirlineFilter ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── Collapsible 7-Day Fare Matrix Drawer ─────────────────── */}
+      {showCalendarMatrix && (
+        <GlassCard className="p-4 border border-white/10 bg-slate-900/90 space-y-3">
+          <div className="flex items-center justify-between text-xs font-semibold text-slate-300 flex-wrap gap-2">
+            <div className="flex items-center gap-1.5">
+              <TrendingDown size={14} className="text-emerald-400" />
+              <span>7-Day Fare Trends ({origin?.iata || "DEL"} → {destination?.iata || "BOM"})</span>
+            </div>
+            <span className="text-xs text-emerald-400">Lowest fares marked in green</span>
+          </div>
+
+          {matrixLoading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+              {Array.from({ length: 7 }).map((_, idx) => (
+                <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/10 text-center animate-pulse space-y-1.5">
+                  <div className="h-2.5 bg-slate-700/60 rounded w-12 mx-auto" />
+                  <div className="h-4 bg-cyan-500/20 rounded w-16 mx-auto" />
+                </div>
+              ))}
+            </div>
+          ) : matrixError ? (
+            <div className="text-xs text-rose-300 p-3 text-center">
+              Unable to load live fare calendar for this route. Please select departure date above.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+              {fareMatrix.map((item) => (
+                <button
+                  key={item.dateStr}
+                  type="button"
+                  onClick={() => setDepartureDate(item.dateStr)}
+                  className={`p-2.5 rounded-xl text-center transition-all cursor-pointer border ${
+                    item.dateStr === departureDate
+                      ? "bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-md"
+                      : item.isCheapest
+                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:border-emerald-400/60"
+                      : "bg-white/5 border-white/10 text-slate-300 hover:border-white/20"
+                  }`}
+                >
+                  <div className="text-[11px] text-slate-400">{item.dayName} {item.dayNumber}</div>
+                  <div className="text-xs font-bold mt-1 truncate">
+                    {item.symbol}{item.price.toLocaleString()}
+                  </div>
+                  {item.isCheapest && (
+                    <div className="text-[9px] font-semibold text-emerald-400 mt-0.5">Lowest</div>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </GlassCard>
+      )}
+
+      {/* ── Collapsible Airline Fleet Filter Drawer ──────────────── */}
+      {showAirlineFilter && availableAirlines.length > 0 && (
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/10 overflow-x-auto no-scrollbar">
+          <span className="text-xs font-medium text-slate-400 flex-shrink-0">
+            Filter:
+          </span>
+          <button
+            type="button"
+            onClick={() => setSelectedAirlineFilter("ALL")}
+            className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex-shrink-0 border ${
+              selectedAirlineFilter === "ALL"
+                ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/40"
+                : "bg-white/5 text-slate-400 hover:text-white border-transparent"
+            }`}
+          >
+            All Airlines ({offers.length})
           </button>
           {availableAirlines.map((airline) => (
             <button
               key={airline.code}
+              type="button"
               onClick={() => setSelectedAirlineFilter(airline.code)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 flex-shrink-0 border ${
                 selectedAirlineFilter === airline.code
-                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40"
-                  : "glass text-slate-400 hover:text-white"
+                  ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/40"
+                  : "bg-white/5 text-slate-400 hover:text-white border-transparent"
               }`}
             >
               <span>{airline.logo}</span>
               <span>{airline.name}</span>
+              <span className="text-[10px] text-slate-500">({airline.count})</span>
             </button>
           ))}
         </div>
       )}
 
-      {/* Results Header & Sort Controls */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span>Real-World Flight Fares</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono">
-              {filteredOffers.length} Verified Offers
-            </span>
-          </h2>
-          <p className="text-xs text-slate-400">
-            Real airline pricing normalized in {currency} ({CURRENCY_MAP[currency]?.label})
-          </p>
-        </div>
-
-        {/* Sort Controls */}
-        <div className="flex items-center gap-1.5 glass p-1 rounded-2xl border border-white/10 text-xs">
-          <span className="px-2.5 text-slate-400 font-semibold flex items-center gap-1">
-            Sort:
-          </span>
-          <button
-            onClick={() => setSortBy("PRICE")}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-              sortBy === "PRICE" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40" : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Lowest Rate
-          </button>
-          <button
-            onClick={() => setSortBy("DURATION")}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-              sortBy === "DURATION" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40" : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Fastest Flight
-          </button>
-        </div>
-      </div>
-
-      {/* Offers Results List — ARIA live region ensures screen readers announce updates */}
-      <div aria-live="polite" aria-label="Flight search results">
+      {/* ── Offers Results List (Single Column Spacious Flow) ─────── */}
+      <div aria-live="polite" aria-label="Flight search results" className="space-y-3.5">
         {loading ? (
           <FlightResultsSkeleton count={4} />
         ) : filteredOffers.length === 0 ? (
-          <GlassCard className="p-12 text-center space-y-3">
+          <GlassCard className="p-12 text-center space-y-3 border border-white/10">
             <div className="text-4xl" role="img" aria-label="Airplane">✈️</div>
-            <h3 className="text-base font-bold text-white">No Flight Fares Found for Filter</h3>
+            <h3 className="text-base font-semibold text-white">No Flights Found</h3>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              Try switching airline filters or selecting a different departure date.
+              No flight options matched your current filter criteria. Try selecting "All Airlines" or changing your dates.
             </p>
           </GlassCard>
         ) : (
-          <div className="space-y-3">
-            {filteredOffers.map((offer) => (
-              <BookingCard
-                key={offer.id}
-                offer={offer}
-                onSelectOffer={setSelectedOffer}
-              />
-            ))}
-          </div>
+          filteredOffers.map((offer) => (
+            <BookingCard
+              key={offer.id}
+              offer={offer}
+              departureDate={departureDate}
+              adults={adults}
+            />
+          ))
         )}
       </div>
-
-      {/* Booking Checkout Handoff Modal */}
-      {selectedOffer && (
-        <BookingModal
-          offer={selectedOffer}
-          onClose={() => setSelectedOffer(null)}
-        />
-      )}
-
-      {/* Custom GDS API Credentials Modal */}
-      {apiModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md p-4 flex items-center justify-center animate-fade-in">
-          <GlassCard className="max-w-md w-full p-6 border border-cyan-400/40 space-y-4 relative">
-            <div className="flex items-center gap-2 text-cyan-300">
-              <Key size={18} />
-              <h3 className="text-sm font-bold text-white">Connect Amadeus / Duffel Live API</h3>
-            </div>
-            <p className="text-xs text-slate-400">
-              Enter your live Amadeus GDS API Client ID and Secret to query your personal GDS sandbox account.
-            </p>
-
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Amadeus API Key (Client ID)</label>
-                <input
-                  type="text"
-                  value={customKey}
-                  onChange={(e) => setCustomKey(e.target.value)}
-                  placeholder="e.g. 7AbcXyZ12345..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-white/15 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Amadeus API Secret</label>
-                <input
-                  type="password"
-                  value={customSecret}
-                  onChange={(e) => setCustomSecret(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-white/15 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
-              <button
-                type="button"
-                onClick={() => setApiModalOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setApiModalOpen(false);
-                  handleSearch();
-                }}
-                className="px-5 py-2 rounded-xl text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300"
-              >
-                Apply Keys & Search
-              </button>
-            </div>
-          </GlassCard>
-        </div>
-      )}
     </div>
   );
 }

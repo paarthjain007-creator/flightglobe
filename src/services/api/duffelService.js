@@ -3,6 +3,8 @@
  * Generates direct NDC airline booking checkout handoff links and seat selection parameters.
  */
 
+import { getAirlineBookingUrl } from "../airlineRedirects";
+
 export async function createDuffelBookingHandoff(offer, passengerDetails) {
   const duffelToken = import.meta.env.VITE_DUFFEL_API_KEY;
 
@@ -44,12 +46,21 @@ export async function createDuffelBookingHandoff(offer, passengerDetails) {
   }
 
   // Direct Airline Booking Handoff Link Generator
-  const airlineSlug = (offer.validatingAirlineName || "airline").toLowerCase().replace(/\s+/g, "");
   const pnr = `FG-${offer.validatingAirlineCode}-${Math.floor(100000 + Math.random() * 900000)}`;
+  const originCode = offer.itineraries?.[0]?.segments?.[0]?.departure?.iataCode || "DEL";
+  const destCode = offer.itineraries?.[0]?.segments?.[offer.itineraries[0].segments.length - 1]?.arrival?.iataCode || "BOM";
+  const dateStr = offer.itineraries?.[0]?.segments?.[0]?.departure?.at?.slice(0, 10) || new Date().toISOString().slice(0, 10);
+
+  const directInfo = getAirlineBookingUrl(offer.validatingAirlineCode, {
+    origin: originCode,
+    destination: destCode,
+    date: dateStr,
+    passengers: 1,
+  });
 
   return {
     success: true,
     bookingReference: pnr,
-    checkoutUrl: `https://www.${airlineSlug}.com/checkout?ref=${pnr}&from=${offer.itineraries[0]?.segments[0]?.departure.iataCode}&to=${offer.itineraries[0]?.segments[offer.itineraries[0].segments.length - 1]?.arrival.iataCode}`,
+    checkoutUrl: directInfo.url,
   };
 }

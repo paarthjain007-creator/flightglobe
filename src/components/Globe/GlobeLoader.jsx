@@ -2,7 +2,7 @@ import React from "react";
 
 export default function GlobeLoader() {
   return (
-    <div className="globe-container flex items-center justify-center" style={{ background: "var(--bg-primary)" }}>
+    <div className="globe-container flex items-center justify-center" style={{ background: "#040508" }}>
       <div className="flex flex-col items-center gap-6">
         {/* Wireframe Globe */}
         <div className="globe-wireframe">
@@ -16,10 +16,10 @@ export default function GlobeLoader() {
 
         {/* Text */}
         <div className="text-center">
-          <div className="text-sm font-semibold mb-1" style={{ color: "var(--accent)" }}>
+          <div className="text-sm font-semibold mb-1" style={{ color: "#00F2FE" }}>
             Loading Globe
           </div>
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+          <div className="text-xs text-slate-400">
             Initializing WebGL renderer…
           </div>
         </div>
@@ -35,19 +35,19 @@ export default function GlobeLoader() {
           position: absolute;
           inset: 20px;
           border-radius: 50%;
-          border: 1px solid var(--glass-border);
-          background: radial-gradient(ellipse at 35% 35%, var(--accent-glow), transparent 70%);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: radial-gradient(ellipse at 35% 35%, rgba(0, 242, 254, 0.4), transparent 70%);
           animation: pulse-core 2s ease-in-out infinite;
         }
         .globe-ring {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          border: 1px solid var(--accent);
+          border: 1px solid #00F2FE;
           opacity: 0.3;
           animation: spin-ring 4s linear infinite;
         }
-        .globe-ring-1 { transform: rotateX(70deg); animation-duration: 3.5s; opacity: 0.5; border-color: var(--accent); }
+        .globe-ring-1 { transform: rotateX(70deg); animation-duration: 3.5s; opacity: 0.5; border-color: #00F2FE; }
         .globe-ring-2 { transform: rotateX(70deg) rotateY(60deg); animation-duration: 4.5s; opacity: 0.3; }
         .globe-ring-3 { transform: rotateX(20deg) rotateZ(45deg); animation-duration: 6s; opacity: 0.2; }
         .globe-dot {
@@ -55,16 +55,16 @@ export default function GlobeLoader() {
           width: 6px;
           height: 6px;
           border-radius: 50%;
-          background: var(--accent);
-          box-shadow: 0 0 10px var(--accent-glow);
+          background: #00F2FE;
+          box-shadow: 0 0 10px rgba(0, 242, 254, 0.6);
           animation: orbit 3s linear infinite;
         }
         .globe-dot-1 { animation-duration: 2.8s; top: 10px; left: 50%; margin-left: -3px; }
         .globe-dot-2 { animation-duration: 4.2s; animation-delay: -1.4s; top: 50%; left: 10px; margin-top: -3px; }
         @keyframes spin-ring { from { transform: rotateX(70deg) rotateY(0deg); } to { transform: rotateX(70deg) rotateY(360deg); } }
         @keyframes pulse-core {
-          0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-          50% { box-shadow: 0 0 30px 8px var(--accent-glow); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.2); }
+          50% { box-shadow: 0 0 30px 8px rgba(0, 242, 254, 0.4); }
         }
         @keyframes orbit {
           0%   { transform: rotate(0deg) translateX(72px) rotate(0deg); }

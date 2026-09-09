@@ -58,9 +58,15 @@ function generate7DayScheduleForWaypoints(waypoints = []) {
 }
 
 function generateLegSchedules(origin, dest, legIndex = 0) {
-  const distKm = haversineDistance(origin.lat, origin.lng, dest.lat, dest.lng);
+  const oLat = origin?.lat ?? origin?.latitude ?? 0;
+  const oLng = origin?.lng ?? origin?.lon ?? origin?.longitude ?? 0;
+  const dLat = dest?.lat ?? dest?.latitude ?? 0;
+  const dLng = dest?.lng ?? dest?.lon ?? dest?.longitude ?? 0;
+
+  const rawDist = haversineDistance(oLat, oLng, dLat, dLng);
+  const distKm = Number.isFinite(rawDist) && rawDist > 0 ? rawDist : 5500;
   const flightHours = distKm / 820 + 0.45; // ~820 km/h cruise + taxi
-  const durationMs = Math.round(flightHours * 3600 * 1000);
+  const durationMs = Number.isFinite(flightHours) ? Math.round(flightHours * 3600 * 1000) : 6 * 3600 * 1000;
 
   const now = new Date();
   const startTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).getTime();
@@ -73,7 +79,8 @@ function generateLegSchedules(origin, dest, legIndex = 0) {
 
     departureHours.forEach((baseHour, idx) => {
       const hour = (baseHour + legIndex * 3) % 24;
-      const depMs = dayMs + hour * 3600 * 1000 + (idx % 2 === 0 ? 15 : 45) * 60 * 1000;
+      const rawDepMs = dayMs + hour * 3600 * 1000 + (idx % 2 === 0 ? 15 : 45) * 60 * 1000;
+      const depMs = Number.isFinite(rawDepMs) ? rawDepMs : Date.now();
       const arrMs = depMs + durationMs;
 
       const airlineObj = REAL_AIRLINES_SCHEDULE_LIST[(day + idx + legIndex) % REAL_AIRLINES_SCHEDULE_LIST.length];
@@ -87,15 +94,18 @@ function generateLegSchedules(origin, dest, legIndex = 0) {
         Math.max(150, (distKm * 0.095 + 85) * (isWeekend ? 1.25 : 1.0) * (isPeakHour ? 1.15 : 0.95))
       );
 
+      const oriIata = origin?.iata || origin?.code || "ORI";
+      const dstIata = dest?.iata || dest?.code || "DST";
+
       schedule.push({
-        id: `sched-leg${legIndex}-${origin.iata}-${dest.iata}-${day}-${idx}`,
+        id: `sched-leg${legIndex}-${oriIata}-${dstIata}-${day}-${idx}`,
         legIndex,
         flightNum,
         airline: airlineObj.name,
         airlineCode: airlineObj.code,
         aircraft,
-        origin,
-        destination: dest,
+        origin: origin || { iata: oriIata, city: "Origin" },
+        destination: dest || { iata: dstIata, city: "Destination" },
         depTime: new Date(depMs).toISOString(),
         arrTime: new Date(arrMs).toISOString(),
         depTimestamp: depMs,
@@ -110,6 +120,7 @@ function generateLegSchedules(origin, dest, legIndex = 0) {
 
   return schedule;
 }
+
 
 export function useFlightSchedules(originAirport, destinationAirport, waypoints = []) {
   const [schedules, setSchedules] = useState([]);

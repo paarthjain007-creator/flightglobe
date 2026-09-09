@@ -67,12 +67,12 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
     <GlassCard className="p-4" animate="animate-slide-up">
       {/* Title Header */}
       <div className="flex items-center gap-2 mb-3">
-        <ArrowRightLeft size={14} style={{ color: "var(--accent)" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+        <ArrowRightLeft size={14} style={{ color: "#00F2FE" }} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
           Currency Converter
         </span>
         {rate && !loading && (
-          <span className="ml-auto text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+          <span className="ml-auto text-xs font-medium text-[#94A3B8]">
             1 {fromCurrency} = {rate < 0.01 ? rate.toFixed(6) : rate.toFixed(4)} {toCurrency}
           </span>
         )}
@@ -80,14 +80,14 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
 
       {/* Preset Buttons */}
       <div className="flex items-center gap-1.5 mb-3">
-        <span className="text-[11px] text-muted mr-1">Presets:</span>
+        <span className="text-[11px] text-[#94A3B8] mr-1">Presets:</span>
         {PRESET_AMOUNTS.map((preset) => (
           <button
             key={preset}
             onClick={() => setAmountInput(String(preset))}
             className={`px-2 py-0.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
               numericAmount === preset
-                ? "bg-accent-glow text-accent border border-accent/40"
+                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40"
                 : "bg-white/5 text-slate-400 hover:text-white"
             }`}
           >
@@ -98,7 +98,7 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
 
       {/* Amount Input Box */}
       <div className="mb-3">
-        <label className="text-xs mb-1 block" style={{ color: "var(--text-muted)" }}>
+        <label className="text-xs mb-1 block text-[#94A3B8]">
           Amount ({fromCurrency})
         </label>
         <input
@@ -107,7 +107,7 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
           value={amountInput}
           onChange={(e) => setAmountInput(e.target.value)}
           placeholder="Enter amount..."
-          className="glass-input w-full px-3 py-2 rounded-xl text-sm font-semibold"
+          className="w-full px-3 py-2 rounded-xl bg-slate-900/90 border border-white/15 focus:outline-none focus:border-cyan-400 text-sm font-semibold text-[#F8FAFC] font-mono"
           min="0"
           step="any"
         />
@@ -116,7 +116,7 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
       {/* Currency Selectors Row */}
       <div className="flex items-center gap-2 mb-3">
         <div className="flex-1">
-          <label className="text-xs mb-1 block" style={{ color: "var(--text-muted)" }}>From</label>
+          <label className="text-xs mb-1 block text-[#94A3B8]">From</label>
           <div className="relative">
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-base pointer-events-none">
               {CURRENCY_FLAGS[fromCurrency] || "🌐"}
@@ -125,10 +125,10 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
               id="currency-from-select"
               value={fromCurrency}
               onChange={(e) => setFromCurrency(e.target.value)}
-              className="glass-input w-full pl-8 pr-2 py-2 rounded-xl text-xs sm:text-sm appearance-none cursor-pointer font-bold"
+              className="w-full pl-8 pr-2 py-2 rounded-xl bg-slate-900/90 border border-white/15 text-xs sm:text-sm appearance-none cursor-pointer font-bold text-white focus:outline-none focus:border-cyan-400"
             >
               {allCurrencies.map((c) => (
-                <option key={c} value={c} style={{ background: "var(--bg-secondary)" }}>
+                <option key={c} value={c} style={{ background: "#080C16" }}>
                   {c}
                 </option>
               ))}
@@ -140,14 +140,14 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
           id="currency-swap-btn"
           onClick={handleSwap}
           className="flex-shrink-0 mt-4 p-2.5 rounded-xl transition-all cursor-pointer hover:scale-110 active:scale-95"
-          style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)", color: "var(--accent)" }}
+          style={{ background: "rgba(0, 242, 254, 0.12)", border: "1px solid rgba(0, 242, 254, 0.3)", color: "#00F2FE" }}
           title="Swap currencies"
         >
           <ArrowRightLeft size={13} />
         </button>
 
         <div className="flex-1">
-          <label className="text-xs mb-1 block" style={{ color: "var(--text-muted)" }}>To</label>
+          <label className="text-xs mb-1 block text-[#94A3B8]">To</label>
           <div className="relative">
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-base pointer-events-none">
               {CURRENCY_FLAGS[toCurrency] || "🌐"}
@@ -156,10 +156,10 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
               id="currency-to-select"
               value={toCurrency}
               onChange={(e) => setToCurrency(e.target.value)}
-              className="glass-input w-full pl-8 pr-2 py-2 rounded-xl text-xs sm:text-sm appearance-none cursor-pointer font-bold"
+              className="w-full pl-8 pr-2 py-2 rounded-xl bg-slate-900/90 border border-white/15 text-xs sm:text-sm appearance-none cursor-pointer font-bold text-white focus:outline-none focus:border-cyan-400"
             >
               {allCurrencies.map((c) => (
-                <option key={c} value={c} style={{ background: "var(--bg-secondary)" }}>
+                <option key={c} value={c} style={{ background: "#080C16" }}>
                   {c}
                 </option>
               ))}
@@ -171,17 +171,17 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
       {/* Conversion Result Display */}
       <div
         className="rounded-xl px-4 py-3 flex items-center justify-between"
-        style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)" }}
+        style={{ background: "rgba(0, 242, 254, 0.10)", border: "1px solid rgba(0, 242, 254, 0.25)" }}
       >
         {loading ? (
           <div className="flex items-center gap-2 mx-auto py-0.5">
-            <Loader2 size={16} className="animate-spin" style={{ color: "var(--accent)" }} />
-            <span className="text-xs" style={{ color: "var(--text-muted)" }}>Converting exchange rates…</span>
+            <Loader2 size={16} className="animate-spin" style={{ color: "#00F2FE" }} />
+            <span className="text-xs text-[#94A3B8]">Converting exchange rates…</span>
           </div>
         ) : (
           <>
             <div>
-              <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+              <div className="text-xs text-[#94A3B8]">
                 {formatCurrencyVal(numericAmount, fromCurrency)} {fromCurrency} =
               </div>
               {isFallback && (
@@ -191,7 +191,7 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
                 </div>
               )}
             </div>
-            <div className="text-lg font-extrabold" style={{ color: "var(--accent)" }}>
+            <div className="text-lg font-extrabold font-mono" style={{ color: "#00FFA3" }}>
               {CURRENCY_FLAGS[toCurrency]} {formatCurrencyVal(result, toCurrency)} {toCurrency}
             </div>
           </>

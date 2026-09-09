@@ -1,14 +1,34 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { X, Plane, Gauge, Navigation, Globe2, Radio, TrendingUp } from "lucide-react";
+import { AIRPORTS } from "../../data/airports";
 
 /**
  * FlightTooltip — glassmorphism card anchored at pointer position with mobile bounds protection.
  */
 export default function FlightTooltip({ plane, x, y, onClose }) {
+  const navigate = useNavigate();
   if (!plane) return null;
 
   const isOnGround = plane.onGround;
   const isSynthetic = plane._synthetic;
+
+  // Find nearest major airport
+  const nearestAirport = useMemo(() => {
+    if (plane.lat == null || plane.lng == null) return null;
+    let closest = null;
+    let minDist = Infinity;
+    for (const apt of AIRPORTS) {
+      const aptLng = apt.lng ?? apt.lon;
+      if (apt.lat == null || aptLng == null) continue;
+      const d = Math.hypot(apt.lat - plane.lat, aptLng - plane.lng);
+      if (d < minDist) {
+        minDist = d;
+        closest = apt;
+      }
+    }
+    return closest;
+  }, [plane.lat, plane.lng]);
 
   // Viewport bounds protection
   const LEFT_OFFSET = 12;
@@ -52,7 +72,7 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
               >
                 {plane.callsign}
               </div>
-              <div className="text-[10px] font-mono" style={{ color: "var(--text-muted)" }}>
+              <div className="text-[10px] font-mono text-slate-400">
                 ICAO: {plane.icao24?.toUpperCase()}
               </div>
             </div>
@@ -114,14 +134,32 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
 
         {/* Coord footer */}
         <div
-          className="px-3.5 py-1.5 font-mono text-[10px] border-t flex items-center justify-between"
-          style={{ borderColor: "var(--glass-border)", color: "var(--text-muted)" }}
+          className="px-3.5 py-1.5 font-mono text-[10px] border-t flex items-center justify-between text-slate-400"
+          style={{ borderColor: "rgba(255, 255, 255, 0.08)" }}
         >
           <span>📍 Coords</span>
           <span className="text-white font-semibold">
             {plane.lat.toFixed(2)}°, {plane.lng.toFixed(2)}°
           </span>
         </div>
+
+        {/* Book Flights Shortcut */}
+        {nearestAirport && (
+          <div className="p-2 border-t border-white/10 bg-white/[0.03]">
+            <button
+              type="button"
+              onClick={() => {
+                onClose?.();
+                navigate(`/booking?from=${nearestAirport.iata}`);
+              }}
+              className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 hover:text-white text-[10px] font-bold mono transition-all cursor-pointer shadow-sm"
+              title={`Search flights originating from ${nearestAirport.city} (${nearestAirport.iata})`}
+            >
+              <Plane size={11} className="text-cyan-400" />
+              <span>Search Flights from {nearestAirport.iata} ↗</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -130,13 +168,13 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
 function DataRow({ icon, label, value, color }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <div className="flex items-center gap-1 text-[10px]" style={{ color: "var(--text-muted)" }}>
+      <div className="flex items-center gap-1 text-[10px] text-slate-400">
         <span>{icon}</span>
         <span>{label}</span>
       </div>
       <span
         className="text-[10px] font-bold font-mono truncate max-w-[120px] text-right"
-        style={{ color: color || "var(--text-primary)" }}
+        style={{ color: color || "#F8FAFC" }}
       >
         {value}
       </span>

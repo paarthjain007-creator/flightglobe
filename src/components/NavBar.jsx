@@ -1,168 +1,319 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { Globe2, LayoutDashboard, BookOpen, Sparkles, Volume2, VolumeX, Plane, Radio, Menu, X } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Globe2, Radio, Compass, LayoutDashboard, Sparkles, Ticket, Plane,
+  Volume2, VolumeX, User, Settings, ChevronDown, Menu, X, Search
+} from "lucide-react";
 import ThemeSelector from "./ui/ThemeSelector";
+import VolumeControl from "./ui/VolumeControl";
 import { useStore } from "../store/useStore";
+import { sound } from "../utils/soundFx";
 
-const TABS = [
-  { path: "/explore",   label: "Explore",      icon: Globe2 },
-  { path: "/radar",     label: "Live Radar",   icon: Radio, badge: "LIVE" },
-  { path: "/booking",   label: "Book Flights", icon: Plane, badge: "GDS" },
-  { path: "/dashboard", label: "Dashboard",    icon: LayoutDashboard },
-  { path: "/copilot",   label: "AI Copilot",   icon: Sparkles, badge: "AI" },
-  { path: "/passport",  label: "Passport",     icon: BookOpen },
+const CURRENCIES = ["USD", "EUR", "GBP", "INR", "AED", "JPY"];
+
+const NAV_TABS = [
+  { path: "/explore",   label: "Explore 3D",     icon: Compass },
+  { path: "/booking",   label: "Book Flights",   icon: Plane },
+  { path: "/radar",     label: "Live Radar",     icon: Radio,    badge: "LIVE" },
+  { path: "/dashboard", label: "Analytics",      icon: LayoutDashboard },
+  { path: "/copilot",   label: "AI Copilot",     icon: Sparkles, badge: "AI" },
+  { path: "/passport",  label: "My Passes",      icon: Ticket },
 ];
 
-export default function NavBar() {
-  const theme          = useStore((s) => s.theme);
-  const setTheme       = useStore((s) => s.setTheme);
-  const stamps         = useStore((s) => s.stamps);
-  const soundEnabled   = useStore((s) => s.soundEnabled ?? true);
+function UtcClock() {
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    function tick() {
+      const d = new Date();
+      setTime(
+        d.toUTCString().split(" ")[4] + " UTC"
+      );
+    }
+    tick();
+    const t = setInterval(tick, 1000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <span className="font-mono text-xs text-slate-300 tracking-wider">
+      {time}
+    </span>
+  );
+}
+
+export default function NavBar({ onOpenCommandPalette }) {
+  const navigate        = useNavigate();
+  const theme           = useStore((s) => s.theme);
+  const setTheme        = useStore((s) => s.setTheme);
+  const trips           = useStore((s) => s.trips || []);
+  const currency        = useStore((s) => s.currency || "USD");
+  const setCurrency     = useStore((s) => s.setCurrency);
+  const soundEnabled    = useStore((s) => s.soundEnabled ?? true);
   const setSoundEnabled = useStore((s) => s.setSoundEnabled);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function handleThemeChange(t) {
     setTheme(t);
-    document.documentElement.setAttribute("data-theme", t === "space" ? "" : t);
+    document.documentElement.setAttribute("data-theme", t);
+  }
+
+  function handleCycleCurrency() {
+    sound.playClick();
+    const nextIdx = (CURRENCIES.indexOf(currency) + 1) % CURRENCIES.length;
+    setCurrency(CURRENCIES[nextIdx]);
   }
 
   return (
-    <>
-      <nav
-        id="main-nav"
-        className="fixed top-0 left-0 right-0 z-50 glass"
-        style={{ height: "56px", borderBottom: "1px solid var(--glass-border)" }}
+    <header
+      className="fixed top-0 inset-x-0 z-[160] px-3 sm:px-6 py-2.5 sm:py-3 pointer-events-none"
+    >
+      <div
+        className="flex items-center justify-between h-14 px-3 sm:px-5 rounded-2xl glass-prism pointer-events-auto"
+        style={{
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(8, 12, 24, 0.94) 50%, rgba(0, 242, 254, 0.08) 100%)",
+          backdropFilter: "blur(32px) saturate(190%)",
+          WebkitBackdropFilter: "blur(32px) saturate(190%)",
+          border: "1px solid rgba(0, 242, 254, 0.28)",
+          boxShadow: "inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 242, 254, 0.12)",
+        }}
       >
-        <div
-          className="flex items-center justify-between h-full px-3 sm:px-5 gap-2 sm:gap-4 max-w-7xl mx-auto"
+
+        {/* ── Brand Logotype ──────────────────────────────────────────── */}
+        <NavLink
+          to="/explore"
+          className="flex items-center gap-2.5 flex-shrink-0 group cursor-pointer"
+          style={{ textDecoration: "none" }}
         >
-          {/* ── Brand ───────────────────────────────── */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Pulsing beacon + globe icon */}
+          <div className="relative flex-shrink-0">
             <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)" }}
+              className="w-8 h-8 rounded-xl flex items-center justify-center bg-cyan-500/15 border border-cyan-400/30"
             >
-              <Globe2 size={14} style={{ color: "var(--accent)" }} />
+              <Globe2 size={16} className="text-cyan-400" />
             </div>
             <span
-              className="text-sm font-bold tracking-tight select-none"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Flight<span style={{ color: "var(--accent)" }}>Globe</span>
+              className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full beacon"
+              style={{ background: "#00FFA3", boxShadow: "0 0 8px #00FFA3" }}
+            />
+          </div>
+
+          <div className="flex flex-col leading-tight">
+            <span className="text-sm sm:text-base font-extrabold tracking-tight text-white">
+              Flight<span className="text-cyan-400">Globe</span>
+            </span>
+            <span className="text-[9px] font-medium text-slate-400 tracking-wide hidden sm:inline">
+              Global Air Telemetry
             </span>
           </div>
+        </NavLink>
 
-          {/* ── Desktop Page Tabs ───────────────────────────── */}
-          <div className="hidden md:flex items-center gap-1 overflow-x-auto no-scrollbar">
-            {TABS.map(({ path, label, icon: Icon, badge }) => (
-              <NavLink
-                key={path}
-                to={path}
-                id={`nav-tab-${label.toLowerCase().replace(/\s+/g, "-")}`}
-                className={({ isActive }) =>
-                  `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer select-none flex-shrink-0 ${
-                    isActive ? "" : "hover:opacity-80"
-                  }`
-                }
-                style={({ isActive }) => ({
-                  background: isActive ? "var(--accent-glow)" : "transparent",
-                  color: isActive ? "var(--accent)" : "var(--text-muted)",
-                  border: isActive
-                    ? "1px solid var(--glass-border)"
-                    : "1px solid transparent",
-                })}
-              >
-                <Icon size={13} />
-                <span>{label}</span>
-
-                {badge && (
+        {/* ── Segmented Glass Pill Nav with Kinetic Sliding Indicator ────────────────────────────────── */}
+        <nav
+          className="hidden md:flex items-center gap-0.5 lg:gap-1 rounded-2xl p-1 relative bg-white/[0.03] border border-white/10"
+        >
+          {NAV_TABS.map(({ path, label, icon: Icon, badge }) => (
+            <NavLink
+              key={path}
+              to={path}
+              onClick={() => sound.playClick()}
+              style={{ textDecoration: "none" }}
+              className={({ isActive }) =>
+                `relative flex items-center gap-1.5 lg:gap-2 px-2.5 py-1 md:px-2.5 lg:px-3.5 md:py-1 lg:py-1.5 rounded-xl transition-colors duration-200 cursor-pointer ${
+                  isActive ? "text-cyan-300 font-semibold" : "text-slate-200 hover:text-white font-medium"
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {/* Sliding Luminous Frosted Glass Capsule */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavTab"
+                      transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                      className="absolute inset-0 rounded-xl"
+                      style={{
+                        background: "linear-gradient(135deg, rgba(0, 242, 254, 0.16) 0%, rgba(0, 242, 254, 0.05) 100%)",
+                        border: "1px solid rgba(0, 242, 254, 0.45)",
+                        boxShadow: "0 0 24px rgba(0, 242, 254, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.3)",
+                        backdropFilter: "blur(12px)",
+                      }}
+                    />
+                  )}
+                  <Icon
+                    size={14}
+                    className="relative z-10 flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                    color={isActive ? "#00F2FE" : "#94A3B8"}
+                  />
                   <span
-                    className="px-1.5 py-0.2 rounded font-bold text-[9px]"
-                    style={{ background: "var(--accent)", color: "var(--bg-primary)" }}
-                  >
-                    {badge}
-                  </span>
-                )}
-
-                {path === "/passport" && stamps.length > 0 && (
-                  <span
-                    className="w-4 h-4 rounded-full flex items-center justify-center font-bold"
+                    className="text-[11px] lg:text-[13px] relative z-10 whitespace-nowrap"
                     style={{
-                      background: "var(--accent)",
-                      color: "var(--bg-primary)",
-                      fontSize: "9px",
+                      color: isActive ? "#00F2FE" : "#E2E8F0",
                     }}
                   >
-                    {stamps.length > 9 ? "9+" : stamps.length}
+                    {label}
                   </span>
-                )}
-              </NavLink>
-            ))}
+                  {badge && (
+                    <span
+                      className="relative z-10 text-[8px] lg:text-[9px] font-bold px-1 lg:px-1.5 py-0.5 rounded-full shadow-sm"
+                      style={{
+                        background: badge === "LIVE" ? "rgba(0, 255, 163, 0.18)" : badge === "AI" ? "rgba(184, 0, 255, 0.22)" : "rgba(0, 242, 254, 0.18)",
+                        border: `1px solid ${badge === "LIVE" ? "rgba(0, 255, 163, 0.45)" : badge === "AI" ? "rgba(184, 0, 255, 0.45)" : "rgba(0, 242, 254, 0.45)"}`,
+                        color: badge === "LIVE" ? "#00FFA3" : badge === "AI" ? "#B800FF" : "#00F2FE",
+                      }}
+                    >
+                      {badge}
+                    </span>
+                  )}
+                  {path === "/passport" && trips.length > 0 && (
+                    <span
+                      className="relative z-10 text-[8px] lg:text-[9px] font-bold px-1.5 rounded-full shadow-md bg-cyan-400 text-slate-950"
+                    >
+                      {trips.length}
+                    </span>
+                  )}
+                </>
+              )}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* ── Right Controls ──────────────────────────────────────────── */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          {/* Quick Command Palette Trigger (Cmd+K) */}
+          <button
+            type="button"
+            onClick={() => { sound.playClick(); onOpenCommandPalette?.(); }}
+            className="hidden md:flex items-center gap-1.5 lg:gap-2 px-2.5 py-1.5 lg:px-3 rounded-xl transition-all cursor-pointer bg-white/5 border border-white/10 hover:border-cyan-400/40 hover:bg-white/10"
+            title="Search flights, routes, or commands (Ctrl+K)"
+          >
+            <Search size={13} className="text-cyan-400" />
+            <span className="text-xs text-slate-300 font-medium hidden xl:inline">Search</span>
+            <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-cyan-300 font-mono border border-white/15">
+              ⌘K
+            </kbd>
+          </button>
+
+          {/* UTC Clock (hidden on smaller displays, visible on wide desktop) */}
+          <div className="hidden xl:block px-2 py-1 rounded-lg bg-white/5 border border-white/10">
+            <UtcClock />
           </div>
 
-          {/* ── Right Side Controls ──────────────────── */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <ThemeSelector activeTheme={theme} onThemeChange={handleThemeChange} />
+          {/* Currency button */}
+          <button
+            type="button"
+            onClick={handleCycleCurrency}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl cursor-pointer transition-all bg-white/5 border border-white/10 hover:bg-white/10 hover:border-amber-400/40"
+            title="Switch active currency"
+          >
+            <span className="text-xs font-bold font-mono text-amber-400">{currency}</span>
+          </button>
 
-            {/* Soundscape Toggle */}
-            <button
-              id="toggle-sound-btn"
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-1.5 rounded-xl transition-all cursor-pointer hover:opacity-100 opacity-70"
-              style={{
-                background: soundEnabled ? "var(--accent-glow)" : "rgba(255,255,255,0.04)",
-                border: "1px solid var(--glass-border)",
-                color: soundEnabled ? "var(--accent)" : "var(--text-muted)",
-              }}
-              title={soundEnabled ? "Mute spatial audio" : "Enable spatial audio"}
-            >
-              {soundEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
-            </button>
+          {/* Volume Control */}
+          <VolumeControl />
 
-            {/* Mobile Menu Hamburger Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-1.5 rounded-xl glass border border-white/10 text-cyan-400 cursor-pointer"
-              aria-label="Toggle mobile menu"
-            >
-              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          </div>
+          {/* Theme */}
+          <ThemeSelector activeTheme={theme} onThemeChange={handleThemeChange} />
+
+          {/* Profile beacon */}
+          <button
+            type="button"
+            onClick={() => { sound.playClick(); navigate("/passport"); }}
+            className="hidden sm:flex w-8 h-8 rounded-xl items-center justify-center cursor-pointer bg-cyan-500/10 border border-cyan-400/20 hover:border-cyan-400/50 hover:bg-cyan-500/20 transition-all"
+            title="My Passes & Digital Credentials"
+          >
+            <User size={14} color="#00F2FE" />
+          </button>
+
+          {/* Mobile hamburger toggle (< md) */}
+          <button
+            type="button"
+            onClick={() => { sound.playClick(); setMobileMenuOpen(!mobileMenuOpen); }}
+            className="md:hidden p-2 rounded-xl cursor-pointer transition-colors bg-white/5 border border-white/10 text-slate-300 hover:text-white"
+            title="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
-      </nav>
+      </div>
 
-      {/* ── Mobile Navigation Drawer Overlay ───────────────── */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-x-0 top-[56px] z-40 p-4 md:hidden animate-slide-up"
-          style={{ background: "rgba(5, 10, 24, 0.96)", backdropFilter: "blur(24px)", borderBottom: "1px solid var(--glass-border)" }}
-        >
-          <div className="grid grid-cols-2 gap-2">
-            {TABS.map(({ path, label, icon: Icon, badge }) => (
+      {/* ── Mobile Navigation Drawer ────────────────────────────────── */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ duration: 0.18 }}
+            className="md:hidden mt-2 p-3 rounded-2xl space-y-1 pointer-events-auto"
+            style={{
+              background: "rgba(8, 12, 24, 0.98)",
+              backdropFilter: "blur(32px)",
+              WebkitBackdropFilter: "blur(32px)",
+              border: "1px solid rgba(0, 242, 254, 0.35)",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.9), 0 0 20px rgba(0, 242, 254, 0.15), inset 0 1px 1.5px rgba(255,255,255,0.15)",
+            }}
+          >
+            {NAV_TABS.map(({ path, label, icon: Icon, badge }) => (
               <NavLink
                 key={path}
                 to={path}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => { sound.playClick(); setMobileMenuOpen(false); }}
                 className={({ isActive }) =>
-                  `flex items-center gap-2.5 p-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-                    isActive ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40" : "glass text-slate-300 hover:text-white"
+                  `flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 font-bold"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white"
                   }`
                 }
               >
-                <Icon size={16} className="text-cyan-400 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="truncate">{label}</div>
+                <div className="flex items-center gap-3">
+                  <Icon size={17} />
+                  <span className="text-sm font-medium">{label}</span>
                 </div>
                 {badge && (
-                  <span className="px-1.5 py-0.5 rounded font-bold text-[9px] bg-cyan-400 text-slate-950">
+                  <span
+                    className="text-[9px] font-bold px-2 py-0.5 rounded-full"
+                    style={{
+                      background: badge === "LIVE" ? "rgba(0, 255, 163, 0.2)" : "rgba(184, 0, 255, 0.2)",
+                      border: `1px solid ${badge === "LIVE" ? "rgba(0, 255, 163, 0.4)" : "rgba(184, 0, 255, 0.4)"}`,
+                      color: badge === "LIVE" ? "#00FFA3" : "#B800FF",
+                    }}
+                  >
                     {badge}
+                  </span>
+                )}
+                {path === "/passport" && trips.length > 0 && (
+                  <span
+                    className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-cyan-400 text-slate-950"
+                  >
+                    {trips.length}
                   </span>
                 )}
               </NavLink>
             ))}
-          </div>
-        </div>
-      )}
-    </>
+
+            {/* Mobile Command Center trigger */}
+            <button
+              type="button"
+              onClick={() => {
+                sound.playClick();
+                setMobileMenuOpen(false);
+                onOpenCommandPalette?.();
+              }}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer text-cyan-300 hover:bg-cyan-500/10 border border-cyan-400/20"
+            >
+              <div className="flex items-center gap-3">
+                <Search size={16} className="text-cyan-400" />
+                <span className="text-sm font-medium">Search Flights & Commands</span>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-cyan-300 border border-white/10">
+                ⌘K
+              </span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
 }

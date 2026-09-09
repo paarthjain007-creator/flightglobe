@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Sparkles, Bot, X, Send, ArrowRight, Compass, ShieldCheck, Zap, RefreshCw, Terminal, Check } from "lucide-react";
 import { useStore } from "../../store/useStore";
 import { processCopilotPrompt } from "../../services/aiCopilotService";
-import { AIRPORTS } from "../../data/airports";
+import { sendAgentChatMessageAPI } from "../../services/api/apiClient";
+import { AIRPORTS, getAirportByIata } from "../../data/airports";
 import GlassCard from "../ui/GlassCard";
 
 const CONTEXT_SUGGESTIONS = {
@@ -14,7 +15,7 @@ const CONTEXT_SUGGESTIONS = {
   ],
   "/booking": [
     { text: "📉 Tuesday flights are 14% cheaper. Update departure date?", action: "OPTIMIZE_TUESDAY" },
-    { text: "🇦🇪 Compare Emirates vs Etihad vs Air India fares", action: "COMPARE_CARRIERS" },
+    { text: "🇮🇳 Compare IndiGo vs SpiceJet vs Air India fares", action: "COMPARE_CARRIERS" },
     { text: "💱 Switch rates display to INR (₹) or EUR (€)", action: "SWITCH_CURRENCY" },
   ],
   "/dashboard": [
@@ -41,6 +42,8 @@ export default function GlobalCopilotFloatingWidget() {
   const setWaypoints = useStore((s) => s.setWaypoints);
   const setCurrency = useStore((s) => s.setCurrency);
   const setDepartureDate = useStore((s) => s.setDepartureDate);
+  const addTrip = useStore((s) => s.addTrip);
+  const removeTrip = useStore((s) => s.removeTrip);
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -100,6 +103,58 @@ export default function GlobalCopilotFloatingWidget() {
     setIsProcessing(true);
 
     try {
+      // 1. Try autonomous backend Agent Engine API
+      const historyPayload = messages
+        .filter((m) => m.text)
+        .slice(-6)
+        .map((m) => ({
+          role: m.sender === "user" ? "user" : "assistant",
+          content: m.text,
+        }));
+
+      const agentResult = await sendAgentChatMessageAPI(query, historyPayload);
+
+      if (agentResult && agentResult.text) {
+        // Dispatch autonomous agent actions
+        if (Array.isArray(agentResult.actions)) {
+          for (const act of agentResult.actions) {
+            if (act.type === "BOOKING_CREATED" && act.booking) {
+              addTrip(act.booking);
+            } else if (act.type === "BOOKING_CANCELLED" && act.bookingId) {
+              removeTrip(act.bookingId);
+            } else if (act.type === "SET_CURRENCY" && act.currency) {
+              setCurrency(act.currency);
+            } else if (act.type === "SWITCH_VIEW") {
+              const v = (act.view || "").toLowerCase();
+              if ((v === "trips" || v === "passport") && pathname !== "/passport") navigate("/passport");
+              else if ((v === "tracker" || v === "radar") && pathname !== "/radar") navigate("/radar");
+              else if ((v === "search" || v === "booking") && pathname !== "/booking") navigate("/booking");
+              else if (v === "dashboard" && pathname !== "/dashboard") navigate("/dashboard");
+              else if ((v === "explore" || v === "globe") && pathname !== "/explore") navigate("/explore");
+              else if (v === "copilot" && pathname !== "/copilot") navigate("/copilot");
+            } else if (act.type === "SET_ROUTE") {
+              const origAirport = getAirportByIata(act.origin);
+              const destAirport = getAirportByIata(act.destination);
+              setSearchOrigin(origAirport);
+              setSearchDestination(destAirport);
+              setWaypoints([origAirport, destAirport]);
+            }
+          }
+        }
+
+        const aiMsg = {
+          id: `ai-${Date.now()}`,
+          sender: "ai",
+          title: "Nimbus Autonomous Agent",
+          text: agentResult.text,
+          timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+        };
+
+        setMessages((prev) => [...prev, aiMsg]);
+        return;
+      }
+
+      // 2. Client-side fallback if backend unavailable
       const response = await processCopilotPrompt(query);
       const waypoints = response.waypoints || [];
 
@@ -172,11 +227,13 @@ export default function GlobalCopilotFloatingWidget() {
     }
   }
 
+  if (pathname === "/copilot") return null;
+
   return (
-    <div id="global-copilot-widget" className="fixed bottom-6 right-6 z-50 font-sans">
+    <div id="global-copilot-widget" className="fixed bottom-4 right-3 sm:bottom-6 sm:right-6 z-50 font-sans max-w-[calc(100vw-24px)]">
       {/* ── EXPANDED CHAT PANEL ────────────────────────────────────────────── */}
       {isOpen ? (
-        <GlassCard className="w-[360px] sm:w-[420px] h-[520px] flex flex-col border border-cyan-400/40 shadow-[0_0_40px_rgba(0,240,255,0.25)] rounded-3xl overflow-hidden animate-slide-up relative">
+        <GlassCard className="w-[calc(100vw-24px)] sm:w-[420px] max-w-[420px] h-[min(520px,calc(100vh-100px))] flex flex-col border border-cyan-400/40 shadow-[0_0_40px_rgba(0,240,255,0.25)] rounded-3xl overflow-hidden animate-slide-up relative">
           
           {/* Header Bar */}
           <div className="p-4 bg-slate-950/80 border-b border-white/10 flex items-center justify-between">
@@ -301,7 +358,7 @@ export default function GlobalCopilotFloatingWidget() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Copilot (e.g. Fly me to Munich)..."
               disabled={isProcessing}
-              className="flex-1 px-3.5 py-2 rounded-xl bg-slate-900 border border-white/15 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-sans"
+              className="flex-1 px-3.5 py-2 rounded-xl bg-slate-900 border border-white/15 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-sans text-base sm:text-xs"
             />
             <button
               type="submit"
@@ -316,7 +373,7 @@ export default function GlobalCopilotFloatingWidget() {
         /* ── COLLAPSED FLOATING ORB BUTTON ───────────────────────────────── */
         <button
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-2.5 px-4 py-3 rounded-full glass border border-cyan-400/40 shadow-[0_0_25px_rgba(0,240,255,0.4)] hover:shadow-[0_0_35px_rgba(0,240,255,0.7)] transition-all duration-300 cursor-pointer animate-bounce-slow"
+          className="group relative flex items-center gap-2 sm:gap-2.5 px-3 py-2 sm:px-4 sm:py-3 rounded-full glass border border-cyan-400/40 shadow-[0_0_25px_rgba(0,240,255,0.4)] hover:shadow-[0_0_35px_rgba(0,240,255,0.7)] transition-all duration-300 cursor-pointer animate-bounce-slow"
         >
           <div className="w-7 h-7 rounded-full bg-cyan-500/30 border border-cyan-400 flex items-center justify-center text-cyan-300 shadow-inner group-hover:scale-110 transition-transform">
             <Sparkles size={15} className="animate-pulse" />

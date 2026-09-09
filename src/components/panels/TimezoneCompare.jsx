@@ -73,8 +73,8 @@ export default function TimezoneCompare({ origin, destination }) {
   return (
     <GlassCard className="p-4" animate="animate-slide-up">
       <div className="flex items-center gap-2 mb-3">
-        <Clock size={14} style={{ color: "var(--accent)" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+        <Clock size={14} style={{ color: "#00F2FE" }} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
           Timezone Comparison
         </span>
       </div>
@@ -83,13 +83,13 @@ export default function TimezoneCompare({ origin, destination }) {
       <div className="flex items-center gap-2 mb-3">
         {/* Origin */}
         <div className="flex-1 rounded-xl p-2.5 text-center" style={{ background: "rgba(74,222,128,0.06)", border: "1px solid rgba(74,222,128,0.2)" }}>
-          <div className="text-xs font-medium mb-0.5" style={{ color: "#4ade80" }}>{origin.iata}</div>
-          <div className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>{originTime}</div>
-          <div className="text-xs mt-0.5 truncate" style={{ color: "var(--text-muted)" }}>{origin.city}</div>
+          <div className="text-xs font-medium mb-0.5" style={{ color: "#4ade80" }}>{origin.iata || origin.code}</div>
+          <div className="text-lg font-bold" style={{ color: "#F8FAFC" }}>{originTime}</div>
+          <div className="text-xs mt-0.5 truncate text-slate-400">{origin.city}</div>
         </div>
 
         <div className="flex-shrink-0 flex flex-col items-center gap-0.5">
-          <ArrowRight size={14} style={{ color: "var(--accent)" }} />
+          <ArrowRight size={14} style={{ color: "#00F2FE" }} />
           <span
             className="text-xs font-bold px-1.5 py-0.5 rounded-md"
             style={{ color: messageColor, background: `${messageColor}15`, border: `1px solid ${messageColor}40` }}
@@ -100,9 +100,9 @@ export default function TimezoneCompare({ origin, destination }) {
 
         {/* Destination */}
         <div className="flex-1 rounded-xl p-2.5 text-center" style={{ background: "rgba(248,113,113,0.06)", border: "1px solid rgba(248,113,113,0.2)" }}>
-          <div className="text-xs font-medium mb-0.5" style={{ color: "#f87171" }}>{destination.iata}</div>
-          <div className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>{destTime}</div>
-          <div className="text-xs mt-0.5 truncate" style={{ color: "var(--text-muted)" }}>{destination.city}</div>
+          <div className="text-xs font-medium mb-0.5" style={{ color: "#f87171" }}>{destination.iata || destination.code}</div>
+          <div className="text-lg font-bold" style={{ color: "#F8FAFC" }}>{destTime}</div>
+          <div className="text-xs mt-0.5 truncate text-slate-400">{destination.city}</div>
         </div>
       </div>
 
@@ -120,16 +120,16 @@ export default function TimezoneCompare({ origin, destination }) {
             />
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-xs" style={{ color: "var(--text-muted)" }}>UTC-12</span>
+            <span className="text-xs text-slate-400">UTC-12</span>
             <span className="text-xs font-medium" style={{ color: messageColor }}>{message}</span>
-            <span className="text-xs" style={{ color: "var(--text-muted)" }}>UTC+14</span>
+            <span className="text-xs text-slate-400">UTC+14</span>
           </div>
         </div>
       )}
 
       {/* Note */}
       {note && (
-        <div className="rounded-lg px-3 py-2 text-xs" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--glass-border)", color: "var(--text-muted)" }}>
+        <div className="rounded-lg px-3 py-2 text-xs text-slate-300" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
           {note}
         </div>
       )}

@@ -1,9 +1,43 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { fetchTrafficDataAPI } from "../services/api/apiClient";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const POLL_INTERVAL_MS  = 15_000;  // 15 s — respects OpenSky rate limits
 const STATE_PUSH_MS     = 100;     // Push React state every 100ms for solid 60 FPS
 const SOOTHING_SPEED_FACTOR = 0.02; // Ultra-calm, soothing flight speed multiplier
+
+const SYNTHETIC_AIRLINES = [
+  { code: "UAE", name: "Emirates" },
+  { code: "BAW", name: "British Airways" },
+  { code: "SIA", name: "Singapore Airlines" },
+  { code: "AIC", name: "Air India" },
+  { code: "DLH", name: "Lufthansa" },
+  { code: "AFR", name: "Air France" },
+  { code: "DAL", name: "Delta Air Lines" },
+  { code: "UAL", name: "United Airlines" },
+  { code: "JAL", name: "Japan Airlines" },
+  { code: "QTR", name: "Qatar Airways" },
+  { code: "SWR", name: "SWISS" },
+  { code: "QFA", name: "Qantas" },
+];
+
+function generateClientFallbackTraffic(count = 35) {
+  return Array.from({ length: count }, (_, i) => {
+    const al = SYNTHETIC_AIRLINES[i % SYNTHETIC_AIRLINES.length];
+    return {
+      icao24: `SYN${i.toString(16).padStart(4, "0").toUpperCase()}`,
+      callsign: `${al.code}${100 + Math.floor(Math.random() * 899)}`,
+      originCountry: al.name,
+      lat: (Math.sin(i * 1.3) * 60) + (Math.random() * 4 - 2),
+      lng: (Math.cos(i * 1.7) * 160) + (Math.random() * 4 - 2),
+      altitude: 28000 + Math.floor(Math.random() * 12000),
+      velocity: 430 + Math.floor(Math.random() * 80),
+      trueTrack: Math.floor(Math.random() * 360),
+      onGround: false,
+      _synthetic: true,
+    };
+  });
+}
 
 /**
  * Shortest-path angle interpolation for headings (0–360°).
@@ -31,40 +65,49 @@ export function useLiveTraffic() {
   const frameCountRef  = useRef(0);
   const fpsRef         = useRef(60);
 
-  // ── API Poll ─────────────────────────────────────────────────────────────────
+  // ── API Poll with Resilient Standalone Fallback ────────────────────────────────
   const fetchTraffic = useCallback(async () => {
+    let incoming = [];
+    let source = "opensky";
+
     try {
-      const res = await fetch("/api/traffic", { cache: "no-store" });
-      if (!res.ok) return;
-      const data = await res.json();
-      const incoming = data.planes || [];
-
-      setStats((s) => ({
-        ...s,
-        count: incoming.length,
-        source: data.source || "opensky",
-        lastUpdate: new Date(),
-      }));
-
-      const targetMap  = targetMapRef.current;
-      const currentMap = currentMapRef.current;
-
-      incoming.forEach((p) => {
-        targetMap.set(p.icao24, p);
-        if (!currentMap.has(p.icao24)) {
-          currentMap.set(p.icao24, { ...p });
-        }
-      });
-
-      const incoming24 = new Set(incoming.map((p) => p.icao24));
-      for (const key of targetMap.keys()) {
-        if (!incoming24.has(key)) {
-          targetMap.delete(key);
-          currentMap.delete(key);
-        }
+      const data = await fetchTrafficDataAPI();
+      if (data && Array.isArray(data.planes)) {
+        incoming = data.planes;
+        source = data.source || "opensky";
       }
-    } catch (err) {
-      console.warn("[useLiveTraffic] fetch error:", err);
+    } catch {
+      // offline / static deployment fallback
+    }
+
+    if (!incoming || incoming.length === 0) {
+      incoming = generateClientFallbackTraffic(35);
+      source = "telemetry-sim";
+    }
+
+    setStats((s) => ({
+      ...s,
+      count: incoming.length,
+      source,
+      lastUpdate: new Date(),
+    }));
+
+    const targetMap  = targetMapRef.current;
+    const currentMap = currentMapRef.current;
+
+    incoming.forEach((p) => {
+      targetMap.set(p.icao24, p);
+      if (!currentMap.has(p.icao24)) {
+        currentMap.set(p.icao24, { ...p });
+      }
+    });
+
+    const incoming24 = new Set(incoming.map((p) => p.icao24));
+    for (const key of targetMap.keys()) {
+      if (!incoming24.has(key)) {
+        targetMap.delete(key);
+        currentMap.delete(key);
+      }
     }
   }, []);
 

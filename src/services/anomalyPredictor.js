@@ -1,4 +1,4 @@
-import { interpolateGreatCircle } from "../utils/slerpMath";
+import { interpolateGreatCircle } from "../utils/slerpMath.js";
 
 /**
  * AI Predictive Anomaly Engine.
@@ -12,12 +12,17 @@ export function predictRouteAnomalies(origin, destination) {
   const anomalies = [];
   const warningRings = [];
 
+  const origLat = Number(origin.lat || 0);
+  const origLng = Number(origin.lng ?? origin.lon ?? 0);
+  const destLat = Number(destination.lat || 0);
+  const destLng = Number(destination.lng ?? destination.lon ?? 0);
+
   // Generate 3D turbulence warning rings along mid-route coordinates
-  const midPoint1 = interpolateGreatCircle(origin.lat, origin.lng, destination.lat, destination.lng, 0.35);
-  const midPoint2 = interpolateGreatCircle(origin.lat, origin.lng, destination.lat, destination.lng, 0.68);
+  const midPoint1 = interpolateGreatCircle(origLat, origLng, destLat, destLng, 0.35);
+  const midPoint2 = interpolateGreatCircle(origLat, origLng, destLat, destLng, 0.68);
 
   // Atlantic / High-altitude jetstream turbulence check
-  const isHighLat = Math.abs(origin.lat) > 40 || Math.abs(destination.lat) > 40;
+  const isHighLat = Math.abs(origLat) > 40 || Math.abs(destLat) > 40;
   if (isHighLat) {
     anomalies.push({
       id: "anom-turb-1",
@@ -67,7 +72,7 @@ export function predictRouteAnomalies(origin, destination) {
     anomalies.push({
       id: "anom-ground-3",
       title: "Destination Low Visibility / Ground De-icing Delay",
-      location: `${destination.city} (${destination.iata})`,
+      location: `${destination.city || "Arrival"} (${destination.iata || destination.code || "DEST"})`,
       probability: 42,
       severity: "moderate",
       description: "Expected 20-30 min holding pattern due to peak arrival slot congestion.",

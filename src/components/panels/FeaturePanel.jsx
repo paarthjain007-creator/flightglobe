@@ -97,10 +97,10 @@ export default function FeaturePanel({
     >
       {/* Feature Header */}
       <div className="glass px-3 py-2 rounded-xl flex items-center gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
           Features
         </span>
-        <div className="flex-1 h-px" style={{ background: "var(--glass-border)" }} />
+        <div className="flex-1 h-px" style={{ background: "rgba(255, 255, 255, 0.08)" }} />
       </div>
 
       {/* Main Feature Buttons */}
@@ -121,8 +121,8 @@ export default function FeaturePanel({
               ${isDisabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:scale-[1.02] active:scale-[0.98]"}
             `}
             style={{
-              background: isActive ? feat.glowColor : "var(--glass-bg)",
-              borderColor: isActive ? feat.borderColor : "var(--glass-border)",
+              background: isActive ? feat.glowColor : "rgba(10, 14, 24, 0.72)",
+              borderColor: isActive ? feat.borderColor : "rgba(255, 255, 255, 0.08)",
               boxShadow: isActive ? `0 0 20px ${feat.glowColor}` : "none",
               backdropFilter: "blur(16px)",
             }}
@@ -132,12 +132,12 @@ export default function FeaturePanel({
               className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 transition-all"
               style={{
                 background: isActive ? feat.glowColor : "rgba(255,255,255,0.05)",
-                border: `1px solid ${isActive ? feat.borderColor : "var(--glass-border)"}`,
+                border: `1px solid ${isActive ? feat.borderColor : "rgba(255, 255, 255, 0.08)"}`,
               }}
             >
               <Icon
                 size={14}
-                style={{ color: isActive ? feat.color : "var(--text-muted)" }}
+                style={{ color: isActive ? feat.color : "#94A3B8" }}
                 className={isActive && feat.id === "jetstream" ? "animate-pulse" : ""}
               />
             </div>
@@ -146,11 +146,11 @@ export default function FeaturePanel({
             <div className="flex-1 min-w-0">
               <div
                 className="text-[11px] font-bold leading-tight truncate"
-                style={{ color: isActive ? feat.color : "var(--text-primary)" }}
+                style={{ color: isActive ? feat.color : "#F8FAFC" }}
               >
                 {feat.label}
               </div>
-              <div className="text-[9px] leading-tight truncate" style={{ color: "var(--text-muted)" }}>
+              <div className="text-[9px] leading-tight truncate text-slate-400">
                 {feat.subtitle}
               </div>
             </div>
@@ -167,8 +167,7 @@ export default function FeaturePanel({
             {!isActive && !isDisabled && (
               <ChevronRight
                 size={12}
-                className="flex-shrink-0 opacity-0 group-hover:opacity-60 transition-opacity"
-                style={{ color: "var(--text-muted)" }}
+                className="flex-shrink-0 opacity-0 group-hover:opacity-60 transition-opacity text-slate-400"
               />
             )}
           </button>
@@ -177,10 +176,10 @@ export default function FeaturePanel({
 
       {/* Map Overlay Sub-section */}
       <div className="glass px-3 py-2 rounded-xl flex items-center gap-2 mt-1">
-        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
           Overlays
         </span>
-        <div className="flex-1 h-px" style={{ background: "var(--glass-border)" }} />
+        <div className="flex-1 h-px" style={{ background: "rgba(255, 255, 255, 0.08)" }} />
       </div>
 
       {overlays.map((ovl) => {
@@ -197,8 +196,8 @@ export default function FeaturePanel({
               hover:scale-[1.02] active:scale-[0.98]
             `}
             style={{
-              background: isActive ? ovl.glowColor : "var(--glass-bg)",
-              borderColor: isActive ? ovl.borderColor : "var(--glass-border)",
+              background: isActive ? ovl.glowColor : "rgba(10, 14, 24, 0.72)",
+              borderColor: isActive ? ovl.borderColor : "rgba(255, 255, 255, 0.08)",
               boxShadow: isActive ? `0 0 16px ${ovl.glowColor}` : "none",
               backdropFilter: "blur(16px)",
             }}
@@ -207,19 +206,19 @@ export default function FeaturePanel({
               className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{
                 background: isActive ? ovl.glowColor : "rgba(255,255,255,0.05)",
-                border: `1px solid ${isActive ? ovl.borderColor : "var(--glass-border)"}`,
+                border: `1px solid ${isActive ? ovl.borderColor : "rgba(255, 255, 255, 0.08)"}`,
               }}
             >
-              <Icon size={14} style={{ color: isActive ? ovl.color : "var(--text-muted)" }} />
+              <Icon size={14} style={{ color: isActive ? ovl.color : "#94A3B8" }} />
             </div>
             <div className="flex-1 min-w-0">
               <div
                 className="text-[11px] font-bold leading-tight truncate"
-                style={{ color: isActive ? ovl.color : "var(--text-primary)" }}
+                style={{ color: isActive ? ovl.color : "#F8FAFC" }}
               >
                 {ovl.label}
               </div>
-              <div className="text-[9px] leading-tight truncate" style={{ color: "var(--text-muted)" }}>
+              <div className="text-[9px] leading-tight truncate text-slate-400">
                 {ovl.subtitle}
               </div>
             </div>

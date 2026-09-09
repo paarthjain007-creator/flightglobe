@@ -12,21 +12,21 @@ export default function Toolbar({ activeTheme, onThemeChange, onResetGlobe, onOp
       <div className="flex items-center gap-2 flex-shrink-0">
         <div
           className="w-7 h-7 rounded-lg flex items-center justify-center"
-          style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)" }}
+          style={{ background: "rgba(0, 242, 254, 0.12)", border: "1px solid rgba(0, 242, 254, 0.25)" }}
         >
-          <Globe2 size={14} style={{ color: "var(--accent)" }} />
+          <Globe2 size={14} style={{ color: "#00F2FE" }} />
         </div>
-        <span className="text-sm font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
-          Flight<span style={{ color: "var(--accent)" }}>Globe</span>
+        <span className="text-sm font-bold tracking-tight" style={{ color: "#F8FAFC" }}>
+          Flight<span style={{ color: "#00F2FE" }}>Globe</span>
         </span>
       </div>
 
-      <div className="w-px h-5 opacity-30" style={{ background: "var(--glass-border)" }} />
+      <div className="w-px h-5 opacity-30" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
 
       {/* Theme Switcher */}
       <ThemeSelector activeTheme={activeTheme} onThemeChange={onThemeChange} />
 
-      <div className="w-px h-5 opacity-30" style={{ background: "var(--glass-border)" }} />
+      <div className="w-px h-5 opacity-30" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
 
       {/* Globe Controls */}
       <div className="flex items-center gap-1.5">
@@ -34,7 +34,7 @@ export default function Toolbar({ activeTheme, onThemeChange, onResetGlobe, onOp
           id="globe-reset-btn"
           onClick={onResetGlobe}
           className="p-1.5 rounded-lg transition-all cursor-pointer hover:opacity-80 active:scale-95"
-          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--glass-border)", color: "var(--text-muted)" }}
+          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255, 255, 255, 0.1)", color: "#94A3B8" }}
           title="Reset globe"
         >
           <RotateCcw size={12} />
@@ -45,7 +45,7 @@ export default function Toolbar({ activeTheme, onThemeChange, onResetGlobe, onOp
           id="passport-open-btn"
           onClick={onOpenPassport}
           className="relative flex items-center gap-1.5 p-1.5 rounded-lg transition-all cursor-pointer hover:opacity-90 active:scale-95"
-          style={{ background: "var(--accent-glow)", border: "1px solid var(--glass-border)", color: "var(--accent)" }}
+          style={{ background: "rgba(0, 242, 254, 0.12)", border: "1px solid rgba(0, 242, 254, 0.25)", color: "#00F2FE" }}
           title="Open Digital Passport"
         >
           <BookOpen size={12} />
@@ -53,7 +53,7 @@ export default function Toolbar({ activeTheme, onThemeChange, onResetGlobe, onOp
           {stampCount > 0 && (
             <span
               className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{ background: "var(--accent)", color: "var(--bg-primary)", fontSize: "9px" }}
+              style={{ background: "#00F2FE", color: "#040508", fontSize: "9px" }}
             >
               {stampCount > 9 ? "9+" : stampCount}
             </span>
@@ -64,7 +64,7 @@ export default function Toolbar({ activeTheme, onThemeChange, onResetGlobe, onOp
       {/* Live indicator */}
       <div className="flex items-center gap-1.5 flex-shrink-0">
         <div className="w-1.5 h-1.5 rounded-full pulse-dot" style={{ background: "#4ade80" }} />
-        <span className="text-xs hidden sm:block" style={{ color: "var(--text-muted)" }}>Live</span>
+        <span className="text-xs hidden sm:block text-slate-400">Live</span>
       </div>
     </header>
   );

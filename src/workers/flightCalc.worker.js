@@ -40,13 +40,17 @@ self.onmessage = function (e) {
   for (let i = 0; i < airports.length - 1; i++) {
     const a = airports[i];
     const b = airports[i + 1];
-    const km = haversine(a.lat, a.lng, b.lat, b.lng);
+    const lat1 = Number(a?.lat || 0);
+    const lng1 = Number(a?.lng ?? a?.lon ?? 0);
+    const lat2 = Number(b?.lat || 0);
+    const lng2 = Number(b?.lng ?? b?.lon ?? 0);
+    const km = haversine(lat1, lng1, lat2, lng2);
     const time = estimateTime(km);
     totalKm += km;
     totalHours += time.totalHours;
     legs.push({
-      from: a.iata,
-      to: b.iata,
+      from: a?.iata || a?.code || "ORIG",
+      to: b?.iata || b?.code || "DEST",
       km: Math.round(km),
       miles: Math.round(km * 0.621371),
       time: { hours: time.hours, minutes: time.minutes },

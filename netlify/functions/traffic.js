@@ -1,10 +1,11 @@
 /**
  * Netlify Serverless Function for OpenSky Network ADS-B Telemetry.
- * Proxies OpenSky API calls directly on Netlify with real airline brand mappings.
+ * Features Singleflight request collapsing, fast 3.5s timeout, and real airline brand mappings.
  */
 
 let cachedPlanes = [];
 let cacheTimestamp = 0;
+let inFlightPromise = null;
 const CACHE_TTL_MS = 12_000;
 const OPENSKY_URL = "https://opensky-network.org/api/states/all";
 
@@ -12,6 +13,11 @@ const REAL_AIRLINE_ICAO_MAP = {
   ETD: { name: "Etihad Airways", logo: "🇦🇪", country: "United Arab Emirates" },
   UAE: { name: "Emirates", logo: "🇦🇪", country: "United Arab Emirates" },
   AIC: { name: "Air India", logo: "🇮🇳", country: "India" },
+  IGO: { name: "IndiGo", logo: "🇮🇳", country: "India" },
+  SEJ: { name: "SpiceJet", logo: "🇮🇳", country: "India" },
+  VTI: { name: "Vistara", logo: "🇮🇳", country: "India" },
+  AKJ: { name: "Akasa Air", logo: "🇮🇳", country: "India" },
+  AXB: { name: "Air India Express", logo: "🇮🇳", country: "India" },
   SWR: { name: "SWISS International Air Lines", logo: "🇨🇭", country: "Switzerland" },
   DLH: { name: "Lufthansa", logo: "🇩🇪", country: "Germany" },
   BAW: { name: "British Airways", logo: "🇬🇧", country: "United Kingdom" },
@@ -94,6 +100,7 @@ export async function handler(_event, _context) {
 
   const headers = {
     "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Content-Type": "application/json",
     "Cache-Control": "public, max-age=10",
   };
@@ -106,47 +113,55 @@ export async function handler(_event, _context) {
     };
   }
 
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
-
-    const res = await fetch(buildOpenSkyUrl(), {
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const data = await res.json();
-    const states = data.states || [];
-
-    const planes = states
-      .map(normaliseState)
-      .filter(Boolean)
-      .filter((p) => !p.onGround);
-
-    if (planes.length > 0) {
-      cachedPlanes = planes;
-      cacheTimestamp = now;
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ planes, source: "opensky", ts: now }),
-      };
-    }
-
-    throw new Error("Empty states response");
-  } catch (err) {
-    if (cachedPlanes.length === 0) {
-      cachedPlanes = generateFallbackTraffic(15);
-      cacheTimestamp = now;
-    }
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ planes: cachedPlanes, source: "fallback", ts: cacheTimestamp }),
-    };
+  if (inFlightPromise) {
+    const res = await inFlightPromise;
+    return { statusCode: 200, headers, body: JSON.stringify(res) };
   }
+
+  inFlightPromise = (async () => {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3500);
+
+      const res = await fetch(buildOpenSkyUrl(), {
+        headers: { Accept: "application/json" },
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      const states = data.states || [];
+
+      const planes = states
+        .map(normaliseState)
+        .filter(Boolean)
+        .filter((p) => !p.onGround);
+
+      if (planes.length > 0) {
+        cachedPlanes = planes;
+        cacheTimestamp = Date.now();
+        return { planes, source: "opensky", ts: cacheTimestamp };
+      }
+
+      throw new Error("Empty states response");
+    } catch (err) {
+      if (cachedPlanes.length === 0) {
+        cachedPlanes = generateFallbackTraffic(15);
+        cacheTimestamp = Date.now();
+      }
+
+      return { planes: cachedPlanes, source: "fallback", ts: cacheTimestamp };
+    } finally {
+      inFlightPromise = null;
+    }
+  })();
+
+  const result = await inFlightPromise;
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify(result),
+  };
 }

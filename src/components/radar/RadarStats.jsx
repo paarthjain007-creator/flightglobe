@@ -22,12 +22,12 @@ export default function RadarStats({ stats }) {
   return (
     <div
       id="radar-stats"
-      className="absolute bottom-4 left-4 z-30 glass rounded-2xl p-3 flex flex-col gap-2 min-w-[200px] border border-cyan-500/30 shadow-2xl transition-all"
+      className="absolute bottom-28 sm:bottom-4 left-3 sm:left-4 z-30 glass rounded-2xl p-3 flex flex-col gap-2 min-w-[200px] max-w-[calc(100vw-24px)] border border-cyan-500/30 shadow-2xl transition-all"
     >
       {/* Drawer Header Toggle */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center justify-between gap-3 text-xs font-bold text-slate-200 cursor-pointer hover:text-cyan-300 w-full"
+        className="flex items-center justify-between gap-3 text-xs font-bold text-[#F8FAFC] cursor-pointer hover:text-cyan-300 w-full"
       >
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: sourceColor }} />
@@ -39,8 +39,8 @@ export default function RadarStats({ stats }) {
       {/* Expandable Body */}
       {expanded && (
         <div className="space-y-2 pt-2 border-t border-white/10 animate-fade-in">
-          <StatRow icon={<Globe2 size={11} />} label="Airborne Aircraft" value={count.toLocaleString()} color="#60a5fa" />
-          <StatRow icon={<Cpu size={11} />} label="Render FPS" value={`${fps} fps`} color={fps >= 55 ? "#4ade80" : fps >= 30 ? "#fbbf24" : "#f87171"} />
+          <StatRow icon={<Globe2 size={11} />} label="Airborne Aircraft" value={count.toLocaleString()} color="#00F2FE" />
+          <StatRow icon={<Cpu size={11} />} label="Render FPS" value={`${fps} fps`} color={fps >= 55 ? "#00FFA3" : fps >= 30 ? "#FBBF24" : "#FF3B69"} />
           <StatRow
             icon={isOffline ? <WifiOff size={11} /> : <Wifi size={11} />}
             label="Feed Source"
@@ -49,7 +49,7 @@ export default function RadarStats({ stats }) {
           />
           <StatRow icon={<Clock size={11} />} label="Last Sync" value={lastUpdateStr} />
 
-          <div className="text-[9px] font-mono text-slate-400 text-center pt-1 border-t border-white/5">
+          <div className="text-[9px] font-mono text-[#94A3B8] text-center pt-1 border-t border-white/5">
             15s Cadence · Real-World Flight Telemetry
           </div>
         </div>
@@ -61,16 +61,17 @@ export default function RadarStats({ stats }) {
 function StatRow({ icon, label, value, color }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+      <div className="flex items-center gap-1.5 text-[11px] text-[#94A3B8]">
         <span>{icon}</span>
         {label}
       </div>
       <span
         className="text-[11px] font-bold font-mono"
-        style={{ color: color || "#ffffff" }}
+        style={{ color: color || "#F8FAFC" }}
       >
         {value}
       </span>
     </div>
   );
 }
+

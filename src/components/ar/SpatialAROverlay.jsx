@@ -33,9 +33,11 @@ export function SpatialAROverlay({ waypoints = [], onClose }) {
   const destination = validWps.length >= 2 ? validWps[validWps.length - 1] : null;
 
   // Build arc between waypoints for the AR globe
+  const origLng = origin ? (origin.lng ?? origin.lon ?? 0) : 0;
+  const destLng = destination ? (destination.lng ?? destination.lon ?? 0) : 0;
   const arArcs = (origin && destination) ? [{
-    startLat: origin.lat, startLng: origin.lng,
-    endLat: destination.lat, endLng: destination.lng,
+    startLat: origin.lat, startLng: origLng,
+    endLat: destination.lat, endLng: destLng,
     color: ["rgba(0,240,255,0.9)", "rgba(0,240,255,0.3)"],
   }] : [];
 
@@ -116,7 +118,7 @@ export function SpatialAROverlay({ waypoints = [], onClose }) {
           {origin && destination && (
             <div className="hidden sm:flex items-center gap-2 glass px-3 py-1.5 rounded-xl border border-white/10 text-xs font-semibold text-cyan-300">
               <Navigation size={13} />
-              <span>{origin.iata} → {destination.iata}</span>
+              <span>{origin.iata || origin.code || "ORIG"} → {destination.iata || destination.code || "DEST"}</span>
             </div>
           )}
           <button
@@ -208,7 +210,7 @@ export function SpatialAROverlay({ waypoints = [], onClose }) {
             {/* Route label */}
             <div className="glass px-4 py-2 rounded-2xl border border-cyan-400/30 text-xs font-mono text-center text-cyan-300 shadow-xl">
               {origin && destination
-                ? `${origin.city} → ${destination.city}`
+                ? `${origin.city || origin.iata || origin.code || "Origin"} → ${destination.city || destination.iata || destination.code || "Destination"}`
                 : "Global Live Flight Tracker"}
             </div>
           </div>
@@ -262,3 +264,5 @@ export function SpatialAROverlay({ waypoints = [], onClose }) {
     </div>
   );
 }
+
+export default SpatialAROverlay;

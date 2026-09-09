@@ -57,3 +57,5 @@ export function WebXRModal({ isOpen, onClose, onStartAR }) {
     </div>
   );
 }
+
+export default WebXRModal;

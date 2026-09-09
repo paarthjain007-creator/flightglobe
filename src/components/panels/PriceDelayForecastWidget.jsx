@@ -1,8 +1,14 @@
 import React from "react";
 import { TrendingUp, AlertTriangle, Calendar, ShieldCheck, DollarSign } from "lucide-react";
 import GlassCard from "../ui/GlassCard";
+import { useStore } from "../../store/useStore";
+import { CURRENCY_MAP } from "../../services/api/amadeusService";
 
 export default function PriceDelayForecastWidget({ dailyForecast = [], selectedDayIndex = 0 }) {
+  const storeCurrency = useStore((s) => s.currency || "USD");
+  const currencyConf = CURRENCY_MAP[storeCurrency] || CURRENCY_MAP.USD;
+  const symbol = currencyConf.symbol || "$";
+
   if (!dailyForecast || dailyForecast.length === 0) return null;
 
   const maxPrice = Math.max(...dailyForecast.map((d) => d.avgPrice), 1);
@@ -15,8 +21,8 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
     <GlassCard className="p-4" animate="animate-slide-up">
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">
-        <TrendingUp size={14} style={{ color: "var(--accent)" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+        <TrendingUp size={14} style={{ color: "#00F2FE" }} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
           Price & Delay Predictive Forecast
         </span>
       </div>
@@ -24,9 +30,9 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
       {/* 7-Day Price Bar Chart */}
       <div className="mb-4">
         <div className="flex items-center justify-between text-xs mb-2">
-          <span style={{ color: "var(--text-muted)" }}>7-Day Ticket Price Trend</span>
-          <span className="font-bold" style={{ color: "var(--accent)" }}>
-            Lowest: ${cheapestDay?.avgPrice} ({cheapestDay?.label})
+          <span className="text-slate-400">7-Day Ticket Price Trend</span>
+          <span className="font-bold text-cyan-400">
+            Lowest: {symbol}{cheapestDay?.avgPrice?.toLocaleString() || 0} ({cheapestDay?.label})
           </span>
         </div>
 
@@ -38,8 +44,8 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
 
             return (
               <div key={d.dayIndex} className="flex-1 flex flex-col items-center gap-1 group">
-                <span className="text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                  ${d.avgPrice}
+                <span className="text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity font-mono">
+                  {symbol}{d.avgPrice}
                 </span>
                 <div
                   className={`w-full rounded-t-lg transition-all duration-300 ${
@@ -52,7 +58,7 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
                   style={{ height: `${heightPct}%` }}
                 />
                 <span className={`text-[10px] font-semibold ${isSelected ? "text-cyan-300" : "text-slate-400"}`}>
-                  {d.label.split(" ")[0]}
+                  {d.label?.split(" ")[0] || d.day || ""}
                 </span>
               </div>
             );
@@ -74,10 +80,10 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
             <AlertTriangle size={12} />
             <span>Delay Risk</span>
           </div>
-          <div className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+          <div className="text-lg font-bold" style={{ color: "#F8FAFC" }}>
             {selectedDay.avgDelayRisk}%
           </div>
-          <div className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+          <div className="text-[10px] text-slate-400">
             {selectedDay.avgDelayRisk > 30 ? "Peak traffic expected" : "Low historical delay"}
           </div>
         </div>
@@ -87,15 +93,15 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
           className="p-3 rounded-xl space-y-1"
           style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)" }}
         >
-          <div className="flex items-center gap-1 text-[11px] font-medium" style={{ color: "var(--accent)" }}>
+          <div className="flex items-center gap-1 text-[11px] font-medium" style={{ color: "#00F2FE" }}>
             <ShieldCheck size={12} />
             <span>Booking Advice</span>
           </div>
-          <div className="text-sm font-bold truncate" style={{ color: "var(--text-primary)" }}>
+          <div className="text-sm font-bold truncate" style={{ color: "#F8FAFC" }}>
             {selectedDay.dayIndex === cheapestDay?.dayIndex ? "Best Value Day" : "Standard Fare"}
           </div>
-          <div className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-            Avg ${selectedDay.avgPrice} / person
+          <div className="text-[10px] text-slate-400 font-mono">
+            Avg {symbol}{selectedDay.avgPrice?.toLocaleString() || 0} / person
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { AIRPORTS } from "../../data/airports";
 import { generateJetstreamPaths, calculateWindEffect } from "../../utils/windVectorMath";
 import { predictRouteAnomalies } from "../../services/anomalyPredictor";
 import { interpolateGreatCircle } from "../../utils/slerpMath";
+import { useStore } from "../../store/useStore";
 
 const THEME_CONFIG = {
   space:     { atmosphere: "#1e3a8a", bg: "#050a18", arcColor: "#60a5fa" },
@@ -40,20 +41,41 @@ function isDayAt(timezone) {
   } catch { return true; }
 }
 
-function buildArcs(waypoints, arcColorTint) {
-  if (!waypoints || waypoints.length < 2) return [];
-  const colorStr = hexToRgba(arcColorTint, 0.85);
+function buildArcs(waypoints, arcColorTint, hoveredFlightPath) {
   const arcs = [];
-  for (let i = 0; i < waypoints.length - 1; i++) {
-    const a = waypoints[i];
-    const b = waypoints[i + 1];
-    if (!a || !b) continue;
-    arcs.push({
-      startLat: a.lat, startLng: a.lng,
-      endLat:   b.lat, endLng:   b.lng,
-      color: [colorStr, colorStr],
-    });
+  
+  // Base Route Arcs
+  if (waypoints && waypoints.length >= 2) {
+    const colorStr = hexToRgba(arcColorTint, 0.85);
+    for (let i = 0; i < waypoints.length - 1; i++) {
+      const a = waypoints[i];
+      const b = waypoints[i + 1];
+      if (!a || !b) continue;
+      arcs.push({
+        startLat: a.lat, startLng: a.lng,
+        endLat:   b.lat, endLng:   b.lng,
+        color: [colorStr, colorStr],
+        stroke: 0.5
+      });
+    }
   }
+
+  // Hovered Booking Flight Path
+  if (hoveredFlightPath && hoveredFlightPath.length >= 2) {
+    for (let i = 0; i < hoveredFlightPath.length - 1; i++) {
+      const a = hoveredFlightPath[i];
+      const b = hoveredFlightPath[i + 1];
+      if (!a || !b) continue;
+      arcs.push({
+        startLat: a.lat, startLng: a.lng,
+        endLat:   b.lat, endLng:   b.lng,
+        color: ["#00f0ff", "#34d399"],
+        stroke: 1.5,
+        altitude: 0.2
+      });
+    }
+  }
+
   return arcs;
 }
 
@@ -153,9 +175,24 @@ export default function GlobeCore({
   isCockpitView = false,
   cockpitProgress = 0.5,
   onPointClick,
+  hoveredFlightPath = null,
 }) {
   const globeRef = useRef(null);
   const cfg = THEME_CONFIG[theme] || THEME_CONFIG.space;
+
+  // ── Spatial Command: FOCUS_LOCATION / DRAW_ROUTE camera pan ─────────────
+  const globeFocusTarget  = useStore((s) => s.globeFocusTarget);
+  const setGlobeFocusTarget = useStore((s) => s.setGlobeFocusTarget);
+
+  useEffect(() => {
+    if (!globeFocusTarget || !globeRef.current) return;
+    const { lat, lng, altitude = 1.8 } = globeFocusTarget;
+    if (typeof lat !== "number" || typeof lng !== "number") return;
+    globeRef.current.pointOfView({ lat, lng, altitude }, 1200);
+    // Clear after firing so a repeat dispatch of the same coords still triggers
+    const timer = setTimeout(() => setGlobeFocusTarget(null), 1300);
+    return () => clearTimeout(timer);
+  }, [globeFocusTarget]);
 
   const containerRef = useRef(null);
   const [dims, setDims] = useState({ w: window.innerWidth, h: window.innerHeight });
@@ -183,12 +220,14 @@ export default function GlobeCore({
 
   const globeTexture = theme === "holodeck" || theme === "synthwave" ? DARK_TEXTURE : useNight ? NIGHT_TEXTURE : DAY_TEXTURE;
 
-  const arcs   = buildArcs(waypoints, windEffect.arcColorTint || cfg.arcColor);
+  const arcs   = buildArcs(waypoints, windEffect.arcColorTint || cfg.arcColor, hoveredFlightPath);
   const points = buildPoints(waypoints, liveFlights, simulated4DFlights, cfg.arcColor);
   const rings  = buildRings(waypoints, warningRings);
 
   const hexPointsData = useMemo(() => {
     if (activeOverlayLayer === "none") return [];
+
+    // Flight density / traffic
     if (activeOverlayLayer === "density") {
       const pts = [];
       AIRPORTS.forEach((ap) => {
@@ -202,15 +241,60 @@ export default function GlobeCore({
       });
       return pts;
     }
-    if (activeOverlayLayer === "weather") {
+
+    // Legacy "weather" alias + new "weather_overlay"
+    if (activeOverlayLayer === "weather" || activeOverlayLayer === "weather_overlay") {
       const pts = [];
-      for (let i = 0; i < 75; i++) {
-        const lat = (Math.random() - 0.5) * 110;
-        const lng = (Math.random() - 0.5) * 350;
-        pts.push({ lat, lng, weight: 2 + Math.random() * 6 });
+      for (let i = 0; i < 90; i++) {
+        const lat = (Math.random() - 0.5) * 140;
+        const lng = (Math.random() - 0.5) * 360;
+        pts.push({ lat, lng, weight: 1 + Math.random() * 7 });
       }
       return pts;
     }
+
+    // Price / fare heat-map — clusters around major route hubs
+    if (activeOverlayLayer === "price_heat_map") {
+      const hubs = AIRPORTS.filter((_, i) => i % 4 === 0).slice(0, 40);
+      const pts = [];
+      hubs.forEach((ap) => {
+        const intensity = Math.floor(2 + Math.random() * 6);
+        for (let i = 0; i < intensity; i++) {
+          pts.push({
+            lat: ap.lat + (Math.random() - 0.5) * 5,
+            lng: ap.lng + (Math.random() - 0.5) * 5,
+            weight: 4 + Math.random() * 8,
+          });
+        }
+      });
+      return pts;
+    }
+
+    // Day/Night terminator band — longitudinal gradient
+    if (activeOverlayLayer === "day_night_cycle") {
+      const pts = [];
+      const terminatorLng = -((new Date().getUTCHours() / 24) * 360 - 180);
+      for (let lat = -80; lat <= 80; lat += 4) {
+        for (let d = -15; d <= 15; d += 3) {
+          pts.push({ lat, lng: terminatorLng + d, weight: 5 - Math.abs(d) * 0.3 });
+        }
+      }
+      return pts;
+    }
+
+    // Aircraft AR pins — reuse live flight pattern with dense sampling
+    if (activeOverlayLayer === "aircraft_ar") {
+      const pts = [];
+      for (let i = 0; i < 60; i++) {
+        pts.push({
+          lat: (Math.random() - 0.5) * 120,
+          lng: (Math.random() - 0.5) * 360,
+          weight: 3 + Math.random() * 4,
+        });
+      }
+      return pts;
+    }
+
     return [];
   }, [activeOverlayLayer]);
 
@@ -317,7 +401,7 @@ export default function GlobeCore({
       {destination && !isCockpitView && (
         <div
           className="absolute bottom-24 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 z-10"
-          style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--text-muted)" }}
+          style={{ background: "rgba(10, 14, 24, 0.72)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#94A3B8" }}
         >
           <span>{useNight ? "🌙" : "☀️"}</span>
           <span>{useNight ? "Night" : "Daytime"} at {destination.city}</span>

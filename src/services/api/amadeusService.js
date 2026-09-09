@@ -5,7 +5,8 @@
  */
 
 import { haversineDistance } from "../../utils/flightCalc";
-import { AIRPORTS } from "../../data/airports";
+import { AIRPORTS, getAirportByIata } from "../../data/airports";
+import { searchAirportsAPI, fetch7DayFareMatrixAPI as fetch7DayFareMatrixFromAPI } from "./apiClient";
 
 let amadeusAccessToken = null;
 let tokenExpirationTime = 0;
@@ -25,29 +26,68 @@ export const REAL_AIRLINE_BRANDS = {
   EY: { name: "Etihad Airways", logo: "🇦🇪", hub: "AUH", country: "United Arab Emirates", baggage: "2x 23kg Included" },
   EK: { name: "Emirates", logo: "🇦🇪", hub: "DXB", country: "United Arab Emirates", baggage: "2x 23kg Included" },
   AI: { name: "Air India", logo: "🇮🇳", hub: "DEL", country: "India", baggage: "2x 23kg Included" },
+  "6E": { name: "IndiGo", logo: "🇮🇳", hub: "DEL", country: "India", baggage: "1x 15kg Included" },
+  SG: { name: "SpiceJet", logo: "🇮🇳", hub: "DEL", country: "India", baggage: "1x 15kg Included" },
+  QP: { name: "Akasa Air", logo: "🇮🇳", hub: "BOM", country: "India", baggage: "1x 15kg Included" },
+  IX: { name: "Air India Express", logo: "🇮🇳", hub: "COK", country: "India", baggage: "1x 15kg Included" },
+  UK: { name: "Vistara", logo: "🇮🇳", hub: "DEL", country: "India", baggage: "2x 23kg Included" },
   LX: { name: "SWISS International Air Lines", logo: "🇨🇭", hub: "ZRH", country: "Switzerland", baggage: "1x 23kg Included" },
   LH: { name: "Lufthansa", logo: "🇩🇪", hub: "FRA", country: "Germany", baggage: "1x 23kg Included" },
   BA: { name: "British Airways", logo: "🇬🇧", hub: "LHR", country: "United Kingdom", baggage: "1x 23kg Included" },
+  VS: { name: "Virgin Atlantic", logo: "🇬🇧", hub: "LHR", country: "United Kingdom", baggage: "1x 23kg Included" },
   QR: { name: "Qatar Airways", logo: "🇶🇦", hub: "DOH", country: "Qatar", baggage: "2x 25kg Included" },
   SQ: { name: "Singapore Airlines", logo: "🇸🇬", hub: "SIN", country: "Singapore", baggage: "2x 25kg Included" },
   QF: { name: "Qantas", logo: "🇦🇺", hub: "SYD", country: "Australia", baggage: "1x 23kg Included" },
+  VA: { name: "Virgin Australia", logo: "🇦🇺", hub: "BNE", country: "Australia", baggage: "1x 23kg Included" },
+  NZ: { name: "Air New Zealand", logo: "🇳🇿", hub: "AKL", country: "New Zealand", baggage: "1x 23kg Included" },
   AF: { name: "Air France", logo: "🇫🇷", hub: "CDG", country: "France", baggage: "1x 23kg Included" },
+  KL: { name: "KLM Royal Dutch Airlines", logo: "🇳🇱", hub: "AMS", country: "Netherlands", baggage: "1x 23kg Included" },
+  IB: { name: "Iberia", logo: "🇪🇸", hub: "MAD", country: "Spain", baggage: "1x 23kg Included" },
+  AZ: { name: "ITA Airways", logo: "🇮🇹", hub: "FCO", country: "Italy", baggage: "1x 23kg Included" },
+  OS: { name: "Austrian Airlines", logo: "🇦🇹", hub: "VIE", country: "Austria", baggage: "1x 23kg Included" },
+  SN: { name: "Brussels Airlines", logo: "🇧🇪", hub: "BRU", country: "Belgium", baggage: "1x 23kg Included" },
+  TP: { name: "TAP Air Portugal", logo: "🇵🇹", hub: "LIS", country: "Portugal", baggage: "1x 23kg Included" },
+  SK: { name: "SAS Scandinavian Airlines", logo: "🇸🇪", hub: "CPH", country: "Sweden", baggage: "1x 23kg Included" },
+  AY: { name: "Finnair", logo: "🇫🇮", hub: "HEL", country: "Finland", baggage: "1x 23kg Included" },
+  LO: { name: "LOT Polish Airlines", logo: "🇵🇱", hub: "WAW", country: "Poland", baggage: "1x 23kg Included" },
+  EI: { name: "Aer Lingus", logo: "🇮🇪", hub: "DUB", country: "Ireland", baggage: "1x 23kg Included" },
   DL: { name: "Delta Air Lines", logo: "🇺🇸", hub: "ATL", country: "United States", baggage: "1x 23kg Included" },
   UA: { name: "United Airlines", logo: "🇺🇸", hub: "ORD", country: "United States", baggage: "1x 23kg Included" },
   AA: { name: "American Airlines", logo: "🇺🇸", hub: "DFW", country: "United States", baggage: "1x 23kg Included" },
+  AC: { name: "Air Canada", logo: "🇨🇦", hub: "YYZ", country: "Canada", baggage: "1x 23kg Included" },
+  WS: { name: "WestJet", logo: "🇨🇦", hub: "YYC", country: "Canada", baggage: "1x 23kg Included" },
+  AM: { name: "Aeroméxico", logo: "🇲🇽", hub: "MEX", country: "Mexico", baggage: "1x 23kg Included" },
+  CM: { name: "Copa Airlines", logo: "🇵🇦", hub: "PTY", country: "Panama", baggage: "1x 23kg Included" },
+  AV: { name: "Avianca", logo: "🇨🇴", hub: "BOG", country: "Colombia", baggage: "1x 23kg Included" },
+  LA: { name: "LATAM Airlines", logo: "🇨🇱", hub: "SCL", country: "Chile", baggage: "1x 23kg Included" },
+  AR: { name: "Aerolíneas Argentinas", logo: "🇦🇷", hub: "EZE", country: "Argentina", baggage: "1x 23kg Included" },
+  G3: { name: "Gol Linhas Aéreas", logo: "🇧🇷", hub: "GRU", country: "Brazil", baggage: "1x 23kg Included" },
+  SA: { name: "South African Airways", logo: "🇿🇦", hub: "JNB", country: "South Africa", baggage: "2x 23kg Included" },
+  ET: { name: "Ethiopian Airlines", logo: "🇪🇹", hub: "ADD", country: "Ethiopia", baggage: "2x 23kg Included" },
+  KQ: { name: "Kenya Airways", logo: "🇰🇪", hub: "NBO", country: "Kenya", baggage: "2x 23kg Included" },
+  MS: { name: "EgyptAir", logo: "🇪🇬", hub: "CAI", country: "Egypt", baggage: "2x 23kg Included" },
+  AT: { name: "Royal Air Maroc", logo: "🇲🇦", hub: "CMN", country: "Morocco", baggage: "2x 23kg Included" },
+  SV: { name: "Saudia", logo: "🇸🇦", hub: "JED", country: "Saudi Arabia", baggage: "2x 23kg Included" },
+  GF: { name: "Gulf Air", logo: "🇧🇭", hub: "BAH", country: "Bahrain", baggage: "2x 23kg Included" },
+  WY: { name: "Oman Air", logo: "🇴🇲", hub: "MCT", country: "Oman", baggage: "2x 23kg Included" },
+  TK: { name: "Turkish Airlines", logo: "🇹🇷", hub: "IST", country: "Turkey", baggage: "2x 23kg Included" },
   JL: { name: "Japan Airlines", logo: "🇯🇵", hub: "HND", country: "Japan", baggage: "2x 23kg Included" },
   NH: { name: "All Nippon Airways (ANA)", logo: "🇯🇵", hub: "NRT", country: "Japan", baggage: "2x 23kg Included" },
-  TK: { name: "Turkish Airlines", logo: "🇹🇷", hub: "IST", country: "Turkey", baggage: "2x 23kg Included" },
   CX: { name: "Cathay Pacific", logo: "🇭🇰", hub: "HKG", country: "Hong Kong", baggage: "2x 23kg Included" },
-  VS: { name: "Virgin Atlantic", logo: "🇬🇧", hub: "LHR", country: "United Kingdom", baggage: "1x 23kg Included" },
+  KE: { name: "Korean Air", logo: "🇰🇷", hub: "ICN", country: "South Korea", baggage: "2x 23kg Included" },
+  OZ: { name: "Asiana Airlines", logo: "🇰🇷", hub: "ICN", country: "South Korea", baggage: "2x 23kg Included" },
+  MH: { name: "Malaysia Airlines", logo: "🇲🇾", hub: "KUL", country: "Malaysia", baggage: "2x 23kg Included" },
+  TG: { name: "Thai Airways", logo: "🇹🇭", hub: "BKK", country: "Thailand", baggage: "2x 23kg Included" },
+  GA: { name: "Garuda Indonesia", logo: "🇮🇩", hub: "CGK", country: "Indonesia", baggage: "2x 23kg Included" },
+  VN: { name: "Vietnam Airlines", logo: "🇻🇳", hub: "SGN", country: "Vietnam", baggage: "2x 23kg Included" },
+  PR: { name: "Philippine Airlines", logo: "🇵🇭", hub: "MNL", country: "Philippines", baggage: "2x 23kg Included" },
+  BR: { name: "EVA Air", logo: "🇹🇼", hub: "TPE", country: "Taiwan", baggage: "2x 23kg Included" },
+  CI: { name: "China Airlines", logo: "🇹🇼", hub: "TPE", country: "Taiwan", baggage: "2x 23kg Included" },
+  CA: { name: "Air China", logo: "🇨🇳", hub: "PEK", country: "China", baggage: "2x 23kg Included" },
+  CZ: { name: "China Southern Airlines", logo: "🇨🇳", hub: "CAN", country: "China", baggage: "2x 23kg Included" },
+  MU: { name: "China Eastern Airlines", logo: "🇨🇳", hub: "PVG", country: "China", baggage: "2x 23kg Included" },
+  FJ: { name: "Fiji Airways", logo: "🇫🇯", hub: "NAN", country: "Fiji", baggage: "1x 23kg Included" },
 };
-
-function getAirportByIata(iata) {
-  if (!iata) return null;
-  const found = AIRPORTS.find((a) => a.iata.toUpperCase() === iata.toUpperCase());
-  if (found) return found;
-  return { iata: iata.toUpperCase(), name: `${iata} Airport`, city: iata, country: "Global Airport", lat: 20.0, lng: 10.0 };
-}
 
 /**
  * Fetches OAuth 2.0 token from Amadeus Security Auth Endpoint
@@ -213,18 +253,12 @@ async function generateFallbackFlightOffers({ originIata, destinationIata, depar
 
   try {
     if (origin && origin.country === "Global Airport") {
-      const res = await fetch(`http://localhost:3001/api/airports/search?q=${originIata}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.results && data.results.length > 0) origin = data.results[0];
-      }
+      const results = await searchAirportsAPI(originIata);
+      if (results && results.length > 0) origin = results[0];
     }
     if (dest && dest.country === "Global Airport") {
-      const res = await fetch(`http://localhost:3001/api/airports/search?q=${destinationIata}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.results && data.results.length > 0) dest = data.results[0];
-      }
+      const results = await searchAirportsAPI(destinationIata);
+      if (results && results.length > 0) dest = results[0];
     }
   } catch (err) {
     console.warn("Failed to fetch exact coordinates for fallback, using estimates.");
@@ -298,7 +332,13 @@ async function generateFallbackFlightOffers({ originIata, destinationIata, depar
         carrierCode: airline.code,
         airlineName: airline.name,
         number: `${airline.code}${Math.floor(100 + Math.random() * 899)}`,
-        aircraft: distKm > 4000 ? (Math.random() > 0.5 ? "Boeing 787-9" : "Airbus A350-900") : (Math.random() > 0.5 ? "Airbus A320neo" : "Boeing 737 MAX 8"),
+        aircraft: airline.code === "6E"
+          ? (Math.random() > 0.4 ? "Airbus A321neo" : "Airbus A320neo")
+          : airline.code === "SG"
+          ? (Math.random() > 0.4 ? "Boeing 737 MAX 8" : "Boeing 737-800")
+          : distKm > 4000
+          ? (Math.random() > 0.5 ? "Boeing 787-9" : "Airbus A350-900")
+          : (Math.random() > 0.5 ? "Airbus A320neo" : "Boeing 737 MAX 8"),
         durationMinutes: Math.round(leg1Hours * 60),
       },
     ];
@@ -314,7 +354,13 @@ async function generateFallbackFlightOffers({ originIata, destinationIata, depar
         carrierCode: airline.code,
         airlineName: airline.name,
         number: `${airline.code}${Math.floor(100 + Math.random() * 899)}`,
-        aircraft: distKm > 4000 ? (Math.random() > 0.5 ? "Boeing 777-300ER" : "Airbus A330-900") : (Math.random() > 0.5 ? "Airbus A220-300" : "Boeing 737-800"),
+        aircraft: airline.code === "6E"
+          ? "Airbus A320neo"
+          : airline.code === "SG"
+          ? "Boeing 737-800"
+          : distKm > 4000
+          ? (Math.random() > 0.5 ? "Boeing 777-300ER" : "Airbus A330-900")
+          : (Math.random() > 0.5 ? "Airbus A220-300" : "Boeing 737-800"),
         durationMinutes: Math.round(leg1Hours * 60),
       });
     }
@@ -395,19 +441,9 @@ export function generate7DayFareMatrix(originIata, destinationIata, departureDat
  */
 export async function fetch7DayFareMatrixAPI(originIata, destinationIata, departureDate, currency = "USD") {
   try {
-    const query = new URLSearchParams({
-      origin: originIata || "JFK",
-      destination: destinationIata || "LHR",
-      departureDate: departureDate || new Date().toISOString().split("T")[0],
-      currency: currency || "USD",
-    });
-
-    const res = await fetch(`http://localhost:3001/api/fares/matrix?${query}`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data && Array.isArray(data.matrix) && data.matrix.length > 0) {
-        return data.matrix;
-      }
+    const matrix = await fetch7DayFareMatrixFromAPI(originIata, destinationIata, departureDate, currency);
+    if (matrix && Array.isArray(matrix) && matrix.length > 0) {
+      return matrix;
     }
   } catch (err) {
     console.warn("[amadeusService] /api/fares/matrix fetch error, using GDS engine fallback:", err.message);

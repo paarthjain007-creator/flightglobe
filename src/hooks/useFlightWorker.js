@@ -44,7 +44,7 @@ export function useFlightWorker(airports) {
   }, []);
 
   // Serialize dep as a string to avoid triggering on every render
-  const airportKey = airports?.map((a) => a?.iata ?? "null").join(",") ?? "";
+  const airportKey = airports?.map((a) => a?.iata || a?.code || "null").join(",") ?? "";
 
   useEffect(() => {
     if (!airports || airports.length < 2) {

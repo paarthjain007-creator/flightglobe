@@ -1,0 +1,11 @@
+/api/traffic          /.netlify/functions/traffic          200
+/api/rates            /.netlify/functions/rates            200
+/api/fares/matrix     /.netlify/functions/fares            200
+/api/airports/search  /.netlify/functions/airports         200
+/api/bookings/*       /.netlify/functions/bookings/:splat  200
+/api/bookings         /.netlify/functions/bookings         200
+/api/agent/chat       /.netlify/functions/agent            200
+/api/user/*           /.netlify/functions/user/:splat      200
+/api/user             /.netlify/functions/user             200
+/api/health           /.netlify/functions/health           200
+/*                    /index.html                          200

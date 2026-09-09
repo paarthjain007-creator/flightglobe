@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { AIRPORTS } from "../data/airports";
+import { AIRPORTS, getAirportByIata } from "../data/airports";
 
 /**
  * useFlightDeepLink
@@ -42,7 +42,7 @@ export function useFlightDeepLink({
     let hydrated = false;
 
     if (fromCode) {
-      const found = AIRPORTS.find((a) => a.iata === fromCode);
+      const found = getAirportByIata(fromCode);
       if (found) {
         setOrigin(found);
         hydrated = true;
@@ -50,7 +50,7 @@ export function useFlightDeepLink({
     }
 
     if (toCode) {
-      const found = AIRPORTS.find((a) => a.iata === toCode);
+      const found = getAirportByIata(toCode);
       if (found) {
         setDestination(found);
         hydrated = true;
@@ -70,15 +70,29 @@ export function useFlightDeepLink({
   }, []);
 
   // Step 1: Update URL parameters ONLY when user triggers search/changes route after initial hydration
-  const syncUrlParams = (newOrigin, newDest, newDate) => {
+  const syncUrlParams = useCallback((newOrigin, newDest, newDate) => {
     if (typeof window === "undefined") return;
+
+    const curFrom = searchParams.get("from")?.toUpperCase();
+    const curTo = searchParams.get("to")?.toUpperCase();
+    const curDate = searchParams.get("date");
+
+    const nextFrom = (newOrigin?.iata || newOrigin?.code || "").toUpperCase();
+    const nextTo = (newDest?.iata || newDest?.code || "").toUpperCase();
+    const nextDate = newDate || "";
+
+    // Skip if URL is already identical
+    if (curFrom === nextFrom && curTo === nextTo && (!nextDate || curDate === nextDate)) {
+      return;
+    }
+
     const params = {};
-    if (newOrigin?.iata) params.from = newOrigin.iata;
-    if (newDest?.iata) params.to = newDest.iata;
-    if (newDate) params.date = newDate;
+    if (nextFrom) params.from = nextFrom;
+    if (nextTo) params.to = nextTo;
+    if (nextDate) params.date = nextDate;
 
     setSearchParams(params, { replace: true });
-  };
+  }, [searchParams, setSearchParams]);
 
   return { syncUrlParams };
 }
