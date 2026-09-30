@@ -3,6 +3,7 @@
  * Intercepts AI tool calls, verifies security boundaries, executes bound backend database functions,
  * and formats response payloads with client state updates.
  */
+import { GoogleGenAI } from '@google/genai';
 
 import {
   getUser,
@@ -155,7 +156,103 @@ export async function executeAgentTool(user, toolName, args) {
 /**
  * Agent Execution Process
  */
+
+async function processAgentChatLLM(user, message, history) {
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  
+  const systemPrompt = `You are the FlightGlobe Autonomous AI Copilot.
+The user will ask you to perform actions on a flight booking platform.
+You must extract the user's intent and parameters and return ONLY a valid JSON object matching this schema:
+{
+  "intent": "book_flight" | "cancel_booking" | "change_currency" | "navigate_view" | "search_flights" | "chat",
+  "parameters": {
+    "origin": "IATA code (e.g. DEL)",
+    "destination": "IATA code (e.g. JFK)",
+    "date": "YYYY-MM-DD",
+    "currency": "USD" | "EUR" | "INR" | "GBP" | "AED",
+    "bookingId": "Booking ID to cancel",
+    "targetView": "booking" | "dashboard" | "explore" | "trips" | "radar",
+    "airline": "Airline Name",
+    "flightCode": "Flight number",
+    "seat": "Seat like 1A"
+  },
+  "reply": "A friendly response confirming the action or answering their question if intent is 'chat'."
+}
+Use your broad knowledge to map city names to 3-letter IATA codes (e.g. 'New York' -> 'JFK', 'Mumbai' -> 'BOM').
+If the user is just saying hi or asking a general question, use intent 'chat' and provide a helpful reply.
+`;
+
+  const contents = [
+    ...(history || []).map(h => ({
+      role: h.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: h.content }],
+    })),
+    { role: 'user', parts: [{ text: message }] },
+  ];
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents,
+    config: {
+      systemInstruction: systemPrompt,
+      responseMimeType: 'application/json',
+    }
+  });
+
+  const rawJson = response.text;
+  const parsed = JSON.parse(rawJson);
+  const clientActions = [];
+  let responseText = parsed.reply;
+
+  if (parsed.intent === 'cancel_booking') {
+    let bookingId = parsed.parameters.bookingId;
+    if (!bookingId) {
+      const userBookings = getUserBookings(user.id);
+      if (userBookings.length > 0) bookingId = userBookings[0].id;
+    }
+    if (bookingId) {
+      const toolResult = await executeAgentTool(user, 'cancel_booking', { bookingId });
+      clientActions.push(toolResult.clientAction);
+      responseText += '\n\n✅ Cancelled booking ' + bookingId + '.';
+    }
+  } else if (parsed.intent === 'navigate_view') {
+    const toolResult = await executeAgentTool(user, 'navigate_view', { targetView: parsed.parameters.targetView });
+    clientActions.push(toolResult.clientAction);
+  } else if (parsed.intent === 'change_currency') {
+    const toolResult = await executeAgentTool(user, 'change_currency', { currency: parsed.parameters.currency });
+    clientActions.push(toolResult.clientAction);
+  } else if (parsed.intent === 'book_flight') {
+    const toolResult = await executeAgentTool(user, 'book_flight', {
+      airline: parsed.parameters.airline || 'Air India',
+      flightCode: parsed.parameters.flightCode || 'AI-101',
+      fromCode: parsed.parameters.origin || 'DEL',
+      toCode: parsed.parameters.destination || 'LHR',
+      seat: parsed.parameters.seat || '1A'
+    });
+    clientActions.push(toolResult.clientAction);
+  } else if (parsed.intent === 'search_flights') {
+    const toolResult = await executeAgentTool(user, 'search_flights', {
+      origin: parsed.parameters.origin || 'DEL',
+      destination: parsed.parameters.destination || 'JFK',
+      departureDate: parsed.parameters.date,
+      currency: parsed.parameters.currency
+    });
+    clientActions.push(toolResult.clientAction);
+    // Also navigate to the booking page so the user sees results
+    clientActions.push({ type: 'NAVIGATE', path: '/booking', origin: parsed.parameters.origin, destination: parsed.parameters.destination });
+  }
+
+  return { status: 'ok', reply: responseText, clientActions };
+}
+
 export async function processAgentChat(user, message, history = []) {
+  if (process.env.GEMINI_API_KEY) {
+    try {
+      return await processAgentChatLLM(user, message, history);
+    } catch (e) {
+      console.error("[AgentEngine] LLM Error, falling back to regex engine:", e.message);
+    }
+  }
   const query = message.trim();
   const lower = query.toLowerCase();
   const clientActions = [];

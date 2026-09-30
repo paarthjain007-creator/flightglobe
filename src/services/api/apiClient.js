@@ -20,7 +20,10 @@ export async function safeFetchJson(endpoint, options = {}) {
       ...(options.headers || {}),
     };
 
-    const res = await fetch(url, { ...options, headers });
+    const timeout = options.timeout || 6000;
+    const signal = options.signal || (typeof AbortSignal?.timeout === "function" ? AbortSignal.timeout(timeout) : undefined);
+
+    const res = await fetch(url, { ...options, headers, signal });
     const contentType = res.headers.get("content-type") || "";
 
     // Guard against static host SPA fallback returning 200 OK with index.html
@@ -90,6 +93,7 @@ export async function sendAgentChatMessageAPI(message, history = []) {
       Authorization: "Bearer usr_commander_1",
     },
     body: JSON.stringify({ message, history }),
+    timeout: 3500,
   });
 
   if (result.ok && result.data?.status === "ok") {

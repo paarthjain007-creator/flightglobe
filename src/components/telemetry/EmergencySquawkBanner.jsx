@@ -56,7 +56,7 @@ export default function EmergencySquawkBanner() {
         className="fixed top-20 left-1/2 -translate-x-1/2 z-[250] w-[95%] max-w-2xl pointer-events-auto"
       >
         <div
-          className="rounded-2xl p-3 sm:p-4 backdrop-blur-2xl shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border"
+          className="rounded-2xl p-3 sm:p-4 backdrop-blur-sm shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border"
           style={{
             background: "rgba(16, 8, 14, 0.95)",
             borderColor: `${accentColor}88`,

@@ -9,11 +9,11 @@ import {
 } from "lucide-react";
 import Interactive3DGlobeTracker from "../components/tracker/Interactive3DGlobeTracker";
 import CockpitHUD from "../components/cockpit/CockpitHUD";
-import WebXRModal from "../components/ui/WebXRModal";
-import SpatialAROverlay from "../components/ar/SpatialAROverlay";
+
+
 import FlightDeckFAB from "../components/ui/FlightDeckFAB";
 import DispatchRoom from "../components/multiplayer/DispatchRoom";
-import FlightStreamMatrix, { SAMPLE_ITINERARIES } from "../components/itinerary/StaggeredDepartureCards";
+import FlightStreamMatrix from "../components/itinerary/StaggeredDepartureCards";
 import KineticSeatCanvas from "../components/canvas/KineticSeatCanvas";
 import { useStore } from "../store/useStore";
 import { sound } from "../utils/soundFx";
@@ -1055,20 +1055,6 @@ export default function Explore() {
           destination={destination}
           progress={planeTelemetry.progress}
           onExitCockpit={() => setIsCockpitView(false)}
-        />
-      )}
-
-      {/* ── 8. SPATIAL AR / WEBXR MODAL & LIVE VIEWPORT OVERLAY ─────────── */}
-      <WebXRModal
-        isOpen={isARModalOpen}
-        onClose={() => setIsARModalOpen(false)}
-        onStartAR={() => setIsARActive(true)}
-      />
-
-      {isARActive && (
-        <SpatialAROverlay
-          waypoints={[origin, destination]}
-          onClose={() => setIsARActive(false)}
         />
       )}
 

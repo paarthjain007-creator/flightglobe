@@ -40,12 +40,12 @@ export default function FlightStatusCard({ origin, destination }) {
   return (
     <GlassCard className="p-4" animate="animate-slide-up">
       <div className="flex items-center gap-2 mb-3">
-        <Plane size={14} style={{ color: "#00F2FE" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <Plane size={14} className="text-[#2997ff]" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#86868b]">
           Flight Status
         </span>
         <div className="ml-auto">
-          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(0, 242, 254, 0.12)", color: "#00F2FE", border: "1px solid rgba(0, 242, 254, 0.25)" }}>
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(41, 151, 255, 0.12)", color: "#2997ff", border: "1px solid rgba(41, 151, 255, 0.25)" }}>
             Simulated
           </span>
         </div>
@@ -53,8 +53,8 @@ export default function FlightStatusCard({ origin, destination }) {
 
       {loading && (
         <div className="flex items-center gap-2 py-3 justify-center">
-          <Loader2 size={14} className="animate-spin" style={{ color: "#00F2FE" }} />
-          <span className="text-xs text-slate-400">Loading status…</span>
+          <Loader2 size={14} className="animate-spin text-[#2997ff]" />
+          <span className="text-xs text-[#86868b]">Loading status…</span>
         </div>
       )}
 

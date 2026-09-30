@@ -6,7 +6,7 @@
 
 import { haversineDistance } from "../../utils/flightCalc";
 import { AIRPORTS, getAirportByIata } from "../../data/airports";
-import { searchAirportsAPI, fetch7DayFareMatrixAPI as fetch7DayFareMatrixFromAPI } from "./apiClient";
+import { searchAirportsAPI, fetch7DayFareMatrixAPI as fetch7DayFareMatrixFromAPI, fetchExchangeRatesAPI } from "./apiClient";
 
 let amadeusAccessToken = null;
 let tokenExpirationTime = 0;
@@ -20,7 +20,27 @@ export const CURRENCY_MAP = {
   CHF: { symbol: "CHF ", rate: 0.90, flag: "🇨🇭", label: "CHF (🇨🇭)" },
   JPY: { symbol: "¥", rate: 154.2, flag: "🇯🇵", label: "JPY (¥)" },
   AUD: { symbol: "A$", rate: 1.54, flag: "🇦🇺", label: "AUD ($)" },
+  CAD: { symbol: "CA$", rate: 1.39, flag: "🇨🇦", label: "CAD ($)" },
+  SGD: { symbol: "SG$", rate: 1.35, flag: "🇸🇬", label: "SGD ($)" },
 };
+
+let lastRatesSync = 0;
+export async function syncLiveExchangeRates() {
+  if (Date.now() - lastRatesSync < 300000) return; // cache for 5 minutes
+  try {
+    const liveRates = await fetchExchangeRatesAPI();
+    if (liveRates && typeof liveRates === "object") {
+      Object.keys(CURRENCY_MAP).forEach((code) => {
+        if (liveRates[code] && typeof liveRates[code] === "number") {
+          CURRENCY_MAP[code].rate = liveRates[code];
+        }
+      });
+      lastRatesSync = Date.now();
+    }
+  } catch (err) {
+    // Keep cached / fallback rates
+  }
+}
 
 export const REAL_AIRLINE_BRANDS = {
   EY: { name: "Etihad Airways", logo: "🇦🇪", hub: "AUH", country: "United Arab Emirates", baggage: "2x 23kg Included" },
@@ -129,6 +149,8 @@ async function getAmadeusToken(customKey, customSecret) {
  * Searches Amadeus Flight Offers for real-world rates
  */
 export async function searchAmadeusFlightOffers(params) {
+  const { slicesQuery } = params;
+  await syncLiveExchangeRates();
   const {
     originIata,
     destinationIata,
@@ -140,6 +162,15 @@ export async function searchAmadeusFlightOffers(params) {
     customSecret,
   } = params;
 
+  const amadeusClassMap = {
+    economy: "ECONOMY",
+    premium: "PREMIUM_ECONOMY",
+    business: "BUSINESS",
+    first: "FIRST",
+  };
+  const normalizedClass = amadeusClassMap[String(travelClass || "ECONOMY").toLowerCase()] || "ECONOMY";
+  const paxCount = Math.max(1, parseInt(adults, 10) || 1);
+
   const token = await getAmadeusToken(customKey, customSecret);
 
   if (token) {
@@ -148,8 +179,8 @@ export async function searchAmadeusFlightOffers(params) {
         originLocationCode: originIata,
         destinationLocationCode: destinationIata,
         departureDate,
-        adults: String(adults),
-        travelClass,
+        adults: String(paxCount),
+        travelClass: normalizedClass,
         currencyCode: currency,
         max: "15",
       });
@@ -163,11 +194,45 @@ export async function searchAmadeusFlightOffers(params) {
         return normalizeAmadeusResponse(data, currency);
       }
     } catch (err) {
-      console.warn("Amadeus API live search failed, using GDS rate calculation engine:", err);
+      console.warn("Amadeus API live search failed, trying backend flight proxy:", err);
     }
   }
 
-  return await generateFallbackFlightOffers(params);
+  // 2. Query our authoritative backend flight engine with real corridor matching
+  if (originIata && destinationIata) {
+    try {
+      
+        const queryParams = {
+          origin: originIata,
+          destination: destinationIata,
+          date: departureDate || "",
+          adults: String(paxCount),
+          cabin: normalizedClass,
+          currency,
+        };
+        if (slicesQuery) queryParams.slicesQuery = slicesQuery;
+        const query = new URLSearchParams(queryParams);
+
+
+      const res = await fetch(`/api/search/flights?${query}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+          return data.data;
+        }
+      }
+    } catch (err) {
+      // Offline / static deployment fallback
+    }
+  }
+
+  return await generateFallbackFlightOffers({
+    ...params,
+    originIata,
+    destinationIata,
+    travelClass: normalizedClass,
+    adults: paxCount,
+  });
 }
 
 function normalizeAmadeusResponse(data, targetCurrency = "USD") {
@@ -247,25 +312,28 @@ function parseISODuration(isoStr) {
   return hours * 60 + minutes;
 }
 
-async function generateFallbackFlightOffers({ originIata, destinationIata, departureDate, travelClass, currency = "USD" }) {
-  let origin = getAirportByIata(originIata);
-  let dest = getAirportByIata(destinationIata);
+async function generateFallbackFlightOffers({ originIata, destinationIata, departureDate, travelClass, adults = 1, currency = "USD" }) {
+  const oCode = String(originIata?.iata || originIata?.code || originIata || "DEL").trim().toUpperCase();
+  const dCode = String(destinationIata?.iata || destinationIata?.code || destinationIata || "BOM").trim().toUpperCase();
+
+  let origin = getAirportByIata(oCode);
+  let dest = getAirportByIata(dCode);
 
   try {
     if (origin && origin.country === "Global Airport") {
-      const results = await searchAirportsAPI(originIata);
+      const results = await searchAirportsAPI(oCode);
       if (results && results.length > 0) origin = results[0];
     }
     if (dest && dest.country === "Global Airport") {
-      const results = await searchAirportsAPI(destinationIata);
+      const results = await searchAirportsAPI(dCode);
       if (results && results.length > 0) dest = results[0];
     }
   } catch (err) {
     console.warn("Failed to fetch exact coordinates for fallback, using estimates.");
   }
 
-  origin = origin || { iata: originIata || "JFK", lat: 40.64, lng: -73.77, city: "New York" };
-  dest = dest || { iata: destinationIata || "LHR", lat: 51.47, lng: -0.45, city: "London" };
+  origin = origin || { iata: oCode, lat: 28.5562, lng: 77.1000, city: oCode, country: "Global Airport" };
+  dest = dest || { iata: dCode, lat: 19.0896, lng: 72.8656, city: dCode, country: "Global Airport" };
 
   const distKm = haversineDistance(origin.lat, origin.lng, dest.lat, dest.lng);
   const baseUsdPrice = Math.round(Math.max(140, distKm * 0.092 + 75));
@@ -300,24 +368,33 @@ async function generateFallbackFlightOffers({ originIata, destinationIata, depar
 
   generatedFleetList.sort(() => 0.5 - Math.random());
 
-  const depBaseTime = new Date(departureDate || Date.now()).getTime();
+  let depBaseTime = Date.now();
+  if (departureDate) {
+    const parsed = new Date(`${departureDate}T06:00:00`);
+    if (!isNaN(parsed.getTime())) depBaseTime = parsed.getTime();
+  }
+
+  const paxCount = Math.max(1, parseInt(adults, 10) || 1);
+  const normClass = String(travelClass || "ECONOMY").toUpperCase();
+  const classMult = normClass.includes("FIRST") ? 4.4 : normClass.includes("BUS") ? 2.6 : normClass.includes("PREM") ? 1.45 : 1.0;
 
   const offers = generatedFleetList.map((airline, idx) => {
     const isLocal = airline.country === originCountry || airline.country === destCountry;
     const isDirect = (distKm < 2500 && isLocal) || (isLocal && Math.random() > 0.4);
     
     const baseAirlineMultiplier = isLocal ? 0.9 : 1.1; 
-    const classMult = travelClass === "BUSINESS" ? 2.6 : travelClass === "FIRST" ? 4.4 : travelClass === "PREMIUM_ECONOMY" ? 1.45 : 1.0;
-    
     const randomPriceJitter = (Math.random() * 0.45) - 0.15;
     
-    const usdTotal = Math.round(baseUsdPrice * baseAirlineMultiplier * classMult * (1 + randomPriceJitter));
+    const perAdultUsd = Math.round(baseUsdPrice * baseAirlineMultiplier * classMult * (1 + randomPriceJitter));
+    const usdTotal = perAdultUsd * paxCount;
     const convertedTotal = Math.round(usdTotal * currConf.rate);
+    const convertedPerAdult = Math.round(perAdultUsd * currConf.rate);
     const convertedBase = Math.round(convertedTotal * 0.78);
     const convertedTaxes = Math.round(convertedTotal * 0.14);
     const convertedFuel = convertedTotal - convertedBase - convertedTaxes;
 
-    const dep1Ms = depBaseTime + (Math.random() * 24) * 3600 * 1000;
+    const minuteSpread = Math.min(990, Math.floor((idx / spawnTarget) * 990) + ((idx * 17) % 35));
+    const dep1Ms = depBaseTime + minuteSpread * 60 * 1000;
     
     const leg1Hours = isDirect ? (distKm / 830) + 0.4 : ((distKm / 830) + 0.4) * 0.55;
     const arr1Ms = dep1Ms + Math.round(leg1Hours * 3600 * 1000);
@@ -379,6 +456,8 @@ async function generateFallbackFlightOffers({ originIata, destinationIata, depar
         currency: currency,
         currencySymbol: currConf.symbol,
         total: convertedTotal,
+        perAdult: convertedPerAdult,
+        passengers: paxCount,
         base: convertedBase,
         fees: convertedTaxes,
         fuelSurcharge: convertedFuel,

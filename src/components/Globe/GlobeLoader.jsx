@@ -16,10 +16,10 @@ export default function GlobeLoader() {
 
         {/* Text */}
         <div className="text-center">
-          <div className="text-sm font-semibold mb-1" style={{ color: "#00F2FE" }}>
+          <div className="text-sm font-semibold mb-1" style={{ color: "#2997ff" }}>
             Loading Globe
           </div>
-          <div className="text-xs text-slate-400">
+          <div className="text-xs text-[#86868b]">
             Initializing WebGL renderer…
           </div>
         </div>
@@ -36,18 +36,18 @@ export default function GlobeLoader() {
           inset: 20px;
           border-radius: 50%;
           border: 1px solid rgba(255, 255, 255, 0.1);
-          background: radial-gradient(ellipse at 35% 35%, rgba(0, 242, 254, 0.4), transparent 70%);
+          background: radial-gradient(ellipse at 35% 35%, rgba(41,151,255, 0.3), transparent 70%);
           animation: pulse-core 2s ease-in-out infinite;
         }
         .globe-ring {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          border: 1px solid #00F2FE;
+          border: 1px solid #2997ff;
           opacity: 0.3;
           animation: spin-ring 4s linear infinite;
         }
-        .globe-ring-1 { transform: rotateX(70deg); animation-duration: 3.5s; opacity: 0.5; border-color: #00F2FE; }
+        .globe-ring-1 { transform: rotateX(70deg); animation-duration: 3.5s; opacity: 0.5; border-color: #2997ff; }
         .globe-ring-2 { transform: rotateX(70deg) rotateY(60deg); animation-duration: 4.5s; opacity: 0.3; }
         .globe-ring-3 { transform: rotateX(20deg) rotateZ(45deg); animation-duration: 6s; opacity: 0.2; }
         .globe-dot {
@@ -55,16 +55,16 @@ export default function GlobeLoader() {
           width: 6px;
           height: 6px;
           border-radius: 50%;
-          background: #00F2FE;
-          box-shadow: 0 0 10px rgba(0, 242, 254, 0.6);
+          background: #2997ff;
+          box-shadow: 0 0 8px rgba(41,151,255, 0.4);
           animation: orbit 3s linear infinite;
         }
         .globe-dot-1 { animation-duration: 2.8s; top: 10px; left: 50%; margin-left: -3px; }
         .globe-dot-2 { animation-duration: 4.2s; animation-delay: -1.4s; top: 50%; left: 10px; margin-top: -3px; }
         @keyframes spin-ring { from { transform: rotateX(70deg) rotateY(0deg); } to { transform: rotateX(70deg) rotateY(360deg); } }
         @keyframes pulse-core {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.2); }
-          50% { box-shadow: 0 0 30px 8px rgba(0, 242, 254, 0.4); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(217,70,239, 0.2); }
+          50% { box-shadow: 0 0 30px 8px rgba(217,70,239, 0.4); }
         }
         @keyframes orbit {
           0%   { transform: rotate(0deg) translateX(72px) rotate(0deg); }

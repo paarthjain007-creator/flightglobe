@@ -70,13 +70,13 @@ export function TimelineScrubber({
     >
       <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-xl bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center">
             <Clock size={14} />
           </div>
           <div>
             <div className="text-xs font-bold text-white flex items-center gap-2">
               <span>{formattedDate} · {formattedTime}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 font-mono">
                 4D Time-Travel
               </span>
             </div>
@@ -85,7 +85,7 @@ export function TimelineScrubber({
 
         {/* Airborne Flight Counter Badge */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-xs font-bold text-cyan-400">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/60 border border-fuchsia-500/30 text-xs font-bold text-fuchsia-400">
             <Plane size={13} className={airborneFlightsCount > 0 ? "animate-pulse" : ""} />
             <span>{airborneFlightsCount} Airborne</span>
           </div>
@@ -113,7 +113,7 @@ export function TimelineScrubber({
             return (
               <div
                 key={i}
-                className={`w-1 rounded-full ${isRush ? "bg-amber-400 h-3" : "bg-cyan-400 h-1.5 self-end"}`}
+                className={`w-1 rounded-full ${isRush ? "bg-amber-400 h-3" : "bg-fuchsia-400 h-1.5 self-end"}`}
               />
             );
           })}
@@ -145,7 +145,7 @@ export function TimelineScrubber({
           <button
             id="play-4d-timeline-btn"
             onClick={() => setIsPlaying(!isPlaying)}
-            className="px-4 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition-all cursor-pointer shadow-lg shadow-cyan-400/20"
+            className="px-4 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 bg-fuchsia-400 text-slate-950 hover:bg-cyan-300 transition-all cursor-pointer shadow-lg shadow-cyan-400/20"
           >
             {isPlaying ? <Pause size={13} /> : <Play size={13} />}
             <span>{isPlaying ? "Pause 4D" : "Play 4D"}</span>
@@ -153,7 +153,7 @@ export function TimelineScrubber({
 
           <button
             onClick={() => setPlaybackSpeed((s) => (s === 1 ? 5 : s === 5 ? 20 : 1))}
-            className="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-cyan-300 border border-white/10 transition-all cursor-pointer"
+            className="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-fuchsia-300 border border-white/10 transition-all cursor-pointer"
             title="Toggle playback speed"
           >
             {playbackSpeed}x Speed

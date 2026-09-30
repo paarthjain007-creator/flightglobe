@@ -80,7 +80,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
         transition={{ duration: 0.2 }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="rounded-2xl bg-slate-900/75 hover:bg-slate-900/90 border border-white/10 hover:border-cyan-400/40 p-4 sm:p-5 transition-all shadow-md hover:shadow-xl space-y-4"
+        className="rounded-2xl bg-[#18181b] hover:bg-[#1f1f24] border border-slate-700/60 hover:border-slate-500/80 shadow-lg p-4 sm:p-5 transition-all shadow-md space-y-4"
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
           {/* 1. Airline Identity */}
@@ -92,12 +92,12 @@ export default function BookingCard({ offer, departureDate, adults }) {
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-base font-bold text-white tracking-tight">{airlineName}</span>
                 {offer.price?.isLowestFare && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-[#30d158] border border-emerald-500/25">
                     Lowest fare
                   </span>
                 )}
               </div>
-              <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
+              <div className="text-xs text-[#86868b] flex items-center gap-2 mt-0.5">
                 <span>Flight {firstSeg?.number}</span>
                 <span>·</span>
                 <span className="capitalize">{offer.price?.cabinClass?.toLowerCase()}</span>
@@ -106,51 +106,51 @@ export default function BookingCard({ offer, departureDate, adults }) {
           </div>
 
           {/* 2. Schedule & Flight Route */}
-          <div className="flex-1 flex items-center justify-between gap-4 max-w-md w-full">
+          <div className="flex-1 flex items-center justify-between gap-4 w-72 md:max-w-md md:w-full flex-shrink-0 snap-center">
             {/* Departure */}
             <div className="text-left">
-              <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tighter">
                 {formatTime(depDate)}
               </div>
-              <div className="text-xs font-semibold text-cyan-400 mt-0.5">
+              <div className="text-sm font-bold text-[#2997ff] mt-1 uppercase tracking-wider">
                 {firstSeg?.departure?.iataCode}
               </div>
             </div>
 
             {/* Flight Progress Bar */}
             <div className="flex-1 flex flex-col items-center px-2">
-              <span className="text-[11px] font-medium text-slate-400 mb-1">
+              <span className="text-xs font-medium text-[#a1a1aa] mb-2 font-mono">
                 {durationHours}h {durationMins}m
               </span>
               <div className="w-full flex items-center gap-1.5">
                 <div className="h-[2px] flex-1 bg-white/20 rounded"></div>
-                <Plane size={13} className="text-slate-400 rotate-90 flex-shrink-0" />
+                <Plane size={13} className="text-[#86868b] rotate-90 flex-shrink-0" />
                 <div className="h-[2px] flex-1 bg-white/20 rounded"></div>
               </div>
-              <span className={`text-[11px] font-semibold mt-1 ${isDirect ? "text-emerald-400" : "text-amber-300"}`}>
+              <span className={`text-[11px] font-semibold mt-1 ${isDirect ? "text-[#30d158]" : "text-[#ff9f0a]"}`}>
                 {isDirect ? "Nonstop" : `1 stop (${segments[0]?.arrival?.iataCode})`}
               </span>
             </div>
 
             {/* Arrival */}
             <div className="text-right">
-              <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tighter">
                 {formatTime(arrDate)}
               </div>
-              <div className="text-xs font-semibold text-emerald-400 mt-0.5">
+              <div className="text-sm font-bold text-emerald-400 mt-1 uppercase tracking-wider">
                 {lastSeg?.arrival?.iataCode}
               </div>
             </div>
           </div>
 
           {/* 3. Price & Booking Actions */}
-          <div className="flex items-center justify-between md:flex-col md:items-end gap-2 pt-3 md:pt-0 border-t md:border-t-0 border-white/10 flex-shrink-0">
+          <div className="flex items-center justify-between md:flex-col md:items-end gap-2 pt-3 md:pt-0 md:border-t-0 flex-shrink-0 w-64 md:w-auto snap-center">
             <div className="text-left md:text-right">
-              <div className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+              <div className="text-2xl sm:text-3xl font-black text-white tracking-tighter">
                 {formattedTotal}
               </div>
-              <div className="text-[10px] text-slate-400">
-                total per traveler
+              <div className="text-[10px] text-[#86868b]">
+                {adults > 1 ? `total · ${symbol}${Number(offer.price?.perAdult || Math.round((offer.price?.total || 0) / adults)).toLocaleString()} / traveler` : "total per traveler"}
               </div>
             </div>
 
@@ -158,7 +158,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
               <button
                 type="button"
                 onClick={() => setModalOpen(true)}
-                className="px-5 py-2 rounded-xl font-semibold text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 hover:from-cyan-300 hover:to-emerald-300 transition-all cursor-pointer shadow-md shadow-cyan-500/15 active:scale-95 whitespace-nowrap"
+                className="px-8 py-3.5 rounded-2xl font-bold text-[13px] bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer shadow-md active:scale-95 whitespace-nowrap uppercase tracking-wide"
               >
                 Select Flight
               </button>
@@ -166,7 +166,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
               <button
                 type="button"
                 onClick={handleBookRedirect}
-                className="text-[11px] text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1 cursor-pointer"
+                className="text-[11px] text-[#86868b] hover:text-[#2997ff] transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <span>or book on {(airlineName || "Airline").split(" ")[0]}</span>
                 <ExternalLink size={10} />
@@ -177,7 +177,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
 
         {/* Card Footer Bar */}
         <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs flex-wrap gap-2">
-          <div className="flex items-center gap-3 text-[11px] text-slate-400 flex-wrap">
+          <div className="flex items-center gap-4 text-xs font-medium text-[#a1a1aa] flex-wrap">
             <span className="flex items-center gap-1">
               <Luggage size={12} className="text-slate-400" />
               <span>{offer.baggageAllowance || "1x 23kg included"}</span>
@@ -272,7 +272,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
             {/* Included amenities */}
             <div className="flex items-center gap-4 text-[11px] text-slate-400 pt-1">
               <span className="flex items-center gap-1 text-emerald-400"><Check size={12} /> Standard Seat</span>
-              <span className="flex items-center gap-1 text-cyan-300"><Check size={12} /> Wi-Fi Onboard</span>
+              <span className="flex items-center gap-1 text-blue-300"><Check size={12} /> Wi-Fi Onboard</span>
               <span className="flex items-center gap-1 text-slate-300"><Check size={12} /> E-Boarding Pass</span>
             </div>
           </div>
@@ -298,3 +298,4 @@ export default function BookingCard({ offer, departureDate, adults }) {
     </>
   );
 }
+

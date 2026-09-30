@@ -1,83 +1,68 @@
-/**
- * FlightGlobe Database & Persistence Layer
- * Handles in-memory & persistent CRUD operations for Users, Bookings, Flights, and System Settings.
- */
+import fs from 'fs';
+import path from 'path';
 
-// Initial Seed Data
-const USERS_DB = new Map([
-  [
-    "usr_commander_1",
-    {
-      id: "usr_commander_1",
-      name: "Commander Alex Vance",
-      email: "alex.vance@flightglobe.io",
-      role: "passenger", // 'passenger' | 'admin' | 'agent'
-      preferences: {
-        currency: "INR",
-        soundEnabled: true,
-        defaultOrigin: "DEL",
-        defaultClass: "Business",
+const DB_PATH = path.resolve(process.cwd(), 'flightglobe_db.json');
+
+// Initialize DB if it doesn't exist
+function initDB() {
+  if (!fs.existsSync(DB_PATH)) {
+    const defaultData = {
+      users: {
+        "usr_commander_1": {
+          id: "usr_commander_1",
+          name: "Commander Alex Vance",
+          email: "alex.vance@flightglobe.io",
+          role: "passenger",
+          preferences: {
+            currency: "INR",
+            soundEnabled: true,
+            defaultOrigin: "DEL",
+            defaultClass: "Business",
+          },
+        }
       },
-    },
-  ],
-]);
+      bookings: {}
+    };
+    fs.writeFileSync(DB_PATH, JSON.stringify(defaultData, null, 2), 'utf8');
+  }
+}
 
-const BOOKINGS_DB = new Map([
-  [
-    "T-8842",
-    {
-      id: "T-8842",
-      userId: "usr_commander_1",
-      flight: {
-        code: "AI-805",
-        airline: "Air India",
-        from: "DEL",
-        to: "LHR",
-        dep: "09:45",
-        arr: "11:55",
-        dur: "8h 40m",
-        plane: "Boeing 787-9 Dreamliner",
-        price: 42500,
-        currency: "INR",
-        currencySymbol: "₹",
-      },
-      seat: "2B",
-      gate: "B14",
-      terminal: "T3",
-      group: "A (Priority)",
-      bookingRef: "FG-847291",
-      date: "2026-09-20",
-      totalPrice: 42500,
-      currency: "INR",
-      currencySymbol: "₹",
-      createdAt: new Date().toISOString(),
-    },
-  ],
-]);
+initDB();
 
-/* ─── Database Operations ─────────────────────────────────────────────────── */
+function readDB() {
+  return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+}
+
+function writeDB(data) {
+  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf8');
+}
 
 export function getUser(userId = "usr_commander_1") {
   if (!userId) return null;
-  return USERS_DB.get(userId) || null;
+  const db = readDB();
+  return db.users[userId] || null;
 }
 
 export function updateUserPreferences(userId, prefs = {}) {
-  const user = getUser(userId);
+  const db = readDB();
+  const user = db.users[userId];
   if (!user) throw new Error("User not found");
+  
   user.preferences = { ...user.preferences, ...prefs };
-  USERS_DB.set(user.id, user);
+  writeDB(db);
   return user.preferences;
 }
 
 export function getUserBookings(userId = "usr_commander_1") {
-  return Array.from(BOOKINGS_DB.values())
+  const db = readDB();
+  return Object.values(db.bookings)
     .filter((b) => b.userId === userId)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 
 export function getBookingById(bookingId) {
-  return BOOKINGS_DB.get(bookingId) || null;
+  const db = readDB();
+  return db.bookings[bookingId] || null;
 }
 
 const SYMBOL_LOOKUP = {
@@ -92,7 +77,8 @@ const SYMBOL_LOOKUP = {
 };
 
 export function createBooking(userId, bookingData = {}) {
-  const user = getUser(userId);
+  const db = readDB();
+  const user = db.users[userId];
   if (!user) throw new Error("User not found");
 
   const id = bookingData.id || `T-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -160,12 +146,14 @@ export function createBooking(userId, bookingData = {}) {
     createdAt: new Date().toISOString(),
   };
 
-  BOOKINGS_DB.set(id, newBooking);
+  db.bookings[id] = newBooking;
+  writeDB(db);
   return newBooking;
 }
 
 export function cancelBooking(userId, bookingIdOrRef) {
-  const user = getUser(userId);
+  const db = readDB();
+  const user = db.users[userId];
   if (!user) throw new Error("User not found");
 
   if (!bookingIdOrRef || (typeof bookingIdOrRef !== "string" && typeof bookingIdOrRef !== "number")) {
@@ -173,13 +161,9 @@ export function cancelBooking(userId, bookingIdOrRef) {
   }
 
   const searchTarget = String(bookingIdOrRef).trim().toUpperCase();
-  if (!searchTarget) {
-    throw new Error("Booking ID or Reference cannot be blank");
-  }
 
-  // Find by ID or Booking Reference (case-insensitive)
   let targetKey = null;
-  for (const [key, b] of BOOKINGS_DB.entries()) {
+  for (const [key, b] of Object.entries(db.bookings)) {
     const idMatch = b.id && b.id.toUpperCase() === searchTarget;
     const refMatch = b.bookingRef && b.bookingRef.toUpperCase() === searchTarget;
     if ((idMatch || refMatch) && b.userId === user.id) {
@@ -192,7 +176,8 @@ export function cancelBooking(userId, bookingIdOrRef) {
     throw new Error(`Booking '${bookingIdOrRef}' not found or unauthorized.`);
   }
 
-  const cancelled = BOOKINGS_DB.get(targetKey);
-  BOOKINGS_DB.delete(targetKey);
+  const cancelled = db.bookings[targetKey];
+  delete db.bookings[targetKey];
+  writeDB(db);
   return cancelled;
 }

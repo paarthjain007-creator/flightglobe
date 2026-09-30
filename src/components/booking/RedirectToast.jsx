@@ -20,12 +20,12 @@ export default function RedirectToast({ airlineName, url, onDone }) {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
       <div
-        className="glass rounded-3xl p-6 max-w-sm w-[90%] text-center space-y-4 border border-cyan-400/40 shadow-2xl"
+        className="glass rounded-3xl p-6 max-w-sm w-[90%] text-center space-y-4 border border-fuchsia-400/40 shadow-2xl"
         style={{ background: "rgba(5, 10, 24, 0.96)" }}
       >
         {phase === "redirecting" ? (
           <>
-            <Loader2 size={32} className="text-cyan-400 animate-spin mx-auto" />
+            <Loader2 size={32} className="text-fuchsia-400 animate-spin mx-auto" />
             <div>
               <div className="text-sm font-bold text-white">Redirecting to {airlineName}</div>
               <div className="text-xs text-slate-400 mt-1">Opening official airline booking page...</div>

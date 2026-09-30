@@ -82,7 +82,7 @@ export default function LivingHeroSearchBar({
       >
         <div className="flex items-center gap-3 sm:gap-4 font-mono">
           <div className="flex items-center gap-2 text-white font-black text-base sm:text-lg tracking-wider">
-            <span className="text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">{originCode}</span>
+            <span className="text-fuchsia-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">{originCode}</span>
             <ArrowRight size={16} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
             <span className="text-indigo-300 drop-shadow-[0_0_8px_rgba(165,180,252,0.8)]">{destCode}</span>
           </div>
@@ -101,17 +101,17 @@ export default function LivingHeroSearchBar({
       {/* ─── Expanding Glass Command Center Modal ──────────────────────── */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="obsidian-panel rounded-3xl p-6 sm:p-8 max-w-2xl w-full border border-cyan-400/30 shadow-[0_0_50px_rgba(6,182,212,0.25)] space-y-6 relative"
+              className="obsidian-panel rounded-3xl p-6 sm:p-8 max-w-2xl w-full border border-fuchsia-400/30 shadow-[0_0_50px_rgba(6,182,212,0.25)] space-y-6 relative"
             >
               {/* Modal Header */}
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300">
+                  <div className="w-9 h-9 rounded-2xl bg-fuchsia-500/20 border border-fuchsia-400/40 flex items-center justify-center text-fuchsia-300">
                     <Sparkles size={18} />
                   </div>
                   <div>
@@ -133,16 +133,16 @@ export default function LivingHeroSearchBar({
               <div className="grid grid-cols-1 sm:grid-cols-11 gap-3 items-center">
                 {/* Origin Picker */}
                 <div className="sm:col-span-5 relative">
-                  <label className="text-[10px] mono uppercase font-bold text-cyan-400 mb-1 flex items-center gap-1">
+                  <label className="text-[10px] mono uppercase font-bold text-fuchsia-400 mb-1 flex items-center gap-1">
                     <MapPin size={11} /> Origin City / Airport
                   </label>
                   <button
                     type="button"
                     onClick={() => setOriginDropdownOpen(!originDropdownOpen)}
-                    className="w-full px-4 py-3 rounded-2xl glass border border-white/12 flex items-center justify-between text-left hover:border-cyan-400/40 transition-colors"
+                    className="w-full px-4 py-3 rounded-2xl glass border border-white/12 flex items-center justify-between text-left hover:border-fuchsia-400/40 transition-colors"
                   >
                     <div>
-                      <div className="text-base font-black mono text-cyan-300">{draftOrigin?.code || draftOrigin?.iata || "JFK"}</div>
+                      <div className="text-base font-black mono text-fuchsia-300">{draftOrigin?.code || draftOrigin?.iata || "JFK"}</div>
                       <div className="text-xs text-slate-300 truncate">{draftOrigin?.city || "New York"}</div>
                     </div>
                     <ChevronDown size={14} className="text-slate-400" />
@@ -155,7 +155,7 @@ export default function LivingHeroSearchBar({
                         placeholder="Search origin airport..."
                         value={originSearchQuery}
                         onChange={(e) => setOriginSearchQuery(e.target.value)}
-                        className="w-full px-3 py-2 mb-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white outline-none focus:border-cyan-400"
+                        className="w-full px-3 py-2 mb-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white outline-none focus:border-fuchsia-400"
                         autoFocus
                       />
                       <div className="space-y-1">
@@ -167,7 +167,7 @@ export default function LivingHeroSearchBar({
                               setDraftOrigin({ code: ap.iata, iata: ap.iata, city: ap.city, name: ap.name, lat: ap.lat, lng: ap.lng, lon: ap.lng });
                               setOriginDropdownOpen(false);
                             }}
-                            className="w-full px-3 py-2 rounded-xl hover:bg-cyan-500/20 text-left text-xs flex items-center justify-between text-slate-200 hover:text-cyan-300"
+                            className="w-full px-3 py-2 rounded-xl hover:bg-fuchsia-500/20 text-left text-xs flex items-center justify-between text-slate-200 hover:text-fuchsia-300"
                           >
                             <span className="font-bold">{ap.city} ({ap.iata})</span>
                             <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{ap.name}</span>
@@ -183,7 +183,7 @@ export default function LivingHeroSearchBar({
                   <button
                     type="button"
                     onClick={handleSwap}
-                    className="p-3 rounded-2xl glass border border-white/12 hover:border-cyan-400 text-cyan-400 hover:bg-cyan-500/20 transition-all cursor-pointer"
+                    className="p-3 rounded-2xl glass border border-white/12 hover:border-fuchsia-400 text-fuchsia-400 hover:bg-fuchsia-500/20 transition-all cursor-pointer"
                     title="Swap Origin and Destination"
                   >
                     <ArrowRightLeft size={16} />
@@ -243,25 +243,25 @@ export default function LivingHeroSearchBar({
                 {/* Date */}
                 <div>
                   <label className="text-[10px] mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
-                    <Calendar size={10} className="text-cyan-400" /> Date
+                    <Calendar size={10} className="text-fuchsia-400" /> Date
                   </label>
                   <input
                     type="date"
                     value={draftDate}
                     onChange={(e) => setDraftDate(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl glass border border-white/12 text-xs font-mono text-white outline-none focus:border-cyan-400"
+                    className="w-full px-3 py-2.5 rounded-xl glass border border-white/12 text-xs font-mono text-white outline-none focus:border-fuchsia-400"
                   />
                 </div>
 
                 {/* Class */}
                 <div>
                   <label className="text-[10px] mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
-                    <SlidersHorizontal size={10} className="text-cyan-400" /> Cabin Class
+                    <SlidersHorizontal size={10} className="text-fuchsia-400" /> Cabin Class
                   </label>
                   <select
                     value={draftClass}
                     onChange={(e) => setDraftClass(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl glass border border-white/12 text-xs font-mono text-white outline-none focus:border-cyan-400 bg-slate-900"
+                    className="w-full px-3 py-2.5 rounded-xl glass border border-white/12 text-xs font-mono text-white outline-none focus:border-fuchsia-400 bg-slate-900"
                   >
                     <option value="Economy">Economy</option>
                     <option value="Premium Economy">Premium Economy</option>
@@ -273,7 +273,7 @@ export default function LivingHeroSearchBar({
                 {/* Passengers */}
                 <div>
                   <label className="text-[10px] mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
-                    <Users size={10} className="text-cyan-400" /> Passengers
+                    <Users size={10} className="text-fuchsia-400" /> Passengers
                   </label>
                   <div className="flex items-center rounded-xl glass border border-white/12 px-2 py-1.5 justify-between">
                     <button
@@ -297,12 +297,12 @@ export default function LivingHeroSearchBar({
                 {/* Currency */}
                 <div>
                   <label className="text-[10px] mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
-                    <DollarSign size={10} className="text-cyan-400" /> Currency
+                    <DollarSign size={10} className="text-fuchsia-400" /> Currency
                   </label>
                   <select
                     value={draftCurr}
                     onChange={(e) => setDraftCurr(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl glass border border-white/12 text-xs font-mono text-white outline-none focus:border-cyan-400 bg-slate-900"
+                    className="w-full px-3 py-2.5 rounded-xl glass border border-white/12 text-xs font-mono text-white outline-none focus:border-fuchsia-400 bg-slate-900"
                   >
                     <option value="USD">USD ($)</option>
                     <option value="EUR">EUR (€)</option>

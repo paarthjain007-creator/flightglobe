@@ -64,7 +64,7 @@ export default function TimezoneCompare({ origin, destination }) {
   }
   if (isBehind) {
     note = "🪄 You arrive before you left! (date line)";
-    messageColor = "#e879f9";
+    messageColor = "#bf5af2";
   }
 
   // Timeline bar: map offset to 0–100%
@@ -73,8 +73,8 @@ export default function TimezoneCompare({ origin, destination }) {
   return (
     <GlassCard className="p-4" animate="animate-slide-up">
       <div className="flex items-center gap-2 mb-3">
-        <Clock size={14} style={{ color: "#00F2FE" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <Clock size={14} style={{ color: "#2997ff" }} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#86868b]">
           Timezone Comparison
         </span>
       </div>
@@ -82,14 +82,14 @@ export default function TimezoneCompare({ origin, destination }) {
       {/* Clock Row */}
       <div className="flex items-center gap-2 mb-3">
         {/* Origin */}
-        <div className="flex-1 rounded-xl p-2.5 text-center" style={{ background: "rgba(74,222,128,0.06)", border: "1px solid rgba(74,222,128,0.2)" }}>
-          <div className="text-xs font-medium mb-0.5" style={{ color: "#4ade80" }}>{origin.iata || origin.code}</div>
-          <div className="text-lg font-bold" style={{ color: "#F8FAFC" }}>{originTime}</div>
-          <div className="text-xs mt-0.5 truncate text-slate-400">{origin.city}</div>
+        <div className="flex-1 rounded-xl p-2.5 text-center" style={{ background: "rgba(48,209,88,0.06)", border: "1px solid rgba(48,209,88,0.2)" }}>
+          <div className="text-xs font-medium mb-0.5" style={{ color: "#30d158" }}>{origin.iata || origin.code}</div>
+          <div className="text-lg font-bold text-[#f5f5f7]">{originTime}</div>
+          <div className="text-xs mt-0.5 truncate text-[#86868b]">{origin.city}</div>
         </div>
 
         <div className="flex-shrink-0 flex flex-col items-center gap-0.5">
-          <ArrowRight size={14} style={{ color: "#00F2FE" }} />
+          <ArrowRight size={14} className="text-[#86868b]" />
           <span
             className="text-xs font-bold px-1.5 py-0.5 rounded-md"
             style={{ color: messageColor, background: `${messageColor}15`, border: `1px solid ${messageColor}40` }}
@@ -99,10 +99,10 @@ export default function TimezoneCompare({ origin, destination }) {
         </div>
 
         {/* Destination */}
-        <div className="flex-1 rounded-xl p-2.5 text-center" style={{ background: "rgba(248,113,113,0.06)", border: "1px solid rgba(248,113,113,0.2)" }}>
-          <div className="text-xs font-medium mb-0.5" style={{ color: "#f87171" }}>{destination.iata || destination.code}</div>
-          <div className="text-lg font-bold" style={{ color: "#F8FAFC" }}>{destTime}</div>
-          <div className="text-xs mt-0.5 truncate text-slate-400">{destination.city}</div>
+        <div className="flex-1 rounded-xl p-2.5 text-center" style={{ background: "rgba(41,151,255,0.06)", border: "1px solid rgba(41,151,255,0.2)" }}>
+          <div className="text-xs font-medium mb-0.5" style={{ color: "#2997ff" }}>{destination.iata || destination.code}</div>
+          <div className="text-lg font-bold text-[#f5f5f7]">{destTime}</div>
+          <div className="text-xs mt-0.5 truncate text-[#86868b]">{destination.city}</div>
         </div>
       </div>
 

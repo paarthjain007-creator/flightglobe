@@ -29,8 +29,8 @@ export function FlightCardSkeleton() {
 
       {/* Price Placeholder */}
       <div className="text-right flex-shrink-0 space-y-2">
-        <div className="h-5 w-20 bg-cyan-900/40 rounded-lg" />
-        <div className="h-7 w-24 bg-cyan-500/20 rounded-xl" />
+        <div className="h-5 w-20 bg-fuchsia-900/40 rounded-lg" />
+        <div className="h-7 w-24 bg-fuchsia-500/20 rounded-xl" />
       </div>
     </div>
   );
@@ -49,7 +49,7 @@ export function FareMatrixSkeleton() {
           className="p-2.5 rounded-2xl bg-white/5 border border-white/10 text-center animate-pulse space-y-1.5"
         >
           <div className="h-2.5 bg-slate-700/60 rounded w-10 mx-auto" />
-          <div className="h-4 bg-cyan-500/20 rounded w-14 mx-auto" />
+          <div className="h-4 bg-fuchsia-500/20 rounded w-14 mx-auto" />
         </div>
       ))}
     </div>

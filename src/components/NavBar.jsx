@@ -16,7 +16,6 @@ const NAV_TABS = [
   { path: "/explore",   label: "Explore 3D",     icon: Compass },
   { path: "/booking",   label: "Book Flights",   icon: Plane },
   { path: "/radar",     label: "Live Radar",     icon: Radio,    badge: "LIVE" },
-  { path: "/dashboard", label: "Analytics",      icon: LayoutDashboard },
   { path: "/copilot",   label: "AI Copilot",     icon: Sparkles, badge: "AI" },
   { path: "/passport",  label: "My Passes",      icon: Ticket },
 ];
@@ -71,11 +70,11 @@ export default function NavBar({ onOpenCommandPalette }) {
       <div
         className="flex items-center justify-between h-14 px-3 sm:px-5 rounded-2xl glass-prism pointer-events-auto"
         style={{
-          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(8, 12, 24, 0.94) 50%, rgba(0, 242, 254, 0.08) 100%)",
-          backdropFilter: "blur(32px) saturate(190%)",
-          WebkitBackdropFilter: "blur(32px) saturate(190%)",
-          border: "1px solid rgba(0, 242, 254, 0.28)",
-          boxShadow: "inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 242, 254, 0.12)",
+          background: "rgba(18, 18, 20, 0.82)",
+          backdropFilter: "blur(28px) saturate(180%)",
+          WebkitBackdropFilter: "blur(28px) saturate(180%)",
+          border: "1px solid rgba(255, 255, 255, 0.10)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
         }}
       >
 
@@ -88,29 +87,29 @@ export default function NavBar({ onOpenCommandPalette }) {
           {/* Pulsing beacon + globe icon */}
           <div className="relative flex-shrink-0">
             <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center bg-cyan-500/15 border border-cyan-400/30"
+              className="w-8 h-8 rounded-xl flex items-center justify-center bg-white/[0.06] border border-white/10 text-white"
             >
-              <Globe2 size={16} className="text-cyan-400" />
+              <Globe2 size={16} className="text-[#2997ff]" />
             </div>
             <span
               className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full beacon"
-              style={{ background: "#00FFA3", boxShadow: "0 0 8px #00FFA3" }}
+              style={{ background: "#30d158", boxShadow: "0 0 6px rgba(48, 209, 88, 0.4)" }}
             />
           </div>
 
           <div className="flex flex-col leading-tight">
-            <span className="text-sm sm:text-base font-extrabold tracking-tight text-white">
-              Flight<span className="text-cyan-400">Globe</span>
+            <span className="text-sm sm:text-base font-bold tracking-tight text-[#f5f5f7]">
+              Flight<span className="text-[#2997ff]">Globe</span>
             </span>
-            <span className="text-[9px] font-medium text-slate-400 tracking-wide hidden sm:inline">
-              Global Air Telemetry
+            <span className="text-[9px] font-medium text-[#86868b] tracking-wide hidden sm:inline">
+              Live GDS Network
             </span>
           </div>
         </NavLink>
 
         {/* ── Segmented Glass Pill Nav with Kinetic Sliding Indicator ────────────────────────────────── */}
         <nav
-          className="hidden md:flex items-center gap-0.5 lg:gap-1 rounded-2xl p-1 relative bg-white/[0.03] border border-white/10"
+          className="hidden md:flex items-center gap-0.5 lg:gap-1 rounded-2xl p-1 relative bg-white/[0.03] border border-white/8"
         >
           {NAV_TABS.map(({ path, label, icon: Icon, badge }) => (
             <NavLink
@@ -120,7 +119,7 @@ export default function NavBar({ onOpenCommandPalette }) {
               style={{ textDecoration: "none" }}
               className={({ isActive }) =>
                 `relative flex items-center gap-1.5 lg:gap-2 px-2.5 py-1 md:px-2.5 lg:px-3.5 md:py-1 lg:py-1.5 rounded-xl transition-colors duration-200 cursor-pointer ${
-                  isActive ? "text-cyan-300 font-semibold" : "text-slate-200 hover:text-white font-medium"
+                  isActive ? "text-white font-medium" : "text-[#86868b] hover:text-white font-medium"
                 }`
               }
             >
@@ -133,9 +132,9 @@ export default function NavBar({ onOpenCommandPalette }) {
                       transition={{ type: "spring", stiffness: 450, damping: 32 }}
                       className="absolute inset-0 rounded-xl"
                       style={{
-                        background: "linear-gradient(135deg, rgba(0, 242, 254, 0.16) 0%, rgba(0, 242, 254, 0.05) 100%)",
-                        border: "1px solid rgba(0, 242, 254, 0.45)",
-                        boxShadow: "0 0 24px rgba(0, 242, 254, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.3)",
+                        background: "rgba(255, 255, 255, 0.10)",
+                        border: "1px solid rgba(255, 255, 255, 0.18)",
+                        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)",
                         backdropFilter: "blur(12px)",
                       }}
                     />
@@ -143,12 +142,12 @@ export default function NavBar({ onOpenCommandPalette }) {
                   <Icon
                     size={14}
                     className="relative z-10 flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
-                    color={isActive ? "#00F2FE" : "#94A3B8"}
+                    color={isActive ? "#2997ff" : "#86868b"}
                   />
                   <span
                     className="text-[11px] lg:text-[13px] relative z-10 whitespace-nowrap"
                     style={{
-                      color: isActive ? "#00F2FE" : "#E2E8F0",
+                      color: isActive ? "#ffffff" : "#86868b",
                     }}
                   >
                     {label}
@@ -157,9 +156,9 @@ export default function NavBar({ onOpenCommandPalette }) {
                     <span
                       className="relative z-10 text-[8px] lg:text-[9px] font-bold px-1 lg:px-1.5 py-0.5 rounded-full shadow-sm"
                       style={{
-                        background: badge === "LIVE" ? "rgba(0, 255, 163, 0.18)" : badge === "AI" ? "rgba(184, 0, 255, 0.22)" : "rgba(0, 242, 254, 0.18)",
-                        border: `1px solid ${badge === "LIVE" ? "rgba(0, 255, 163, 0.45)" : badge === "AI" ? "rgba(184, 0, 255, 0.45)" : "rgba(0, 242, 254, 0.45)"}`,
-                        color: badge === "LIVE" ? "#00FFA3" : badge === "AI" ? "#B800FF" : "#00F2FE",
+                        background: badge === "LIVE" ? "rgba(48, 209, 88, 0.12)" : badge === "AI" ? "rgba(191, 90, 242, 0.12)" : "rgba(41, 151, 255, 0.12)",
+                        border: `1px solid ${badge === "LIVE" ? "rgba(48, 209, 88, 0.25)" : badge === "AI" ? "rgba(191, 90, 242, 0.25)" : "rgba(41, 151, 255, 0.25)"}`,
+                        color: badge === "LIVE" ? "#30d158" : badge === "AI" ? "#bf5af2" : "#2997ff",
                       }}
                     >
                       {badge}
@@ -167,7 +166,7 @@ export default function NavBar({ onOpenCommandPalette }) {
                   )}
                   {path === "/passport" && trips.length > 0 && (
                     <span
-                      className="relative z-10 text-[8px] lg:text-[9px] font-bold px-1.5 rounded-full shadow-md bg-cyan-400 text-slate-950"
+                      className="relative z-10 text-[8px] lg:text-[9px] font-bold px-1.5 rounded-full shadow-md bg-white/20 text-white"
                     >
                       {trips.length}
                     </span>
@@ -184,29 +183,31 @@ export default function NavBar({ onOpenCommandPalette }) {
           <button
             type="button"
             onClick={() => { sound.playClick(); onOpenCommandPalette?.(); }}
-            className="hidden md:flex items-center gap-1.5 lg:gap-2 px-2.5 py-1.5 lg:px-3 rounded-xl transition-all cursor-pointer bg-white/5 border border-white/10 hover:border-cyan-400/40 hover:bg-white/10"
+            className="hidden md:flex items-center gap-1.5 lg:gap-2 px-2.5 py-1.5 lg:px-3 rounded-xl transition-all cursor-pointer bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08]"
             title="Search flights, routes, or commands (Ctrl+K)"
           >
-            <Search size={13} className="text-cyan-400" />
-            <span className="text-xs text-slate-300 font-medium hidden xl:inline">Search</span>
-            <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-cyan-300 font-mono border border-white/15">
+            <Search size={13} className="text-[#2997ff]" />
+            <span className="text-xs text-[#86868b] font-medium hidden xl:inline">Search</span>
+            <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-[#86868b] font-mono border border-white/10">
               ⌘K
             </kbd>
           </button>
 
           {/* UTC Clock (hidden on smaller displays, visible on wide desktop) */}
-          <div className="hidden xl:block px-2 py-1 rounded-lg bg-white/5 border border-white/10">
+          <div className="hidden xl:block px-2 py-1 rounded-lg bg-white/[0.04] border border-white/8">
             <UtcClock />
           </div>
 
-          {/* Currency button */}
+          {/* Currency/Language button */}
           <button
             type="button"
             onClick={handleCycleCurrency}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl cursor-pointer transition-all bg-white/5 border border-white/10 hover:bg-white/10 hover:border-amber-400/40"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-all bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-white/20"
             title="Switch active currency"
           >
-            <span className="text-xs font-bold font-mono text-amber-400">{currency}</span>
+            <span className="text-sm">🇺🇸</span>
+            <span className="text-[11px] font-semibold text-[#f5f5f7] tracking-wide">{currency}</span>
+            <ChevronDown size={11} className="text-[#86868b] ml-0.5" />
           </button>
 
           {/* Volume Control */}
@@ -219,17 +220,17 @@ export default function NavBar({ onOpenCommandPalette }) {
           <button
             type="button"
             onClick={() => { sound.playClick(); navigate("/passport"); }}
-            className="hidden sm:flex w-8 h-8 rounded-xl items-center justify-center cursor-pointer bg-cyan-500/10 border border-cyan-400/20 hover:border-cyan-400/50 hover:bg-cyan-500/20 transition-all"
+            className="hidden sm:flex w-8 h-8 rounded-xl items-center justify-center cursor-pointer bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all text-[#86868b] hover:text-white"
             title="My Passes & Digital Credentials"
           >
-            <User size={14} color="#00F2FE" />
+            <User size={14} />
           </button>
 
           {/* Mobile hamburger toggle (< md) */}
           <button
             type="button"
             onClick={() => { sound.playClick(); setMobileMenuOpen(!mobileMenuOpen); }}
-            className="md:hidden p-2 rounded-xl cursor-pointer transition-colors bg-white/5 border border-white/10 text-slate-300 hover:text-white"
+            className="md:hidden p-2 rounded-xl cursor-pointer transition-colors bg-white/[0.04] border border-white/10 text-[#86868b] hover:text-white"
             title="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -247,11 +248,11 @@ export default function NavBar({ onOpenCommandPalette }) {
             transition={{ duration: 0.18 }}
             className="md:hidden mt-2 p-3 rounded-2xl space-y-1 pointer-events-auto"
             style={{
-              background: "rgba(8, 12, 24, 0.98)",
+              background: "rgba(18, 18, 20, 0.96)",
               backdropFilter: "blur(32px)",
               WebkitBackdropFilter: "blur(32px)",
-              border: "1px solid rgba(0, 242, 254, 0.35)",
-              boxShadow: "0 24px 60px rgba(0,0,0,0.9), 0 0 20px rgba(0, 242, 254, 0.15), inset 0 1px 1.5px rgba(255,255,255,0.15)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.8), inset 0 1px 1.5px rgba(255,255,255,0.1)",
             }}
           >
             {NAV_TABS.map(({ path, label, icon: Icon, badge }) => (
@@ -273,11 +274,11 @@ export default function NavBar({ onOpenCommandPalette }) {
                 </div>
                 {badge && (
                   <span
-                    className="text-[9px] font-bold px-2 py-0.5 rounded-full"
+                    className="text-[9px] font-semibold px-2 py-0.5 rounded-full"
                     style={{
-                      background: badge === "LIVE" ? "rgba(0, 255, 163, 0.2)" : "rgba(184, 0, 255, 0.2)",
-                      border: `1px solid ${badge === "LIVE" ? "rgba(0, 255, 163, 0.4)" : "rgba(184, 0, 255, 0.4)"}`,
-                      color: badge === "LIVE" ? "#00FFA3" : "#B800FF",
+                      background: badge === "LIVE" ? "rgba(48, 209, 88, 0.12)" : "rgba(191, 90, 242, 0.12)",
+                      border: `1px solid ${badge === "LIVE" ? "rgba(48, 209, 88, 0.25)" : "rgba(191, 90, 242, 0.25)"}`,
+                      color: badge === "LIVE" ? "#30d158" : "#bf5af2",
                     }}
                   >
                     {badge}
@@ -285,7 +286,7 @@ export default function NavBar({ onOpenCommandPalette }) {
                 )}
                 {path === "/passport" && trips.length > 0 && (
                   <span
-                    className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-cyan-400 text-slate-950"
+                    className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#0071e3] text-white"
                   >
                     {trips.length}
                   </span>
@@ -317,3 +318,4 @@ export default function NavBar({ onOpenCommandPalette }) {
     </header>
   );
 }
+

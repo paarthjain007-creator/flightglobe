@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Search, Plane, Calendar, Loader2, ArrowRightLeft, Filter, TrendingDown, Zap, Clock, ArrowUpRight, ChevronDown, ChevronUp } from "lucide-react";
 import AirportSearch from "../Search/AirportSearch";
 import BookingCard from "./BookingCard";
 import { searchAmadeusFlightOffers, CURRENCY_MAP, fetch7DayFareMatrixAPI } from "../../services/api/amadeusService";
 import { AIRPORTS } from "../../data/airports";
 import GlassCard from "../ui/GlassCard";
+import DatePicker from "../ui/DatePicker";
 import { FlightResultsSkeleton } from "../ui/FlightSkeletonLoader";
 import { useFlightDeepLink } from "../../hooks/useFlightDeepLink";
 import { useStore } from "../../store/useStore";
@@ -50,26 +51,54 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
   const today = new Date().toISOString().split("T")[0];
   const isSameAirport = !!(origin && destination && (origin.iata || origin.code) === (destination.iata || destination.code));
 
+  const setSearchOrigin = useStore((s) => s.setSearchOrigin);
+  const setSearchDestination = useStore((s) => s.setSearchDestination);
+
+  const prevInitOriginRef = useRef(initialOrigin?.iata || initialOrigin?.code);
+  const prevInitDestRef = useRef(initialDestination?.iata || initialDestination?.code);
+
+  // Synchronize ONLY when initialOrigin prop explicitly changes from outside (e.g. preset clicked)
+  useEffect(() => {
+    const nextCode = initialOrigin?.iata || initialOrigin?.code;
+    if (nextCode && nextCode !== prevInitOriginRef.current) {
+      prevInitOriginRef.current = nextCode;
+      setOrigin(initialOrigin);
+    }
+  }, [initialOrigin]);
+
+  // Synchronize ONLY when initialDestination prop explicitly changes from outside (e.g. preset clicked)
+  useEffect(() => {
+    const nextCode = initialDestination?.iata || initialDestination?.code;
+    if (nextCode && nextCode !== prevInitDestRef.current) {
+      prevInitDestRef.current = nextCode;
+      setDestination(initialDestination);
+    }
+  }, [initialDestination]);
+
+  const handleOriginChange = (newOrig) => {
+    setOrigin(newOrig);
+    if (newOrig) {
+      setSearchOrigin(newOrig);
+    }
+  };
+
+  const handleDestinationChange = (newDest) => {
+    setDestination(newDest);
+    if (newDest) {
+      setSearchDestination(newDest);
+    }
+  };
+
   // Swap Origin and Destination
   const handleSwapAirports = () => {
     if (!origin || !destination) return;
-    const temp = origin;
-    setOrigin(destination);
-    setDestination(temp);
+    const tempOrigin = origin;
+    const tempDest = destination;
+    setOrigin(tempDest);
+    setDestination(tempOrigin);
+    setSearchOrigin(tempDest);
+    setSearchDestination(tempOrigin);
   };
-
-  // Synchronize when initialOrigin or initialDestination change (guarded by IATA code comparison)
-  useEffect(() => {
-    if (initialOrigin && ((initialOrigin.iata || initialOrigin.code) !== (origin?.iata || origin?.code))) {
-      setOrigin(initialOrigin);
-    }
-  }, [initialOrigin, origin]);
-
-  useEffect(() => {
-    if (initialDestination && ((initialDestination.iata || initialDestination.code) !== (destination?.iata || destination?.code))) {
-      setDestination(initialDestination);
-    }
-  }, [initialDestination, destination]);
 
   // Fetch 7-day Fare Matrix — AbortController prevents race conditions
   useEffect(() => {
@@ -197,7 +226,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
   return (
     <div id="flight-search-engine" className="space-y-5">
       {/* ── Search Input Card ───────────────────────────────────── */}
-      <GlassCard className="p-4 sm:p-6 border border-white/10 shadow-xl space-y-4 !overflow-visible">
+      <div className="p-6 sm:p-8 bg-[#18181b] border border-white/5 rounded-3xl shadow-2xl space-y-5 !overflow-visible relative">
         
         {/* Top utility row: Trip Type & Currency Switcher */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10 flex-wrap gap-2 text-xs">
@@ -218,7 +247,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                   title={conf.name}
                   className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1 ${
                     currency === code
-                      ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm"
+                      ? "bg-blue-500/20 text-blue-300 border border-blue-400/40 shadow-sm"
                       : "text-slate-400 hover:text-white"
                   }`}
                 >
@@ -237,13 +266,13 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             {/* Origin Airport */}
             <div className="md:col-span-5 relative z-30">
               <label className="text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Plane size={13} className="text-cyan-400" />
+                <Plane size={13} className="text-blue-400" />
                 <span>Departure City or Airport</span>
               </label>
               <AirportSearch
                 id="booking-origin-search"
                 value={origin}
-                onChange={setOrigin}
+                onChange={handleOriginChange}
                 placeholder="Where from?"
               />
             </div>
@@ -255,7 +284,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                 onClick={handleSwapAirports}
                 title="Swap Origin and Destination"
                 aria-label="Swap Origin and Destination"
-                className="w-10 h-10 rounded-full bg-slate-900 border border-white/15 text-slate-300 hover:text-cyan-300 hover:border-cyan-400/50 hover:bg-white/5 flex items-center justify-center transition-all cursor-pointer active:scale-90 active:rotate-180 shadow-md"
+                className="w-10 h-10 rounded-full bg-slate-900 border border-white/15 text-slate-300 hover:text-blue-300 hover:border-blue-400/50 hover:bg-white/5 flex items-center justify-center transition-all cursor-pointer active:scale-90 active:rotate-180 shadow-md"
               >
                 <ArrowRightLeft size={14} />
               </button>
@@ -272,7 +301,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                 <button
                   type="button"
                   onClick={handleSwapAirports}
-                  className="md:hidden text-xs text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+                  className="md:hidden text-xs text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <ArrowRightLeft size={11} /> Swap
                 </button>
@@ -280,7 +309,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               <AirportSearch
                 id="booking-dest-search"
                 value={destination}
-                onChange={setDestination}
+                onChange={handleDestinationChange}
                 placeholder="Where to?"
               />
             </div>
@@ -292,7 +321,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             {/* Departure Date */}
             <div className="md:col-span-4">
               <label className="text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Calendar size={13} className="text-cyan-400" />
+                <Calendar size={13} className="text-blue-400" />
                 <span>Departure Date</span>
               </label>
               <input
@@ -300,7 +329,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                 value={departureDate}
                 min={today}
                 onChange={(e) => setDepartureDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 focus:outline-none focus:border-cyan-400 text-white text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 focus:outline-none focus:border-blue-400 text-white text-sm"
                 style={{ colorScheme: "dark" }}
               />
             </div>
@@ -311,7 +340,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               <select
                 value={travelClass}
                 onChange={(e) => setTravelClass(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-white text-sm focus:outline-none focus:border-cyan-400 cursor-pointer"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-white text-sm focus:outline-none focus:border-blue-400 cursor-pointer"
                 style={{ colorScheme: "dark" }}
               >
                 <option value="ECONOMY">Economy</option>
@@ -327,7 +356,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               <select
                 value={adults}
                 onChange={(e) => setAdults(Number(e.target.value))}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-white text-sm focus:outline-none focus:border-cyan-400 cursor-pointer"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-white text-sm focus:outline-none focus:border-blue-400 cursor-pointer"
                 style={{ colorScheme: "dark" }}
               >
                 {[1, 2, 3, 4, 5, 6].map((n) => (
@@ -341,7 +370,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               <button
                 type="submit"
                 disabled={loading || isSameAirport}
-                className="w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 hover:from-cyan-300 hover:to-emerald-300 transition-all cursor-pointer shadow-lg shadow-cyan-500/15 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-full py-3 sm:py-0 rounded-2xl font-bold text-[13px] uppercase tracking-wider flex items-center justify-center gap-2 bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-all cursor-pointer shadow-[0_0_20px_rgba(34,211,238,0.25)] hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <><Loader2 size={16} className="animate-spin" /> Searching...</>
@@ -360,7 +389,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             </div>
           )}
         </form>
-      </GlassCard>
+      </div>
 
       {/* ── Clean Filter & Sort Controls Toolbar ─────────────────── */}
       <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-md flex items-center justify-between flex-wrap gap-3">
@@ -382,7 +411,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                 onClick={() => setQuickFilter(id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                   quickFilter === id
-                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm"
+                    ? "bg-blue-500/20 text-blue-300 border border-blue-400/40 shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
                 }`}
               >
@@ -398,7 +427,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               type="checkbox"
               checked={nonStopOnly}
               onChange={(e) => setNonStopOnly(e.target.checked)}
-              className="rounded border-slate-700 text-cyan-400 focus:ring-0 accent-cyan-400 cursor-pointer"
+              className="rounded border-slate-700 text-blue-400 focus:ring-0 accent-cyan-400 cursor-pointer"
             />
             <span>Nonstop only</span>
           </label>
@@ -411,11 +440,11 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             onClick={() => setShowCalendarMatrix(!showCalendarMatrix)}
             className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 border ${
               showCalendarMatrix
-                ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/50 shadow-sm"
+                ? "bg-blue-500/20 text-blue-300 border-blue-400/50 shadow-sm"
                 : "bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:text-white"
             }`}
           >
-            <TrendingDown size={13} className={showCalendarMatrix ? "text-cyan-300" : "text-emerald-400"} />
+            <TrendingDown size={13} className={showCalendarMatrix ? "text-blue-300" : "text-emerald-400"} />
             <span>7-Day Calendar</span>
             {showCalendarMatrix ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
@@ -426,11 +455,11 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               onClick={() => setShowAirlineFilter(!showAirlineFilter)}
               className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 border ${
                 showAirlineFilter || selectedAirlineFilter !== "ALL"
-                  ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/50 shadow-sm"
+                  ? "bg-blue-500/20 text-blue-300 border-blue-400/50 shadow-sm"
                   : "bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:text-white"
               }`}
             >
-              <Filter size={13} className="text-cyan-400" />
+              <Filter size={13} className="text-blue-400" />
               <span>Airlines {selectedAirlineFilter !== "ALL" ? `(${selectedAirlineFilter})` : `(${availableAirlines.length})`}</span>
               {showAirlineFilter ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             </button>
@@ -440,7 +469,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
       {/* ── Collapsible 7-Day Fare Matrix Drawer ─────────────────── */}
       {showCalendarMatrix && (
-        <GlassCard className="p-4 border border-white/10 bg-slate-900/90 space-y-3">
+        <div className="p-4 border border-white/10 bg-slate-900/90 space-y-3">
           <div className="flex items-center justify-between text-xs font-semibold text-slate-300 flex-wrap gap-2">
             <div className="flex items-center gap-1.5">
               <TrendingDown size={14} className="text-emerald-400" />
@@ -454,7 +483,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               {Array.from({ length: 7 }).map((_, idx) => (
                 <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/10 text-center animate-pulse space-y-1.5">
                   <div className="h-2.5 bg-slate-700/60 rounded w-12 mx-auto" />
-                  <div className="h-4 bg-cyan-500/20 rounded w-16 mx-auto" />
+                  <div className="h-4 bg-blue-500/20 rounded w-16 mx-auto" />
                 </div>
               ))}
             </div>
@@ -471,7 +500,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                   onClick={() => setDepartureDate(item.dateStr)}
                   className={`p-2.5 rounded-xl text-center transition-all cursor-pointer border ${
                     item.dateStr === departureDate
-                      ? "bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-md"
+                      ? "bg-blue-500/20 border-blue-400 text-cyan-200 shadow-md"
                       : item.isCheapest
                       ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:border-emerald-400/60"
                       : "bg-white/5 border-white/10 text-slate-300 hover:border-white/20"
@@ -488,7 +517,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               ))}
             </div>
           )}
-        </GlassCard>
+        </div>
       )}
 
       {/* ── Collapsible Airline Fleet Filter Drawer ──────────────── */}
@@ -502,7 +531,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             onClick={() => setSelectedAirlineFilter("ALL")}
             className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex-shrink-0 border ${
               selectedAirlineFilter === "ALL"
-                ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/40"
+                ? "bg-blue-500/20 text-blue-300 border-blue-400/40"
                 : "bg-white/5 text-slate-400 hover:text-white border-transparent"
             }`}
           >
@@ -515,7 +544,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               onClick={() => setSelectedAirlineFilter(airline.code)}
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 flex-shrink-0 border ${
                 selectedAirlineFilter === airline.code
-                  ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/40"
+                  ? "bg-blue-500/20 text-blue-300 border-blue-400/40"
                   : "bg-white/5 text-slate-400 hover:text-white border-transparent"
               }`}
             >
@@ -532,13 +561,13 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
         {loading ? (
           <FlightResultsSkeleton count={4} />
         ) : filteredOffers.length === 0 ? (
-          <GlassCard className="p-12 text-center space-y-3 border border-white/10">
+          <div className="p-12 text-center space-y-3 border border-white/10">
             <div className="text-4xl" role="img" aria-label="Airplane">✈️</div>
             <h3 className="text-base font-semibold text-white">No Flights Found</h3>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
               No flight options matched your current filter criteria. Try selecting "All Airlines" or changing your dates.
             </p>
-          </GlassCard>
+          </div>
         ) : (
           filteredOffers.map((offer) => (
             <BookingCard
@@ -553,3 +582,5 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
     </div>
   );
 }
+
+

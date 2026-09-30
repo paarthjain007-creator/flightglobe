@@ -21,8 +21,8 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
     <GlassCard className="p-4" animate="animate-slide-up">
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">
-        <TrendingUp size={14} style={{ color: "#00F2FE" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <TrendingUp size={14} className="text-[#2997ff]" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#86868b]">
           Price & Delay Predictive Forecast
         </span>
       </div>
@@ -30,8 +30,8 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
       {/* 7-Day Price Bar Chart */}
       <div className="mb-4">
         <div className="flex items-center justify-between text-xs mb-2">
-          <span className="text-slate-400">7-Day Ticket Price Trend</span>
-          <span className="font-bold text-cyan-400">
+          <span className="text-[#86868b]">7-Day Ticket Price Trend</span>
+          <span className="font-bold text-[#30d158]">
             Lowest: {symbol}{cheapestDay?.avgPrice?.toLocaleString() || 0} ({cheapestDay?.label})
           </span>
         </div>
@@ -44,20 +44,20 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
 
             return (
               <div key={d.dayIndex} className="flex-1 flex flex-col items-center gap-1 group">
-                <span className="text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity font-mono">
+                <span className="text-[9px] text-[#86868b] opacity-0 group-hover:opacity-100 transition-opacity font-mono">
                   {symbol}{d.avgPrice}
                 </span>
                 <div
                   className={`w-full rounded-t-lg transition-all duration-300 ${
                     isCheapest
-                      ? "bg-emerald-400"
+                      ? "bg-[#30d158]"
                       : isSelected
-                      ? "bg-cyan-400"
-                      : "bg-cyan-500/30 group-hover:bg-cyan-400/60"
+                      ? "bg-[#2997ff]"
+                      : "bg-white/15 group-hover:bg-white/30"
                   }`}
                   style={{ height: `${heightPct}%` }}
                 />
-                <span className={`text-[10px] font-semibold ${isSelected ? "text-cyan-300" : "text-slate-400"}`}>
+                <span className={`text-[10px] font-semibold ${isSelected ? "text-[#2997ff]" : "text-[#86868b]"}`}>
                   {d.label?.split(" ")[0] || d.day || ""}
                 </span>
               </div>
@@ -72,18 +72,18 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
         <div
           className="p-3 rounded-xl space-y-1"
           style={{
-            background: selectedDay.avgDelayRisk > 30 ? "rgba(248,113,113,0.08)" : "rgba(74,222,128,0.08)",
-            border: `1px solid ${selectedDay.avgDelayRisk > 30 ? "rgba(248,113,113,0.2)" : "rgba(74,222,128,0.2)"}`,
+            background: selectedDay.avgDelayRisk > 30 ? "rgba(255,69,58,0.08)" : "rgba(48,209,88,0.08)",
+            border: `1px solid ${selectedDay.avgDelayRisk > 30 ? "rgba(255,69,58,0.2)" : "rgba(48,209,88,0.2)"}`,
           }}
         >
-          <div className="flex items-center gap-1 text-[11px] font-medium" style={{ color: selectedDay.avgDelayRisk > 30 ? "#f87171" : "#4ade80" }}>
+          <div className="flex items-center gap-1 text-[11px] font-medium" style={{ color: selectedDay.avgDelayRisk > 30 ? "#ff453a" : "#30d158" }}>
             <AlertTriangle size={12} />
             <span>Delay Risk</span>
           </div>
-          <div className="text-lg font-bold" style={{ color: "#F8FAFC" }}>
+          <div className="text-lg font-bold text-[#f5f5f7]">
             {selectedDay.avgDelayRisk}%
           </div>
-          <div className="text-[10px] text-slate-400">
+          <div className="text-[10px] text-[#86868b]">
             {selectedDay.avgDelayRisk > 30 ? "Peak traffic expected" : "Low historical delay"}
           </div>
         </div>
@@ -91,16 +91,16 @@ export default function PriceDelayForecastWidget({ dailyForecast = [], selectedD
         {/* Optimal Booking Window */}
         <div
           className="p-3 rounded-xl space-y-1"
-          style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)" }}
+          style={{ background: "rgba(41,151,255,0.08)", border: "1px solid rgba(41,151,255,0.2)" }}
         >
-          <div className="flex items-center gap-1 text-[11px] font-medium" style={{ color: "#00F2FE" }}>
+          <div className="flex items-center gap-1 text-[11px] font-medium" style={{ color: "#2997ff" }}>
             <ShieldCheck size={12} />
             <span>Booking Advice</span>
           </div>
-          <div className="text-sm font-bold truncate" style={{ color: "#F8FAFC" }}>
+          <div className="text-sm font-bold truncate text-[#f5f5f7]">
             {selectedDay.dayIndex === cheapestDay?.dayIndex ? "Best Value Day" : "Standard Fare"}
           </div>
-          <div className="text-[10px] text-slate-400 font-mono">
+          <div className="text-[10px] text-[#86868b] font-mono">
             Avg {symbol}{selectedDay.avgPrice?.toLocaleString() || 0} / person
           </div>
         </div>

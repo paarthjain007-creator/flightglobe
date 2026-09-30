@@ -9,38 +9,38 @@ import {
 import { useStore } from "../store/useStore";
 import { readStampsFromLocalStorage } from "../hooks/usePassportStamps";
 import { sound } from "../utils/soundFx";
-import { cancelBookingAPI } from "../services/api/apiClient";
+import { cancelBookingAPI, fetchUserBookingsAPI } from "../services/api/apiClient";
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    AURORA STAMP PALETTES (High-contrast aerospace HUD themes)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const STAMP_PALETTES = [
   {
-    border: "#00F2FE",
-    text: "#00F2FE",
-    bg: "rgba(0, 242, 254, 0.06)",
-    glow: "rgba(0, 242, 254, 0.25)",
+    border: "#2997ff",
+    text: "#2997ff",
+    bg: "rgba(41, 151, 255, 0.08)",
+    glow: "rgba(41, 151, 255, 0.18)",
     label: "PACIFIC SECTOR",
   },
   {
-    border: "#00FFA3",
-    text: "#00FFA3",
-    bg: "rgba(0, 255, 163, 0.06)",
-    glow: "rgba(0, 255, 163, 0.25)",
+    border: "#30d158",
+    text: "#30d158",
+    bg: "rgba(48, 209, 88, 0.08)",
+    glow: "rgba(48, 209, 88, 0.18)",
     label: "TRANSIT APPROVED",
   },
   {
-    border: "#B800FF",
-    text: "#B800FF",
-    bg: "rgba(184, 0, 255, 0.07)",
-    glow: "rgba(184, 0, 255, 0.25)",
+    border: "#bf5af2",
+    text: "#bf5af2",
+    bg: "rgba(191, 90, 242, 0.08)",
+    glow: "rgba(191, 90, 242, 0.18)",
     label: "EUROPEAN CORRIDOR",
   },
   {
-    border: "#E2B755",
-    text: "#E2B755",
-    bg: "rgba(226, 183, 85, 0.07)",
-    glow: "rgba(226, 183, 85, 0.25)",
+    border: "#ff9f0a",
+    text: "#ff9f0a",
+    bg: "rgba(255, 159, 10, 0.08)",
+    glow: "rgba(255, 159, 10, 0.18)",
     label: "PREMIUM CLEARANCE",
   },
 ];
@@ -220,14 +220,14 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
         boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.15), 0 20px 50px rgba(0,0,0,0.55)",
       }}
     >
-      {/* Top Foil Aurora Security Strip */}
+      {/* Top Foil Security Strip */}
       <div
-        className={`h-1.5 w-full ${isBusiness ? "" : "holo-edge"}`}
-        style={
-          isBusiness
-            ? { background: "linear-gradient(90deg, #E2B755, #00F2FE, #E2B755)" }
-            : undefined
-        }
+        className="h-1.5 w-full"
+        style={{
+          background: isBusiness
+            ? "linear-gradient(90deg, #ff9f0a, #bf5af2, #2997ff)"
+            : "linear-gradient(90deg, #2997ff, #bf5af2)"
+        }}
       />
 
       <div className="p-4 sm:p-6 md:p-8 flex flex-col lg:flex-row gap-6 lg:gap-8 items-stretch">
@@ -241,11 +241,11 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
               <div
                 className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: isBusiness ? "rgba(226,183,85,0.12)" : "rgba(0,242,254,0.10)",
-                  border: `1px solid ${isBusiness ? "rgba(226,183,85,0.3)" : "rgba(0,242,254,0.25)"}`,
+                  background: isBusiness ? "rgba(255,159,10,0.12)" : "rgba(41,151,255,0.12)",
+                  border: `1px solid ${isBusiness ? "rgba(255,159,10,0.3)" : "rgba(41,151,255,0.3)"}`,
                 }}
               >
-                <Plane size={18} color={isBusiness ? "#E2B755" : "#00F2FE"} className="-rotate-45" />
+                <Plane size={18} color={isBusiness ? "#ff9f0a" : "#2997ff"} className="-rotate-45" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -253,15 +253,15 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                   <span
                     className="mono text-[10px] font-bold px-2 py-0.5 rounded"
                     style={{
-                      background: isBusiness ? "rgba(226,183,85,0.15)" : "rgba(0,242,254,0.12)",
-                      border: `1px solid ${isBusiness ? "rgba(226,183,85,0.35)" : "rgba(0,242,254,0.3)"}`,
-                      color: isBusiness ? "#E2B755" : "#00F2FE",
+                      background: isBusiness ? "rgba(255,159,10,0.15)" : "rgba(41,151,255,0.12)",
+                      border: `1px solid ${isBusiness ? "rgba(255,159,10,0.35)" : "rgba(41,151,255,0.3)"}`,
+                      color: isBusiness ? "#ff9f0a" : "#2997ff",
                     }}
                   >
                     {flightCode}
                   </span>
                 </div>
-                <div className="mono text-[10px] text-[#7A85A0] mt-0.5">
+                <div className="mono text-[10px] text-[#86868b] mt-0.5">
                   DATE: {trip.date || "2026-09-04"} · GATEWAY FLIGHT-OS
                 </div>
               </div>
@@ -275,16 +275,16 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                 className="chip text-[10px] py-1 cursor-pointer"
                 title="Copy PNR Booking Reference"
               >
-                <span className="text-[#7A85A0]">REF:</span>
+                <span className="text-[#86868b]">REF:</span>
                 <span className="text-white">{trip.bookingRef || "FG-849201"}</span>
-                {copied && <CheckCircle2 size={11} color="#00FFA3" />}
+                {copied && <CheckCircle2 size={11} color="#30d158" />}
               </button>
               <div
                 className="flex items-center gap-1 px-2.5 py-1 rounded-full mono text-[9px] font-bold"
                 style={{
-                  background: "rgba(0,255,163,0.12)",
-                  border: "1px solid rgba(0,255,163,0.3)",
-                  color: "#00FFA3",
+                  background: "rgba(48,209,88,0.12)",
+                  border: "1px solid rgba(48,209,88,0.3)",
+                  color: "#30d158",
                 }}
               >
                 <CheckCircle2 size={10} />
@@ -297,41 +297,41 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
           <div className="flex items-center justify-between gap-4 py-2">
             {/* Origin */}
             <div className="flex-1">
-              <div className="mono text-[34px] sm:text-[42px] font-black leading-none" style={{ color: "#00F2FE" }}>
+              <div className="mono text-[34px] sm:text-[42px] font-black leading-none text-white">
                 {origCode}
               </div>
               <div className="font-semibold text-sm text-white mt-1">{origCity}</div>
-              <div className="mono text-[11px] text-[#7A85A0] mt-0.5">
+              <div className="mono text-[11px] text-[#86868b] mt-0.5">
                 DEP {flight.dep || "07:30"} · {trip.terminal || "T4"}
               </div>
             </div>
 
             {/* Middle Flight Path Arc */}
             <div className="flex flex-col items-center justify-center flex-1 max-w-[200px] px-2">
-              <span className="mono text-[10px] text-[#00FFA3] font-bold tracking-wider mb-1">
+              <span className="mono text-[10px] text-[#30d158] font-bold tracking-wider mb-1">
                 NON-STOP
               </span>
               <div className="relative w-full flex items-center justify-center">
-                <div className="w-full h-px" style={{ background: "linear-gradient(90deg, #00F2FE, #7928CA, #00FFA3)" }} />
+                <div className="w-full h-px" style={{ background: "linear-gradient(90deg, #2997ff, #bf5af2)" }} />
                 <div
                   className="absolute w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{ background: "#05060A", border: "1px solid rgba(0,242,254,0.4)" }}
+                  style={{ background: "#161618", border: "1px solid rgba(41,151,255,0.4)" }}
                 >
-                  <Plane size={11} color="#00F2FE" className="rotate-45" />
+                  <Plane size={11} color="#2997ff" className="rotate-45" />
                 </div>
               </div>
-              <span className="mono text-[9px] text-[#7A85A0] mt-1.5">
+              <span className="mono text-[9px] text-[#86868b] mt-1.5">
                 {flight.dur || "7h 15m"}
               </span>
             </div>
 
             {/* Destination */}
             <div className="flex-1 text-right">
-              <div className="mono text-[34px] sm:text-[42px] font-black leading-none" style={{ color: "#B800FF" }}>
+              <div className="mono text-[34px] sm:text-[42px] font-black leading-none text-white">
                 {destCode}
               </div>
               <div className="font-semibold text-sm text-white mt-1">{destCity}</div>
-              <div className="mono text-[11px] text-[#7A85A0] mt-0.5">
+              <div className="mono text-[11px] text-[#86868b] mt-0.5">
                 ARR {flight.arr || "19:45"} · {trip.terminal || "T5"}
               </div>
             </div>
@@ -340,38 +340,38 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
           {/* Passenger & Flight Specs Grid */}
           <div
             className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3.5 rounded-2xl"
-            style={{ background: "rgba(5, 8, 18, 0.70)", border: "1px solid rgba(255,255,255,0.05)" }}
+            style={{ background: "rgba(22, 22, 24, 0.70)", border: "1px solid rgba(255,255,255,0.06)" }}
           >
             <div>
-              <div className="mono text-[8px] uppercase tracking-widest text-[#64748B]">ASSIGNED SEAT</div>
-              <div className="mono text-base font-bold" style={{ color: isBusiness ? "#E2B755" : "#00F2FE" }}>
+              <div className="mono text-[8px] uppercase tracking-widest text-[#86868b]">ASSIGNED SEAT</div>
+              <div className="mono text-base font-bold" style={{ color: isBusiness ? "#ff9f0a" : "#2997ff" }}>
                 {seat}
               </div>
-              <div className="mono text-[9px] text-[#94A3B8]">{cabinClass}</div>
+              <div className="mono text-[9px] text-[#86868b]">{cabinClass}</div>
             </div>
 
             <div>
-              <div className="mono text-[8px] uppercase tracking-widest text-[#64748B]">GATE / BOARDING</div>
+              <div className="mono text-[8px] uppercase tracking-widest text-[#86868b]">GATE / BOARDING</div>
               <div className="mono text-base font-bold text-white">
                 {trip.gate || "B14"}
               </div>
-              <div className="mono text-[9px] text-[#00FFA3]">GROUP {trip.group || "A"}</div>
+              <div className="mono text-[9px] text-[#30d158]">GROUP {trip.group || "A"}</div>
             </div>
 
             <div>
-              <div className="mono text-[8px] uppercase tracking-widest text-[#64748B]">TERMINAL</div>
+              <div className="mono text-[8px] uppercase tracking-widest text-[#86868b]">TERMINAL</div>
               <div className="mono text-base font-bold text-white">
                 {trip.terminal || "T4"}
               </div>
-              <div className="mono text-[9px] text-[#94A3B8]">FAST-TRACK</div>
+              <div className="mono text-[9px] text-[#86868b]">FAST-TRACK</div>
             </div>
 
             <div>
-              <div className="mono text-[8px] uppercase tracking-widest text-[#64748B]">TOTAL FARE</div>
-              <div className="mono text-base font-bold font-mono" style={{ color: "#00FFA3" }}>
+              <div className="mono text-[8px] uppercase tracking-widest text-[#86868b]">TOTAL FARE</div>
+              <div className="mono text-base font-bold font-mono text-[#30d158]">
                 {currencySymbol}{typeof price === "number" ? price.toLocaleString() : price}
               </div>
-              <div className="mono text-[9px] text-[#94A3B8]">TAXES INCL.</div>
+              <div className="mono text-[9px] text-[#86868b]">TAXES INCL.</div>
             </div>
           </div>
 
@@ -400,10 +400,10 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                 <button
                   type="button"
                   onClick={() => onBookSimilar(origCode, destCode)}
-                  className="btn-ghost flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-bold cursor-pointer hover:text-cyan-300"
+                  className="btn-ghost flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-bold cursor-pointer hover:text-blue-300"
                   title="Search & book another flight on this corridor"
                 >
-                  <Plane size={13} className="text-cyan-400" />
+                  <Plane size={13} className="text-blue-400" />
                   <span>BOOK SIMILAR ROUTE</span>
                 </button>
               )}
@@ -432,32 +432,32 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
         <div
           className="lg:w-64 flex flex-col justify-between items-center text-center p-5 rounded-2xl"
           style={{
-            background: "rgba(5, 8, 18, 0.75)",
+            background: "rgba(22, 22, 24, 0.75)",
             border: "1px solid rgba(255,255,255,0.06)",
           }}
         >
           <div className="w-full space-y-1">
-            <div className="mono text-[9px] font-bold tracking-widest text-[#00F2FE]">
+            <div className="mono text-[9px] font-bold tracking-widest text-[#2997ff]">
               DIGITAL WALLET NFC
             </div>
-            <div className="mono text-[10px] text-[#7A85A0]">
+            <div className="mono text-[10px] text-[#86868b]">
               BIOMETRIC SMART PASS
             </div>
           </div>
 
           {/* High contrast QR code */}
           <div className="my-4 p-3 rounded-2xl bg-white shadow-xl flex items-center justify-center">
-            <QrCode size={110} color="#05060A" />
+            <QrCode size={110} color="#161618" />
           </div>
 
           <div className="w-full space-y-3">
-            <div className="mono text-[9px] text-[#7A85A0] leading-relaxed">
+            <div className="mono text-[9px] text-[#86868b] leading-relaxed">
               SCAN AT TSA PRE-CHECK & BOARDING E-GATES
             </div>
 
             <div
-              className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl mono text-[9px] font-bold text-[#00FFA3]"
-              style={{ background: "rgba(0,255,163,0.08)", border: "1px solid rgba(0,255,163,0.2)" }}
+              className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl mono text-[9px] font-semibold text-[#30d158]"
+              style={{ background: "rgba(48,209,88,0.08)", border: "1px solid rgba(48,209,88,0.2)" }}
             >
               <ShieldCheck size={12} />
               <span>IATA DIGITAL READY</span>
@@ -474,55 +474,66 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Passport() {
   const navigate    = useNavigate();
-  const stamps      = useStore((s) => s.stamps || []);
-  const removeStamp = useStore((s) => s.removeStamp);
-  const clearStamps = useStore((s) => s.clearStamps);
-  const addStamp    = useStore((s) => s.addStamp);
-  const trips       = useStore((s) => s.trips || []);
+  
+  // Real DB state
+  const [dbTrips, setDbTrips] = useState([]);
+  const [loadingDb, setLoadingDb] = useState(true);
+  
   const removeTrip  = useStore((s) => s.removeTrip);
   const setStoreWps = useStore((s) => s.setWaypoints);
 
   const [activeTab, setActiveTab] = useState("passes"); // "passes" | "stamps"
 
-  // Deduplicate stamps by ID
+  useEffect(() => {
+    async function load() {
+      setLoadingDb(true);
+      try {
+        const data = await fetchUserBookingsAPI();
+        if (data) {
+          setDbTrips(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch bookings", err);
+      } finally {
+        setLoadingDb(false);
+      }
+    }
+    load();
+  }, []);
+
   const uniqueStamps = React.useMemo(() => {
     const seen = new Set();
-    return (stamps || []).filter((s) => {
+    return dbTrips.map(trip => ({
+      id: trip.id,
+      origin: trip.origin,
+      destination: trip.destination,
+      date: trip.date,
+      airline: trip.flight?.airline,
+      flightNo: trip.flight?.code
+    })).filter((s) => {
       const id = s.id || `${s.origin?.iata}-${s.destination?.iata}-${s.date}`;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
-  }, [stamps]);
-
-  // Hydrate local storage stamps on mount (only if not already loaded)
-  useEffect(() => {
-    const lsStamps = readStampsFromLocalStorage();
-    const existingIds = new Set((stamps || []).map((s) => s.id));
-    lsStamps.forEach((s) => {
-      if (s.id && !existingIds.has(s.id)) {
-        addStamp(s);
-      }
-    });
-
-    function onStampAdded(e) {
-      if (e.detail && !existingIds.has(e.detail.id)) {
-        addStamp(e.detail);
-      }
-    }
-    window.addEventListener("passport:stamp-added", onStampAdded);
-    return () => window.removeEventListener("passport:stamp-added", onStampAdded);
-  }, [addStamp]);
+  }, [dbTrips]);
 
   const uniqueDests = Array.from(
     new Set((uniqueStamps || []).map((s) => s.destination?.iata || s.destination?.code).filter(Boolean))
   );
 
-  function handleCancelTrip(id) {
+  async function handleCancelTrip(id) {
     sound.playClick();
-    cancelBookingAPI(id).catch((err) => console.warn("Failed to cancel trip in backend:", err));
-    removeTrip(id);
+    setDbTrips(prev => prev.filter(t => t.id !== id));
+    try {
+      await cancelBookingAPI(id);
+      removeTrip(id); // fallback clear local
+    } catch(err) {
+      console.warn("Failed to cancel trip in backend:", err);
+    }
   }
+
+  const trips = dbTrips; // override the variable used by the rest of the file
 
   function handleViewGlobe(item) {
     sound.playClick();
@@ -535,27 +546,27 @@ export default function Passport() {
   return (
     <div
       id="passport-page"
-      className="px-4 sm:px-6 mx-auto space-y-6 pt-24 sm:pt-28 pb-16 max-w-[1160px] animate-fade-in"
+      className="px-4 pl-6 sm:px-8 sm:pl-10 mx-auto space-y-6 pt-24 sm:pt-28 pb-16 max-w-[1160px] animate-fade-in relative z-10"
     >
       {/* ── HUD HEADER ─────────────────────────────────────────── */}
       <div
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
       >
-        <div>
+        <div className="flex-1 max-w-md">
           <div className="mono text-[9px] tracking-widest mb-1 text-[#64748B]">
             DIGITAL CREDENTIALS // TRAVEL DOSSIER
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
             <span>Passes & Digital Passport</span>
           </h1>
-          <p className="text-xs text-[#94A3B8] mt-1">
+          <p className="text-xs text-[#94A3B8] mt-1 break-words whitespace-normal">
             Active electronic boarding passes, biometric flight clearances, and verified destination stamps.
           </p>
         </div>
 
         {/* View Switcher Segmented Control */}
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-3 flex-wrap relative z-50">
           <div
             className="flex items-center gap-1 p-1 rounded-2xl"
             style={{
@@ -567,11 +578,11 @@ export default function Passport() {
             <button
               type="button"
               onClick={() => { sound.playClick(); setActiveTab("passes"); }}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer"
               style={{
-                background: activeTab === "passes" ? "rgba(0,242,254,0.12)" : "transparent",
-                border: activeTab === "passes" ? "1px solid rgba(0,242,254,0.3)" : "1px solid transparent",
-                color: activeTab === "passes" ? "#00F2FE" : "#7A85A0",
+                background: activeTab === "passes" ? "rgba(41,151,255,0.12)" : "transparent",
+                border: activeTab === "passes" ? "1px solid rgba(41,151,255,0.3)" : "1px solid transparent",
+                color: activeTab === "passes" ? "#2997ff" : "#86868b",
               }}
             >
               <Ticket size={13} />
@@ -579,8 +590,8 @@ export default function Passport() {
               <span
                 className="mono w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center"
                 style={{
-                  background: activeTab === "passes" ? "#00F2FE" : "rgba(255,255,255,0.08)",
-                  color: activeTab === "passes" ? "#05060A" : "#7A85A0",
+                  background: activeTab === "passes" ? "#0071e3" : "rgba(255,255,255,0.08)",
+                  color: "#ffffff",
                 }}
               >
                 {trips.length}
@@ -591,18 +602,18 @@ export default function Passport() {
             <button
               type="button"
               onClick={() => { sound.playClick(); setActiveTab("stamps"); }}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer"
               style={{
-                background: activeTab === "stamps" ? "rgba(184,0,255,0.12)" : "transparent",
-                border: activeTab === "stamps" ? "1px solid rgba(184,0,255,0.3)" : "1px solid transparent",
-                color: activeTab === "stamps" ? "#B800FF" : "#7A85A0",
+                background: activeTab === "stamps" ? "rgba(191,90,242,0.12)" : "transparent",
+                border: activeTab === "stamps" ? "1px solid rgba(191,90,242,0.3)" : "1px solid transparent",
+                color: activeTab === "stamps" ? "#bf5af2" : "#86868b",
               }}
             >
               <span>🌍 PASSPORT STAMPS</span>
               <span
                 className="mono w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center"
                 style={{
-                  background: activeTab === "stamps" ? "#B800FF" : "rgba(255,255,255,0.08)",
+                  background: activeTab === "stamps" ? "#bf5af2" : "rgba(255,255,255,0.08)",
                   color: "#fff",
                 }}
               >
@@ -632,16 +643,16 @@ export default function Passport() {
             <div
               className="rounded-3xl p-12 sm:p-16 text-center space-y-4"
               style={{
-                background: "rgba(13, 17, 27, 0.65)",
+                background: "rgba(22, 22, 24, 0.65)",
                 border: "1px dashed rgba(255,255,255,0.12)",
                 backdropFilter: "blur(20px)",
               }}
             >
               <div
                 className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center"
-                style={{ background: "rgba(0,242,254,0.08)", border: "1px solid rgba(0,242,254,0.2)" }}
+                style={{ background: "rgba(41,151,255,0.10)", border: "1px solid rgba(41,151,255,0.25)" }}
               >
-                <Ticket size={28} color="#00F2FE" />
+                <Ticket size={28} color="#2997ff" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-bold text-white">No active electronic boarding passes</h3>
@@ -739,13 +750,13 @@ export default function Passport() {
               <div
                 className="p-4 sm:p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4"
                 style={{
-                  background: "rgba(13, 17, 27, 0.70)",
-                  border: "1px solid rgba(255,255,255,0.07)",
+                  background: "rgba(22, 22, 24, 0.70)",
+                  border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
                 <div className="flex items-center gap-3 flex-wrap">
                   <div className="flex items-center gap-1.5">
-                    <MapPin size={15} color="#00F2FE" />
+                    <MapPin size={15} color="#2997ff" />
                     <span className="mono text-xs font-bold text-white">
                       VISITED HUBS ({uniqueDests.length}):
                     </span>
@@ -754,11 +765,11 @@ export default function Passport() {
                     {uniqueDests.map((iata) => (
                       <span
                         key={iata}
-                        className="mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg"
+                        className="mono text-[10px] font-semibold px-2.5 py-0.5 rounded-lg"
                         style={{
-                          background: "rgba(0,242,254,0.10)",
-                          border: "1px solid rgba(0,242,254,0.25)",
-                          color: "#00F2FE",
+                          background: "rgba(41,151,255,0.10)",
+                          border: "1px solid rgba(41,151,255,0.25)",
+                          color: "#2997ff",
                         }}
                       >
                         {iata}

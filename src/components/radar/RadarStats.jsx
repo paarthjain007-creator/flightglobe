@@ -6,7 +6,10 @@ import { Cpu, Radio, Clock, Globe2, Wifi, WifiOff, ChevronUp, ChevronDown, Activ
  */
 export default function RadarStats({ stats }) {
   const [expanded, setExpanded] = useState(false);
-  const { count, source, lastUpdate, fps } = stats;
+  const count = stats?.count ?? 0;
+  const source = stats?.source ?? "fallback";
+  const lastUpdate = stats?.lastUpdate;
+  const fps = stats?.fps ?? 60;
 
   const isLive    = source === "opensky";
   const isCached  = source === "cache";
@@ -22,25 +25,29 @@ export default function RadarStats({ stats }) {
   return (
     <div
       id="radar-stats"
-      className="absolute bottom-28 sm:bottom-4 left-3 sm:left-4 z-[201] pointer-events-auto glass rounded-2xl p-3 flex flex-col gap-2 min-w-[200px] max-w-[calc(100vw-24px)] border border-cyan-500/30 shadow-2xl transition-all"
+      className="absolute bottom-28 sm:bottom-4 left-3 sm:left-4 z-[201] pointer-events-auto rounded-2xl p-3 flex flex-col gap-2 min-w-[200px] max-w-[calc(100vw-24px)] border border-white/10 shadow-2xl transition-all"
+      style={{
+        background: "rgba(22, 22, 24, 0.88)",
+        backdropFilter: "blur(24px)",
+      }}
     >
       {/* Drawer Header Toggle */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center justify-between gap-3 text-xs font-bold text-[#F8FAFC] cursor-pointer hover:text-cyan-300 w-full"
+        className="flex items-center justify-between gap-3 text-xs font-bold text-[#f5f5f7] cursor-pointer hover:text-white w-full"
       >
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: sourceColor }} />
           <span>ADS-B Telemetry Drawer</span>
         </div>
-        {expanded ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+        {expanded ? <ChevronDown size={14} className="text-[#86868b]" /> : <ChevronUp size={14} className="text-[#86868b]" />}
       </button>
 
       {/* Expandable Body */}
       {expanded && (
         <div className="space-y-2 pt-2 border-t border-white/10 animate-fade-in">
-          <StatRow icon={<Globe2 size={11} />} label="Airborne Aircraft" value={count.toLocaleString()} color="#00F2FE" />
-          <StatRow icon={<Cpu size={11} />} label="Render FPS" value={`${fps} fps`} color={fps >= 55 ? "#00FFA3" : fps >= 30 ? "#FBBF24" : "#FF3B69"} />
+          <StatRow icon={<Globe2 size={11} className="text-[#2997ff]" />} label="Airborne Aircraft" value={count.toLocaleString()} color="#2997ff" />
+          <StatRow icon={<Cpu size={11} />} label="Render FPS" value={`${fps} fps`} color={fps >= 55 ? "#30d158" : fps >= 30 ? "#ff9f0a" : "#ff453a"} />
           <StatRow
             icon={isOffline ? <WifiOff size={11} /> : <Wifi size={11} />}
             label="Feed Source"

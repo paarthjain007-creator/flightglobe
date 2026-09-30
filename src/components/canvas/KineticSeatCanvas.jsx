@@ -97,21 +97,21 @@ export default function KineticSeatCanvas({
     <div className="flex flex-col h-full">
       {/* ── Header: Flight + Live Price Ticker ─────────────────────────── */}
       <div className="flex-shrink-0 pb-4">
-        <div className="mono text-[10px] tracking-widest mb-1" style={{ color: "#404660" }}>
+        <div className="mono text-[10px] tracking-widest mb-1 text-[#86868b]">
           KINETIC SEAT SELECTION // {selectedFlight?.callsign || "FLIGHT-OS"}
         </div>
         <div className="flex items-baseline gap-3">
           <div
-            className="mono font-bold leading-none"
-            style={{ fontSize: "38px", color: "#E8EAF0", textShadow: isBusiness ? "0 0 24px rgba(226,183,85,0.4)" : "0 0 24px rgba(0,242,254,0.3)" }}
+            className="mono font-bold leading-none text-[#f5f5f7]"
+            style={{ fontSize: "38px" }}
           >
             {symbol}{displayedPrice.toLocaleString()}
           </div>
           <div>
-            <div className="mono text-[11px] font-bold" style={{ color: isBusiness ? "#E2B755" : "#00F2FE" }}>
+            <div className="mono text-[11px] font-semibold" style={{ color: isBusiness ? "#ff9f0a" : "#2997ff" }}>
               {isBusiness ? "BUSINESS CLASS SUITE" : "ECONOMY CLASS"}
             </div>
-            <div className="mono text-[10px]" style={{ color: "#404660" }}>
+            <div className="mono text-[10px] text-[#86868b]">
               SEAT {selectedSeat} · {seatAttrs.pitch} PITCH
             </div>
           </div>
@@ -122,29 +122,29 @@ export default function KineticSeatCanvas({
       <div
         className="flex-1 rounded-2xl p-4 overflow-y-auto no-scrollbar min-h-0 relative"
         style={{
-          background: "rgba(5, 8, 18, 0.80)",
-          border: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(22, 22, 24, 0.75)",
+          border: "1px solid rgba(255,255,255,0.08)",
         }}
       >
         {/* Ambient glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-16 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse, rgba(0,242,254,0.06) 0%, transparent 70%)" }} />
+          style={{ background: "radial-gradient(ellipse, rgba(41,151,255,0.05) 0%, transparent 70%)" }} />
 
         {/* Front marker */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
-          <span className="mono text-[9px] tracking-widest" style={{ color: "#404660" }}>▲ FORWARD CABIN</span>
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+          <span className="mono text-[9px] tracking-widest text-[#86868b]">▲ FORWARD CABIN</span>
+          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
         </div>
 
         {/* Business / First class */}
         <div className="mb-5">
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-px flex-1" style={{ background: "rgba(226,183,85,0.2)" }} />
-            <span className="mono text-[9px] font-bold tracking-widest" style={{ color: "#E2B755" }}>
+            <div className="h-px flex-1" style={{ background: "rgba(255,159,10,0.25)" }} />
+            <span className="mono text-[9px] font-semibold tracking-widest text-[#ff9f0a]">
               ✦ BUSINESS CLASS
             </span>
-            <div className="h-px flex-1" style={{ background: "rgba(226,183,85,0.2)" }} />
+            <div className="h-px flex-1" style={{ background: "rgba(255,159,10,0.25)" }} />
           </div>
 
           <div className="space-y-2 max-w-[280px] mx-auto">
@@ -171,7 +171,7 @@ export default function KineticSeatCanvas({
                         </button>
                         {isSel && !isOcc && (
                           <div className="absolute inset-0 -m-1.5 rounded-2xl border-2 pointer-events-none seat-active-ring"
-                            style={{ borderColor: "#E2B755" }} />
+                            style={{ borderColor: "#ff9f0a" }} />
                         )}
                       </div>
                     );
@@ -179,7 +179,7 @@ export default function KineticSeatCanvas({
                 </div>
 
                 {/* Center Aisle Indicator */}
-                <span className="mono text-[8px] tracking-widest text-[#404660] select-none">
+                <span className="mono text-[8px] tracking-widest text-[#86868b] select-none">
                   AISLE
                 </span>
 
@@ -204,7 +204,7 @@ export default function KineticSeatCanvas({
                         </button>
                         {isSel && !isOcc && (
                           <div className="absolute inset-0 -m-1.5 rounded-2xl border-2 pointer-events-none seat-active-ring"
-                            style={{ borderColor: "#E2B755" }} />
+                            style={{ borderColor: "#ff9f0a" }} />
                         )}
                       </div>
                     );
@@ -217,32 +217,32 @@ export default function KineticSeatCanvas({
 
         {/* Galley divider */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
-          <span className="mono text-[9px] tracking-widest" style={{ color: "#404660" }}>— GALLEY & RESTROOMS —</span>
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
+          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+          <span className="mono text-[9px] tracking-widest text-[#86868b]">— GALLEY & RESTROOMS —</span>
+          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
         </div>
 
         {/* Economy */}
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.06)" }} />
-            <span className="mono text-[9px] font-bold tracking-widest" style={{ color: "#7A85A0" }}>
+            <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.08)" }} />
+            <span className="mono text-[9px] font-semibold tracking-widest text-[#86868b]">
               ECONOMY CLASS — ROWS 3–8
             </span>
-            <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.08)" }} />
           </div>
 
           {/* Column headers with aisle gap */}
           <div className="flex items-center justify-between max-w-[280px] mx-auto mb-1.5 px-1">
             <div className="flex items-center gap-1.5">
               {["A","B","C"].map((col) => (
-                <span key={col} className="mono text-[8px] w-8 text-center" style={{ color: "#404660" }}>{col}</span>
+                <span key={col} className="mono text-[8px] w-8 text-center text-[#86868b]">{col}</span>
               ))}
             </div>
-            <span className="mono text-[7px] tracking-wider text-[#404660]">AISLE</span>
+            <span className="mono text-[7px] tracking-wider text-[#86868b]">AISLE</span>
             <div className="flex items-center gap-1.5">
               {["D","E","F"].map((col) => (
-                <span key={col} className="mono text-[8px] w-8 text-center" style={{ color: "#404660" }}>{col}</span>
+                <span key={col} className="mono text-[8px] w-8 text-center text-[#86868b]">{col}</span>
               ))}
             </div>
           </div>
@@ -274,7 +274,7 @@ export default function KineticSeatCanvas({
                           </button>
                           {isSel && !isOcc && (
                             <div className="absolute inset-0 -m-1 rounded-xl border-2 pointer-events-none seat-active-ring"
-                              style={{ borderColor: "#00F2FE" }} />
+                              style={{ borderColor: "#2997ff" }} />
                           )}
                         </div>
                       );
@@ -283,7 +283,7 @@ export default function KineticSeatCanvas({
 
                   {/* Aisle Spacer with subtle floor light */}
                   <div className="w-4 flex items-center justify-center">
-                    <span className="w-1 h-1 rounded-full bg-cyan-400/30" />
+                    <span className="w-1 h-1 rounded-full bg-white/25" />
                   </div>
 
                   {/* Right 3 seats (D, E, F) */}
@@ -307,7 +307,7 @@ export default function KineticSeatCanvas({
                           </button>
                           {isSel && !isOcc && (
                             <div className="absolute inset-0 -m-1 rounded-xl border-2 pointer-events-none seat-active-ring"
-                              style={{ borderColor: "#00F2FE" }} />
+                              style={{ borderColor: "#2997ff" }} />
                           )}
                         </div>
                       );
@@ -326,12 +326,12 @@ export default function KineticSeatCanvas({
         <div className="grid grid-cols-2 gap-2">
           {Object.entries(seatAttrs).map(([k, v]) => (
             <div key={k} className="flex items-center gap-2 px-3 py-2 rounded-xl"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
               <div>
-                <div className="mono text-[8px] tracking-widest" style={{ color: "#404660" }}>
+                <div className="mono text-[8px] tracking-widest text-[#86868b]">
                   {k.toUpperCase()}
                 </div>
-                <div className="mono text-[10px] font-bold" style={{ color: "#E8EAF0" }}>{v}</div>
+                <div className="mono text-[10px] font-semibold text-[#f5f5f7]">{v}</div>
               </div>
             </div>
           ))}
@@ -339,8 +339,8 @@ export default function KineticSeatCanvas({
 
         {/* Trust line */}
         <div className="flex items-center justify-center gap-3">
-          <ShieldCheck size={11} color="#00FFA3" />
-          <span className="mono text-[9px] tracking-wider" style={{ color: "#404660" }}>
+          <ShieldCheck size={12} color="#30d158" />
+          <span className="mono text-[9px] tracking-wider text-[#86868b]">
             256-BIT ENCRYPTED · IATA GDS · FREE 24H CANCELLATION
           </span>
         </div>

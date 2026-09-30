@@ -72,8 +72,8 @@ function AirportPicker({ label, value, onChange }) {
 
   return (
     <div ref={ref} className="relative flex-1 min-w-[130px]">
-      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-slate-400">
-        <MapPin size={10} className="text-cyan-400" />
+      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
+        <MapPin size={10} className="text-[#2997ff]" />
         {label}
       </div>
 
@@ -84,21 +84,22 @@ function AirportPicker({ label, value, onChange }) {
           setOpen(!open);
           setTimeout(() => inputRef.current?.focus(), 50);
         }}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-2xl glass cursor-pointer text-left transition-all hover:border-cyan-400/50"
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-2xl cursor-pointer text-left transition-all hover:border-white/20"
         style={{
-          border: open ? "1px solid #00F2FE" : "1px solid rgba(255, 255, 255, 0.1)",
-          boxShadow: open ? "0 0 16px rgba(0, 242, 254, 0.25)" : "none",
+          background: "rgba(255, 255, 255, 0.04)",
+          border: open ? "1px solid rgba(41, 151, 255, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)",
+          boxShadow: open ? "0 0 12px rgba(41, 151, 255, 0.15)" : "none",
         }}
       >
         <div className="min-w-0">
-          <div className="text-lg font-black mono leading-none text-cyan-400">
+          <div className="text-lg font-black mono leading-none text-[#2997ff]">
             {value?.code || value?.iata || "DEL"}
           </div>
           <div className="text-[11px] truncate font-medium text-slate-200 mt-0.5">
             {value?.city || "New Delhi"}
           </div>
         </div>
-        <ChevronDown size={13} className={`transition-transform duration-200 ${open ? "rotate-180 text-cyan-400" : "text-slate-500"}`} />
+        <ChevronDown size={13} className={`transition-transform duration-200 ${open ? "rotate-180 text-[#2997ff]" : "text-[#86868b]"}`} />
       </button>
 
       <AnimatePresence>
@@ -110,8 +111,8 @@ function AirportPicker({ label, value, onChange }) {
             transition={{ duration: 0.15 }}
             className="absolute top-full left-0 right-0 mt-1.5 rounded-2xl p-2 z-50 shadow-2xl"
             style={{
-              background: "rgba(10, 12, 18, 0.97)",
-              border: "1px solid rgba(255, 255, 255, 0.15)",
+              background: "rgba(22, 22, 24, 0.96)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
               backdropFilter: "blur(24px)",
               minWidth: "260px",
             }}
@@ -123,7 +124,7 @@ function AirportPicker({ label, value, onChange }) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search city, IATA code, or airport..."
-                className="w-full px-3 py-2 rounded-xl text-sm font-medium outline-none bg-slate-900 border border-white/20 text-white placeholder-slate-400 focus:border-cyan-400"
+                className="w-full px-3 py-2 rounded-xl text-sm font-medium outline-none bg-black/40 border border-white/10 text-white placeholder-[#86868b] focus:border-[#2997ff]"
               />
             </div>
 
@@ -140,8 +141,8 @@ function AirportPicker({ label, value, onChange }) {
                     }}
                     className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-left cursor-pointer transition-colors"
                     style={{
-                      background: (value?.code || value?.iata) === a.code ? "rgba(0, 242, 254, 0.15)" : "transparent",
-                      color: (value?.code || value?.iata) === a.code ? "#00F2FE" : "#F8FAFC",
+                      background: (value?.code || value?.iata) === a.code ? "rgba(41, 151, 255, 0.12)" : "transparent",
+                      color: (value?.code || value?.iata) === a.code ? "#2997ff" : "#F8FAFC",
                     }}
                     onMouseEnter={(e) => {
                       if ((value?.code || value?.iata) !== a.code) e.currentTarget.style.background = "rgba(255,255,255,0.06)";
@@ -152,17 +153,17 @@ function AirportPicker({ label, value, onChange }) {
                   >
                     <div>
                       <div className="text-xs font-bold">{a.city}</div>
-                      <div className="text-[10px] text-slate-400 truncate max-w-[170px]">{a.name}</div>
+                      <div className="text-[10px] text-[#86868b] truncate max-w-[170px]">{a.name}</div>
                     </div>
                     <span className="mono font-bold text-[11px] px-2 py-0.5 rounded-md"
-                      style={{ background: "rgba(255,255,255,0.08)", color: "#00F2FE" }}>
+                      style={{ background: "rgba(255,255,255,0.08)", color: "#2997ff" }}>
                       {a.code}
                     </span>
                   </button>
                 </li>
               ))}
               {filtered.length === 0 && (
-                <div className="text-center py-3 text-xs text-slate-500 mono">
+                <div className="text-center py-3 text-xs text-[#86868b] mono">
                   No airports found
                 </div>
               )}
@@ -245,8 +246,8 @@ export default function SearchBar({
                 }}
                 className={`px-3 py-1 rounded-lg text-[10px] font-bold mono transition-all cursor-pointer ${
                   tripType === t.id
-                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-white/10 text-white border border-white/20 shadow-sm"
+                    : "text-[#86868b] hover:text-white"
                 }`}
               >
                 {t.label}
@@ -256,8 +257,8 @@ export default function SearchBar({
 
           {/* Currency Switcher */}
           {onCurrencyChange && (
-            <div className="flex items-center gap-1.5 text-[10px] mono text-slate-400">
-              <DollarSign size={11} className="text-cyan-400" />
+            <div className="flex items-center gap-1.5 text-[10px] mono text-[#86868b]">
+              <DollarSign size={11} className="text-[#2997ff]" />
               <span>Currency:</span>
               <select
                 value={currency}
@@ -265,14 +266,14 @@ export default function SearchBar({
                   sound.playClick();
                   onCurrencyChange(e.target.value);
                 }}
-                className="bg-white/5 border border-white/15 text-cyan-300 px-2 py-0.5 rounded-lg font-bold outline-none cursor-pointer"
+                className="bg-white/5 border border-white/15 text-slate-200 px-2 py-0.5 rounded-lg font-bold outline-none cursor-pointer"
               >
-                <option value="INR" className="bg-slate-900">INR (₹)</option>
-                <option value="USD" className="bg-slate-900">USD ($)</option>
-                <option value="EUR" className="bg-slate-900">EUR (€)</option>
-                <option value="GBP" className="bg-slate-900">GBP (£)</option>
-                <option value="AED" className="bg-slate-900">AED (د.إ)</option>
-                <option value="SGD" className="bg-slate-900">SGD (S$)</option>
+                <option value="INR" className="bg-[#161618]">INR (₹)</option>
+                <option value="USD" className="bg-[#161618]">USD ($)</option>
+                <option value="EUR" className="bg-[#161618]">EUR (€)</option>
+                <option value="GBP" className="bg-[#161618]">GBP (£)</option>
+                <option value="AED" className="bg-[#161618]">AED (د.إ)</option>
+                <option value="SGD" className="bg-[#161618]">SGD (S$)</option>
               </select>
             </div>
           )}
@@ -290,7 +291,7 @@ export default function SearchBar({
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             onClick={swap}
             aria-label="Swap origin and destination"
-            className="sm:mt-4 w-9 h-9 rounded-2xl flex items-center justify-center cursor-pointer flex-shrink-0 bg-white/5 border border-white/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors"
+            className="sm:mt-4 w-9 h-9 rounded-2xl flex items-center justify-center cursor-pointer flex-shrink-0 bg-white/5 border border-white/10 text-[#86868b] hover:text-white hover:bg-white/10 transition-colors"
           >
             <ArrowRightLeft size={14} />
           </motion.button>
@@ -302,8 +303,8 @@ export default function SearchBar({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-end">
           {/* Departure Date */}
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-slate-400">
-              <Calendar size={10} className="text-cyan-400" />
+            <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
+              <Calendar size={10} className="text-[#2997ff]" />
               Departure Date
             </div>
             <input
@@ -319,14 +320,14 @@ export default function SearchBar({
           {/* Cabin Class & Pax */}
           <div className="flex gap-2">
             <div className="flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-slate-400">
-                <Sparkles size={10} className="text-cyan-400" />
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
+                <Sparkles size={10} className="text-[#2997ff]" />
                 Cabin
               </div>
               <select
                 value={travelClass}
                 onChange={(e) => setTravelClass(e.target.value)}
-                className="w-full px-2 py-2 rounded-2xl mono text-xs font-semibold outline-none cursor-pointer bg-slate-900 border border-white/10 text-white"
+                className="w-full px-2 py-2 rounded-2xl mono text-xs font-semibold outline-none cursor-pointer bg-[#161618] border border-white/10 text-white"
               >
                 <option value="Economy">Economy</option>
                 <option value="Premium">Prem. Economy</option>
@@ -336,14 +337,14 @@ export default function SearchBar({
             </div>
 
             <div className="w-20">
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-slate-400">
-                <Users size={10} className="text-cyan-400" />
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
+                <Users size={10} className="text-[#2997ff]" />
                 Pax
               </div>
               <select
                 value={travelers}
                 onChange={(e) => setTravelers(Number(e.target.value))}
-                className="w-full px-2 py-2 rounded-2xl mono text-xs font-semibold outline-none cursor-pointer bg-slate-900 border border-white/10 text-white"
+                className="w-full px-2 py-2 rounded-2xl mono text-xs font-semibold outline-none cursor-pointer bg-[#161618] border border-white/10 text-white"
               >
                 {[1, 2, 3, 4, 5, 6].map(n => (
                   <option key={n} value={n}>{n} Pax</option>
@@ -357,13 +358,13 @@ export default function SearchBar({
             <motion.button
               type="submit"
               whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.96 }}
-              className="w-full py-2.5 rounded-2xl flex items-center justify-center gap-2 text-white font-bold text-xs cursor-pointer relative overflow-hidden shadow-lg"
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-2.5 rounded-2xl flex items-center justify-center gap-2 text-white font-bold text-xs cursor-pointer relative overflow-hidden transition-all"
               style={{
-                background: "linear-gradient(135deg, #4F46E5, #06B6D4)",
+                background: "#0071e3",
                 boxShadow: submitted
-                  ? "0 0 28px rgba(6,182,212,0.8)"
-                  : "0 0 16px rgba(79,70,229,0.4)",
+                  ? "0 0 20px rgba(0, 113, 227, 0.6)"
+                  : "0 2px 10px rgba(0, 113, 227, 0.35)",
               }}
             >
               <AnimatePresence mode="wait" initial={false}>

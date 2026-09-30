@@ -47,8 +47,8 @@ export function getPresetPrompts() {
 }
 
 export async function processCopilotPrompt(userPrompt) {
-  // Simulate AI network processing latency
-  await new Promise((res) => setTimeout(res, 600));
+  // Quick response latency
+  await new Promise((res) => setTimeout(res, 120));
 
   const lower = userPrompt.toLowerCase();
 

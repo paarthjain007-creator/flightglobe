@@ -74,14 +74,45 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
 
   function handleInput(e) {
     setQuery(e.target.value);
-    if (value) onChange(null);
   }
 
   function handleSelect(airport) {
+    if (!airport) return;
     onChange(airport);
     setQuery(`${airport.iata} — ${airport.city}`);
     setOpen(false);
     setResults([]);
+  }
+
+  function handleBlur() {
+    setTimeout(async () => {
+      const q = query.trim();
+      if (!q) {
+        onChange(null);
+        return;
+      }
+      if (value && query === `${value.iata} — ${value.city}`) {
+        return;
+      }
+      if (q.length === 3) {
+        const matchedAirport = getAirportByIata(q);
+        if (matchedAirport) {
+          handleSelect(matchedAirport);
+          return;
+        }
+      }
+      if (results && results.length > 0) {
+        const exact = results.find(
+          (r) => r.iata.toUpperCase() === q.toUpperCase() ||
+                 r.city.toLowerCase() === q.toLowerCase()
+        );
+        handleSelect(exact || results[0]);
+        return;
+      }
+      if (value) {
+        setQuery(`${value.iata} — ${value.city}`);
+      }
+    }, 200);
   }
 
   function handleClear() {
@@ -93,9 +124,14 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
   }
 
   function handleKeyDown(e) {
-    if (e.key === "Enter" && results.length > 0 && open) {
+    if (e.key === "Enter") {
       e.preventDefault();
-      handleSelect(results[0]);
+      if (results.length > 0 && open) {
+        handleSelect(results[0]);
+      } else if (query.trim().length === 3) {
+        const matched = getAirportByIata(query.trim());
+        if (matched) handleSelect(matched);
+      }
     } else if (e.key === "Escape") {
       setOpen(false);
     }
@@ -113,12 +149,12 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
         {loading ? (
           <Loader2
             size={15}
-            className="absolute left-3.5 pointer-events-none animate-spin text-cyan-400"
+            className="absolute left-3.5 pointer-events-none animate-spin text-[#2997ff]"
           />
         ) : (
           <Search
             size={15}
-            className="absolute left-3.5 pointer-events-none text-cyan-400"
+            className="absolute left-3.5 pointer-events-none text-[#86868b]"
           />
         )}
         <input
@@ -128,16 +164,17 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
           onChange={handleInput}
           onKeyDown={handleKeyDown}
           onFocus={() => query.length >= 1 && setOpen(true)}
+          onBlur={handleBlur}
           placeholder={placeholder}
           autoComplete="off"
-          className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-slate-900/95 border border-white/20 hover:border-white/35 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 text-sm font-semibold transition-all"
+          className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-black/40 border border-white/10 hover:border-white/20 text-white placeholder-[#86868b] focus:outline-none focus:border-[#2997ff] focus:ring-1 focus:ring-blue-400/20 text-sm font-semibold transition-all"
           style={{ fontSize: "15px" }}
         />
         {(query || value) && (
           <button
             onClick={handleClear}
             aria-label="Clear airport selection"
-            className="absolute right-3 p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-slate-400 hover:text-white"
+            className="absolute right-3 p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-[#86868b] hover:text-white"
           >
             <X size={14} />
           </button>
@@ -147,7 +184,7 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
       {/* Dropdown Results */}
       {open && results.length > 0 && (
         <div
-          className="absolute z-50 mt-1.5 w-full rounded-2xl overflow-hidden shadow-2xl animate-slide-up max-h-72 overflow-y-auto p-1.5 bg-slate-950/95 border border-white/20 backdrop-blur-2xl"
+          className="absolute z-50 mt-1.5 w-full rounded-2xl overflow-hidden shadow-2xl animate-slide-up max-h-72 overflow-y-auto p-1.5 bg-[#161618]/95 border border-white/10 backdrop-blur-sm"
         >
           {results.map((airport) => (
             <button
@@ -157,7 +194,7 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
               onClick={() => handleSelect(airport)}
             >
               <div
-                className="flex-shrink-0 px-2.5 py-1 rounded-lg flex items-center justify-center text-xs font-bold font-mono bg-cyan-500/15 border border-cyan-400/30 text-cyan-300"
+                className="flex-shrink-0 px-2.5 py-1 rounded-lg flex items-center justify-center text-xs font-bold font-mono bg-blue-500/10 border border-blue-400/20 text-[#2997ff]"
               >
                 {airport.iata}
               </div>
@@ -165,11 +202,11 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
                 <div className="text-sm font-bold truncate text-white">
                   {airport.city}, {airport.country}
                 </div>
-                <div className="text-xs truncate text-slate-300 mt-0.5">
+                <div className="text-xs truncate text-[#86868b] mt-0.5">
                   {airport.name}
                 </div>
               </div>
-              <MapPin size={13} className="flex-shrink-0 text-cyan-400/70" />
+              <MapPin size={13} className="flex-shrink-0 text-[#86868b]" />
             </button>
           ))}
         </div>
@@ -179,7 +216,7 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
       {value && (
         <div className="mt-1.5 flex items-center gap-2 px-1 text-xs text-slate-300 font-medium">
           <div
-            className="w-2 h-2 rounded-full flex-shrink-0 bg-emerald-400 shadow-[0_0_6px_#00FFA3]"
+            className="w-2 h-2 rounded-full flex-shrink-0 bg-[#30d158] shadow-[0_0_6px_rgba(48,209,88,0.4)]"
           />
           <span className="truncate">
             {value.name} · {value.country}

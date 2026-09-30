@@ -1,3 +1,5 @@
+/api/search/*         /.netlify/functions/search           200
+/api/search           /.netlify/functions/search           200
 /api/traffic          /.netlify/functions/traffic          200
 /api/rates            /.netlify/functions/rates            200
 /api/fares/matrix     /.netlify/functions/fares            200

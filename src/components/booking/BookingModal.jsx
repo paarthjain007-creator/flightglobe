@@ -106,12 +106,12 @@ export default function BookingModal({ offer, onClose }) {
         date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
         origin: {
           iata:    depIata,
-          city:    depAirport.city || depIata,
+          city:    depAirport?.city || depIata,
           country: offer.validatingAirlineName || "",
         },
         destination: {
           iata:    arrIata,
-          city:    arrAirport.city || arrIata,
+          city:    arrAirport?.city || arrIata,
           country: offer.validatingAirlineName || "",
         },
         airline:    offer.validatingAirlineName,
@@ -130,7 +130,7 @@ export default function BookingModal({ offer, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
       <div
-        className="glass rounded-3xl p-6 max-w-xl w-full relative space-y-5 border border-cyan-400/40 shadow-2xl overflow-y-auto max-h-[90vh]"
+        className="glass rounded-3xl p-6 max-w-xl w-full relative space-y-5 border border-blue-400/40 shadow-2xl overflow-y-auto max-h-[90vh]"
         style={{ background: "rgba(10, 15, 30, 0.96)" }}
       >
         <button
@@ -142,13 +142,13 @@ export default function BookingModal({ offer, onClose }) {
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-          <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl border border-cyan-400/30 flex-shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-2xl border border-blue-400/30 flex-shrink-0">
             {offer.validatingAirlineLogo || "✈️"}
           </div>
           <div>
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <span>{offer.validatingAirlineName}</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-mono">
                 {offer.source}
               </span>
             </h3>
@@ -167,15 +167,15 @@ export default function BookingModal({ offer, onClose }) {
               </div>
               <h4 className="text-xl font-bold text-white">E-Ticket Confirmed</h4>
               <p className="text-xs text-slate-300">
-                PNR Reference: <strong className="text-cyan-300 font-mono">{bookingResult.bookingReference}</strong>
+                PNR Reference: <strong className="text-blue-300 font-mono">{bookingResult.bookingReference}</strong>
               </p>
             </div>
 
             {/* Boarding Pass Ticket */}
-            <div className="p-5 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/40 border border-cyan-400/40 text-xs space-y-4 relative overflow-hidden font-mono shadow-2xl">
-              <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
+            <div className="p-5 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/40 border border-blue-400/40 text-xs space-y-4 relative overflow-hidden font-mono shadow-2xl">
+              <div className="flex items-center justify-between border-b border-blue-500/20 pb-3">
                 <div className="flex items-center gap-2">
-                  <Ticket size={18} className="text-cyan-400" />
+                  <Ticket size={18} className="text-blue-400" />
                   <span className="font-bold text-white text-sm">BOARDING PASS</span>
                 </div>
                 <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
@@ -183,28 +183,28 @@ export default function BookingModal({ offer, onClose }) {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div>
+              <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 sm:grid sm:grid-cols-3 sm:gap-3 pb-2 sm:pb-0">
+                <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
                   <span className="text-[10px] text-slate-400 block uppercase">Passenger</span>
                   <span className="font-bold text-white text-sm">{firstName} {lastName}</span>
                 </div>
-                <div>
+                <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
                   <span className="text-[10px] text-slate-400 block uppercase">Flight No</span>
-                  <span className="font-bold text-cyan-300 text-sm">{firstSeg?.number}</span>
+                  <span className="font-bold text-blue-300 text-sm">{firstSeg?.number}</span>
                 </div>
-                <div>
+                <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
                   <span className="text-[10px] text-slate-400 block uppercase">Seat Number</span>
                   <span className="font-bold text-emerald-400 text-sm">{selectedSeat.split(" ")[0]}</span>
                 </div>
-                <div>
+                <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
                   <span className="text-[10px] text-slate-400 block uppercase">Dep Terminal</span>
                   <span className="font-bold text-white">{firstSeg?.departure.terminal || "T1"}</span>
                 </div>
-                <div>
+                <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
                   <span className="text-[10px] text-slate-400 block uppercase">Cabin</span>
                   <span className="font-bold text-white">{offer.price.cabinClass}</span>
                 </div>
-                <div>
+                <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
                   <span className="text-[10px] text-slate-400 block uppercase">Total Rate</span>
                   <span className="font-bold text-emerald-300">{symbol}{offer.price.total.toLocaleString()} {currencyCode}</span>
                 </div>
@@ -226,15 +226,14 @@ export default function BookingModal({ offer, onClose }) {
                 <span>Print Boarding Pass</span>
               </button>
 
-              <a
-                href={bookingResult.checkoutUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => { onClose(); window.location.href = "/passport"; }}
                 className="flex-1 py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 hover:opacity-90 transition-all shadow-xl cursor-pointer"
               >
-                <span>Airline Portal</span>
-                <ExternalLink size={14} />
-              </a>
+                <span>View My Passes</span>
+                <Luggage size={14} />
+              </button>
             </div>
           </div>
         ) : (
@@ -242,22 +241,22 @@ export default function BookingModal({ offer, onClose }) {
           <form onSubmit={handleSubmitBooking} className="space-y-4">
             
             {/* Detailed Rate Breakdown Box */}
-            <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/20 space-y-2 text-xs">
-              <div className="font-bold text-cyan-300 flex items-center justify-between border-b border-white/10 pb-1.5">
+            <div className="p-4 rounded-2xl bg-cyan-950/30 border border-blue-500/20 space-y-2 text-xs">
+              <div className="font-bold text-blue-300 flex items-center justify-between border-b border-white/10 pb-1.5">
                 <span>Real-Time Rate & Tax Breakdown ({currencyCode}):</span>
                 <span className="text-emerald-400 font-mono text-sm">{symbol}{offer.price.total.toLocaleString()}</span>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 font-mono text-[11px] text-slate-300 pt-1">
-                <div>
+              <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 sm:grid sm:grid-cols-3 sm:gap-2 font-mono text-[11px] text-slate-300 pt-1 pb-1">
+                <div className="flex-shrink-0 w-24 sm:w-auto snap-center">
                   <span className="text-slate-400 text-[10px] block">Base Fare</span>
                   <span className="font-bold">{symbol}{offer.price.base.toLocaleString()}</span>
                 </div>
-                <div>
+                <div className="flex-shrink-0 w-24 sm:w-auto snap-center">
                   <span className="text-slate-400 text-[10px] block">Govt Taxes</span>
                   <span className="font-bold">{symbol}{offer.price.fees.toLocaleString()}</span>
                 </div>
-                <div>
+                <div className="flex-shrink-0 w-24 sm:w-auto snap-center">
                   <span className="text-slate-400 text-[10px] block">Fuel Surcharge</span>
                   <span className="font-bold">{symbol}{(offer.price.fuelSurcharge || 0).toLocaleString()}</span>
                 </div>
@@ -266,7 +265,7 @@ export default function BookingModal({ offer, onClose }) {
 
             {/* Passenger Information */}
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[11px] font-semibold text-slate-300 mb-1 block">First Name</label>
                   <input
@@ -275,7 +274,7 @@ export default function BookingModal({ offer, onClose }) {
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="John"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
                   />
                 </div>
                 <div>
@@ -286,12 +285,12 @@ export default function BookingModal({ offer, onClose }) {
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Doe"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[11px] font-semibold text-slate-300 mb-1 block">Passenger Contact Email</label>
                   <input
@@ -300,7 +299,7 @@ export default function BookingModal({ offer, onClose }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="passenger@example.com"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
                   />
                 </div>
 
@@ -309,7 +308,7 @@ export default function BookingModal({ offer, onClose }) {
                   <select
                     value={selectedSeat}
                     onChange={(e) => setSelectedSeat(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-white focus:outline-none focus:border-blue-400 font-mono"
                   >
                     {SEAT_OPTIONS.map((seat) => (
                       <option key={seat} value={seat}>{seat}</option>

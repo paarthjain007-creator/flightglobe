@@ -67,7 +67,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: "Explore 3D Master Globe",
         category: "Navigation",
         icon: Globe2,
-        color: "#00F2FE",
+        color: "#2997ff",
         action: () => { navigate("/explore"); onClose(); },
       },
       {
@@ -75,7 +75,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: "Search & Book Flights (GDS Engine)",
         category: "Navigation",
         icon: Plane,
-        color: "#38BDF8",
+        color: "#2997ff",
         action: () => { navigate("/booking"); onClose(); },
       },
       {
@@ -83,23 +83,16 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: "Tactical Live Radar HUD",
         category: "Navigation",
         icon: Radio,
-        color: "#00FFA3",
+        color: "#30d158",
         action: () => { navigate("/radar"); onClose(); },
       },
-      {
-        id: "nav-dashboard",
-        title: "Analytics Bento Grid & Delay Engine",
-        category: "Navigation",
-        icon: LayoutDashboard,
-        color: "#A78BFA",
-        action: () => { navigate("/dashboard"); onClose(); },
-      },
+
       {
         id: "nav-copilot",
         title: "Nimbus AI Copilot Console",
         category: "Navigation",
         icon: Sparkles,
-        color: "#B800FF",
+        color: "#bf5af2",
         action: () => { navigate("/copilot"); onClose(); },
       },
       {
@@ -107,7 +100,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: "My Passes & Holographic Stamps",
         category: "Navigation",
         icon: Ticket,
-        color: "#FBBF24",
+        color: "#ff9f0a",
         action: () => { navigate("/passport"); onClose(); },
       },
 
@@ -117,7 +110,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: "Toggle First-Person Cockpit POV",
         category: "Flight Deck",
         icon: Eye,
-        color: "#00F2FE",
+        color: "#2997ff",
         action: () => {
           navigate("/explore");
           setSpatialCommand({ action: "TRIGGER_COCKPIT_VIEW", _cockpitTrigger: true, timestamp: Date.now() });
@@ -129,7 +122,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: "Toggle Global Jetstream Wind Streamlines",
         category: "Flight Deck",
         icon: Wind,
-        color: "#00FFA3",
+        color: "#30d158",
         action: () => {
           navigate("/explore");
           setSpatialCommand({ action: "TOGGLE_JETSTREAM", _jetstreamTrigger: true, timestamp: Date.now() });
@@ -153,7 +146,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: `Switch to ${showDayNight ? "Night Mode" : "Daylight Solar View"}`,
         category: "Flight Deck",
         icon: showDayNight ? Moon : Sun,
-        color: "#FBBF24",
+        color: "#ff9f0a",
         action: () => {
           setShowDayNight(!showDayNight);
           onClose();
@@ -164,7 +157,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: "Launch WebXR Spatial Hologram Mode",
         category: "Flight Deck",
         icon: Box,
-        color: "#B800FF",
+        color: "#bf5af2",
         action: () => {
           navigate("/explore");
           setSpatialCommand({ action: "TRIGGER_AR_MODE", _arTrigger: true, timestamp: Date.now() });
@@ -176,7 +169,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: `Toggle VHF ATC Tower Comms (${atcRadioEnabled ? "Currently ON" : "Currently OFF"})`,
         category: "Telemetry & Audio",
         icon: Radio,
-        color: "#00F2FE",
+        color: "#2997ff",
         badge: atcRadioEnabled ? "LIVE" : null,
         action: () => {
           setAtcRadioEnabled(!atcRadioEnabled);
@@ -188,7 +181,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: "Simulate Transponder Squawk 7700 Emergency Alert",
         category: "Telemetry & Audio",
         icon: AlertTriangle,
-        color: "#FF3B69",
+        color: "#ff453a",
         badge: "ALERT",
         action: () => {
           setEmergencyAlert({
@@ -211,7 +204,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: `Theme: ${t.toUpperCase()}`,
         category: "Themes",
         icon: Zap,
-        color: t === theme ? "#00FFA3" : "#94A3B8",
+        color: t === theme ? "#30d158" : "#86868b",
         badge: t === theme ? "ACTIVE" : null,
         action: () => {
           setTheme(t);
@@ -226,7 +219,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         title: `Currency: ${c}`,
         category: "Currencies",
         icon: Coins,
-        color: c === currency ? "#FBBF24" : "#94A3B8",
+        color: c === currency ? "#ff9f0a" : "#86868b",
         badge: c === currency ? "ACTIVE" : null,
         action: () => {
           setCurrency(c);
@@ -246,7 +239,7 @@ export default function CommandPalette({ isOpen, onClose }) {
       title: `${a.iata} — ${a.city} (${a.name})`,
       category: "Airports & Hubs",
       icon: MapPin,
-      color: "#00F2FE",
+      color: "#2997ff",
       action: () => {
         setSearchDestination(a);
         setWaypoints([AIRPORTS[0], a]);
@@ -309,20 +302,22 @@ export default function CommandPalette({ isOpen, onClose }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: -16 }}
         transition={{ duration: 0.16 }}
-        className="border-beam-card w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto"
+        className="w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto"
         style={{
-          background: "rgba(9, 13, 23, 0.98)",
-          border: "1px solid rgba(0, 242, 254, 0.25)",
-          boxShadow: "0 0 50px rgba(0, 242, 254, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.10)",
+          background: "rgba(22, 22, 24, 0.98)",
+          backdropFilter: "blur(32px)",
+          WebkitBackdropFilter: "blur(32px)",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+          boxShadow: "0 24px 70px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.12)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top luminous accent bar */}
-        <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, #00F2FE, #7928CA, #00FFA3)" }} />
+        <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, #2997ff, #bf5af2)" }} />
 
         {/* Search Input Bar */}
         <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/10">
-          <Search size={18} className="text-cyan-400 flex-shrink-0" />
+          <Search size={18} className="text-[#2997ff] flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -330,18 +325,18 @@ export default function CommandPalette({ isOpen, onClose }) {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type a command, airport (JFK, HND), or page..."
-            className="flex-1 bg-transparent text-base sm:text-sm text-white placeholder-slate-500 outline-none mono font-medium"
+            className="flex-1 bg-transparent text-base sm:text-sm text-white placeholder-[#86868b] outline-none mono font-medium"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="p-1 rounded-md text-slate-500 hover:text-white cursor-pointer"
+              className="p-1 rounded-md text-[#86868b] hover:text-white cursor-pointer"
             >
               <X size={14} />
             </button>
           )}
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] mono text-slate-400 bg-white/5 border border-white/10">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] mono text-[#86868b] bg-white/5 border border-white/10">
             <span>ESC</span>
           </div>
         </div>
@@ -352,7 +347,7 @@ export default function CommandPalette({ isOpen, onClose }) {
           className="max-h-[380px] overflow-y-auto p-2 space-y-1 custom-scrollbar"
         >
           {items.length === 0 ? (
-            <div className="p-8 text-center text-slate-500 mono text-xs">
+            <div className="p-8 text-center text-[#86868b] mono text-xs">
               No matching aerospace commands or airports found for "{query}".
             </div>
           ) : (
@@ -368,16 +363,16 @@ export default function CommandPalette({ isOpen, onClose }) {
                   onMouseEnter={() => setActiveIndex(index)}
                   className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl cursor-pointer transition-all text-left"
                   style={{
-                    background: isSelected ? "rgba(0, 242, 254, 0.10)" : "transparent",
-                    border: isSelected ? "1px solid rgba(0, 242, 254, 0.35)" : "1px solid transparent",
-                    boxShadow: isSelected ? "0 0 16px rgba(0, 242, 254, 0.10)" : "none",
+                    background: isSelected ? "rgba(41, 151, 255, 0.12)" : "transparent",
+                    border: isSelected ? "1px solid rgba(41, 151, 255, 0.35)" : "1px solid transparent",
+                    boxShadow: isSelected ? "0 0 16px rgba(41, 151, 255, 0.10)" : "none",
                   }}
                 >
                   <div
                     className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{
-                      background: isSelected ? "rgba(0, 242, 254, 0.20)" : "rgba(255, 255, 255, 0.05)",
-                      border: `1px solid ${isSelected ? "rgba(0, 242, 254, 0.40)" : "rgba(255, 255, 255, 0.08)"}`,
+                      background: isSelected ? "rgba(41, 151, 255, 0.20)" : "rgba(255, 255, 255, 0.05)",
+                      border: `1px solid ${isSelected ? "rgba(41, 151, 255, 0.40)" : "rgba(255, 255, 255, 0.08)"}`,
                     }}
                   >
                     <Icon size={14} style={{ color: item.color }} />
@@ -389,19 +384,19 @@ export default function CommandPalette({ isOpen, onClose }) {
                       {item.badge && (
                         <span
                           className="mono text-[8px] font-bold px-1.5 py-0.5 rounded"
-                          style={{ background: "rgba(0, 255, 163, 0.15)", color: "#00FFA3", border: "1px solid rgba(0, 255, 163, 0.3)" }}
+                          style={{ background: "rgba(48, 209, 88, 0.12)", color: "#30d158", border: "1px solid rgba(48, 209, 88, 0.25)" }}
                         >
                           {item.badge}
                         </span>
                       )}
                     </div>
-                    <div className="mono text-[9px] text-slate-400 mt-0.5">
+                    <div className="mono text-[9px] text-[#86868b] mt-0.5">
                       {item.category}
                     </div>
                   </div>
 
                   {isSelected && (
-                    <div className="flex items-center gap-1 text-[10px] mono text-cyan-400 flex-shrink-0">
+                    <div className="flex items-center gap-1 text-[10px] mono text-blue-400 flex-shrink-0">
                       <span>SELECT</span>
                       <CornerDownLeft size={10} />
                     </div>
@@ -419,7 +414,7 @@ export default function CommandPalette({ isOpen, onClose }) {
             <span>↵ Execute</span>
             <span>ESC Close</span>
           </div>
-          <div className="flex items-center gap-1.5 text-cyan-400/80">
+          <div className="flex items-center gap-1.5 text-blue-400/80">
             <Zap size={11} />
             <span>FLIGHTGLOBE COMMAND ENGINE</span>
           </div>

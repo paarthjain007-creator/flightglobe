@@ -6,10 +6,10 @@ import { useWeather, weatherCodeToDescription, weatherCodeToEmoji } from "../../
 function StatBadge({ icon: Icon, label, value }) {
   return (
     <div className="flex items-center gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-      <Icon size={12} style={{ color: "#00F2FE" }} />
+      <Icon size={12} style={{ color: "#2997ff" }} />
       <div>
-        <div className="text-xs text-[#94A3B8]">{label}</div>
-        <div className="text-sm font-semibold text-[#F8FAFC]">{value}</div>
+        <div className="text-xs text-[#86868b]">{label}</div>
+        <div className="text-sm font-semibold text-[#f5f5f7]">{value}</div>
       </div>
     </div>
   );
@@ -23,25 +23,25 @@ export default function WeatherWidget({ airport }) {
   return (
     <GlassCard className="p-4" animate="animate-slide-up">
       <div className="flex items-center gap-2 mb-3">
-        <Cloud size={14} style={{ color: "#00F2FE" }} />
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+        <Cloud size={14} style={{ color: "#2997ff" }} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#86868b]">
           Destination Weather
         </span>
       </div>
 
-      <div className="text-sm font-medium mb-3 text-[#F8FAFC]">
+      <div className="text-sm font-medium mb-3 text-[#f5f5f7]">
         {airport.city}, {airport.country}
       </div>
 
       {loading && (
         <div className="flex items-center gap-2 py-4 justify-center">
-          <Loader2 size={16} className="animate-spin" style={{ color: "#00F2FE" }} />
-          <span className="text-xs text-[#94A3B8]">Fetching weather…</span>
+          <Loader2 size={16} className="animate-spin" style={{ color: "#2997ff" }} />
+          <span className="text-xs text-[#86868b]">Fetching weather…</span>
         </div>
       )}
 
       {error && (
-        <div className="text-xs text-center py-3 rounded-lg" style={{ color: "#f87171", background: "rgba(248,113,113,0.08)" }}>
+        <div className="text-xs text-center py-3 rounded-lg" style={{ color: "#ff453a", background: "rgba(255,69,58,0.08)" }}>
           {error}
         </div>
       )}
@@ -51,11 +51,11 @@ export default function WeatherWidget({ airport }) {
           <div className="flex items-center gap-4 mb-4">
             <div className="text-5xl leading-none">{weatherCodeToEmoji(weather.weathercode, weather.isDay)}</div>
             <div>
-              <div className="text-3xl font-bold font-mono" style={{ color: "#00F2FE" }}>
+              <div className="text-3xl font-bold font-mono text-[#f5f5f7]">
                 {weather.temp}°C
               </div>
               {weather.feelsLike !== null && (
-                <div className="text-xs mt-0.5 text-[#94A3B8]">
+                <div className="text-xs mt-0.5 text-[#86868b]">
                   Feels like {weather.feelsLike}°C
                 </div>
               )}

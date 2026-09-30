@@ -6,7 +6,7 @@ const TOUR_KEY = "flightglobe_tour_v1";
 const STEPS = [
   {
     icon: Globe2,
-    color: "text-cyan-400",
+    color: "text-fuchsia-400",
     title: "Interactive 3D Globe",
     desc: "Click any airport dot on the globe to add a waypoint. Build a multi-leg route by adding two or more stops, then hit \"Calculate Trip Insights\" to unlock the full telemetry dashboard.",
     hint: "💡 Try clicking on any glowing dot — that's a live airport!",
@@ -66,7 +66,7 @@ export default function GuidedTour({ onDone }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div
-        className="w-full max-w-md rounded-3xl border border-cyan-400/30 shadow-2xl p-6 space-y-5 relative"
+        className="w-full max-w-md rounded-3xl border border-fuchsia-400/30 shadow-2xl p-6 space-y-5 relative"
         style={{ background: "rgba(5, 10, 24, 0.96)" }}
       >
         {/* Close */}
@@ -84,7 +84,7 @@ export default function GuidedTour({ onDone }) {
             <div
               key={i}
               className={`h-1 rounded-full transition-all duration-300 ${
-                i === step ? "w-6 bg-cyan-400" : "w-2 bg-white/20"
+                i === step ? "w-6 bg-fuchsia-400" : "w-2 bg-white/20"
               }`}
             />
           ))}
@@ -126,7 +126,7 @@ export default function GuidedTour({ onDone }) {
             <button
               onClick={next}
               aria-label={step < STEPS.length - 1 ? "Next step" : "Start exploring"}
-              className="px-4 py-1.5 rounded-xl text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 flex items-center gap-1 cursor-pointer transition-all"
+              className="px-4 py-1.5 rounded-xl text-xs font-bold bg-fuchsia-400 text-slate-950 hover:bg-cyan-300 flex items-center gap-1 cursor-pointer transition-all"
             >
               {step < STEPS.length - 1 ? (
                 <>Next <ChevronRight size={13} /></>

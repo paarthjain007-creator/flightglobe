@@ -56,11 +56,11 @@ export default function VolumeControl() {
           key: lvl.label, type: "button",
           onClick: () => handleSelect(lvl),
           className: "w-full flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors",
-          style: { background: isActive ? "rgba(0,242,254,0.12)" : "transparent", color: isActive ? "#00F2FE" : "#94A3B8" },
+          style: { background: isActive ? "rgba(41,151,255,0.12)" : "transparent", color: isActive ? "#2997ff" : "#86868b" },
         },
           React.createElement(LvlIcon, { size: 12 }),
           React.createElement("span", { className: "mono text-[10px] font-bold" }, lvl.label),
-          isActive && React.createElement("span", { className: "w-1.5 h-1.5 rounded-full ml-auto", style: { background: "#00F2FE" } })
+          isActive && React.createElement("span", { className: "w-1.5 h-1.5 rounded-full ml-auto", style: { background: "#2997ff" } })
         );
       }))
     )

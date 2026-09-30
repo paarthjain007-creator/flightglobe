@@ -88,25 +88,25 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
         type="button"
         aria-label="Toggle Atmosphere visual theme selector"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border shadow-sm"
+        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border"
         style={{
-          background: "rgba(0, 242, 254, 0.10)",
-          borderColor: "rgba(0, 242, 254, 0.35)",
-          color: "#00F2FE",
-          boxShadow: "0 0 16px rgba(0, 242, 254, 0.15)",
+          background: "rgba(255, 255, 255, 0.06)",
+          borderColor: "rgba(255, 255, 255, 0.12)",
+          color: "#f5f5f7",
+          backdropFilter: "blur(20px)",
         }}
         title="Toggle Atmosphere Visual Theme"
       >
-        <Palette size={13} />
-        <span className="font-bold hidden xl:inline">Atmosphere:</span>
+        <Palette size={13} className="text-[#2997ff]" />
+        <span className="font-bold hidden xl:inline text-[#86868b]">Atmosphere:</span>
         <span
           className="w-2 h-2 rounded-full flex-shrink-0"
           style={{ background: activeThemeData.dot }}
         />
-        <span className="hidden sm:inline font-medium">{activeThemeData.label}</span>
+        <span className="hidden sm:inline font-medium text-slate-200">{activeThemeData.label}</span>
         <ChevronDown
           size={12}
-          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`transition-transform duration-200 text-[#86868b] ${open ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -115,16 +115,16 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
         <div
           className="absolute right-0 top-full mt-2 w-56 z-[100] rounded-2xl shadow-2xl border overflow-hidden animate-slide-up"
           style={{
-            background: "rgba(6, 10, 20, 0.98)",
-            borderColor: "rgba(0, 242, 254, 0.35)",
+            background: "rgba(22, 22, 24, 0.96)",
+            borderColor: "rgba(255, 255, 255, 0.12)",
             backdropFilter: "blur(24px)",
-            boxShadow: "0 20px 50px rgba(0, 0, 0, 0.85), 0 0 20px rgba(0, 242, 254, 0.12)",
+            boxShadow: "0 20px 50px rgba(0, 0, 0, 0.7)",
           }}
         >
           {/* Header */}
           <div className="px-4 py-2.5 border-b flex items-center gap-2" style={{ borderColor: "rgba(255, 255, 255, 0.08)" }}>
-            <Palette size={13} style={{ color: "#00F2FE" }} />
-            <span className="text-xs font-bold text-slate-400">
+            <Palette size={13} style={{ color: "#2997ff" }} />
+            <span className="text-xs font-bold text-[#86868b]">
               Visual Themes
             </span>
           </div>
@@ -144,7 +144,7 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
                   }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all cursor-pointer group"
                   style={{
-                    background: isActive ? "rgba(0, 242, 254, 0.12)" : "transparent",
+                    background: isActive ? "rgba(41, 151, 255, 0.12)" : "transparent",
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.05)";
@@ -158,26 +158,26 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
                     className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm"
                     style={{
                       background: t.dot,
-                      boxShadow: isActive ? `0 0 8px ${t.dot}` : "none",
+                      boxShadow: isActive ? `0 0 6px ${t.dot}` : "none",
                     }}
                   />
                   {/* Icon */}
-                  <Icon size={13} style={{ color: isActive ? "#00F2FE" : "#94A3B8", flexShrink: 0 }} />
+                  <Icon size={13} style={{ color: isActive ? "#2997ff" : "#86868b", flexShrink: 0 }} />
                   {/* Labels */}
                   <div className="flex-1 min-w-0">
                     <div
                       className="text-xs font-bold leading-tight"
-                      style={{ color: isActive ? "#00F2FE" : "#F8FAFC" }}
+                      style={{ color: isActive ? "#2997ff" : "#F8FAFC" }}
                     >
                       {t.label}
                     </div>
-                    <div className="text-[10px] leading-tight text-slate-400">
+                    <div className="text-[10px] leading-tight text-[#86868b]">
                       {t.description}
                     </div>
                   </div>
                   {/* Active Check */}
                   {isActive && (
-                    <Check size={13} style={{ color: "#00F2FE", flexShrink: 0 }} />
+                    <Check size={13} style={{ color: "#2997ff", flexShrink: 0 }} />
                   )}
                 </button>
               );

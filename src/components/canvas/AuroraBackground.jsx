@@ -15,12 +15,12 @@ const THEME_AURORAS = {
   },
   holodeck: {
     ribbons: [
-      { colorStart: "rgba(0, 242, 254, 0.45)", colorMid: "rgba(13, 148, 136, 0.25)", colorEnd: "rgba(0, 242, 254, 0)" },
+      { colorStart: "rgba(217,70,239, 0.45)", colorMid: "rgba(13, 148, 136, 0.25)", colorEnd: "rgba(217,70,239, 0)" },
       { colorStart: "rgba(0, 255, 163, 0.40)", colorMid: "rgba(20, 184, 166, 0.28)", colorEnd: "rgba(0, 255, 163, 0)" },
-      { colorStart: "rgba(6, 182, 212, 0.35)", colorMid: "rgba(0, 242, 254, 0.20)", colorEnd: "rgba(6, 182, 212, 0)" },
+      { colorStart: "rgba(6, 182, 212, 0.35)", colorMid: "rgba(217,70,239, 0.20)", colorEnd: "rgba(6, 182, 212, 0)" },
       { colorStart: "rgba(52, 211, 153, 0.32)", colorMid: "rgba(5, 150, 105, 0.18)", colorEnd: "rgba(52, 211, 153, 0)" },
     ],
-    spotlight: { start: "rgba(0, 242, 254, 0.14)", mid: "rgba(0, 255, 163, 0.07)" },
+    spotlight: { start: "rgba(217,70,239, 0.14)", mid: "rgba(0, 255, 163, 0.07)" },
     hues: [180, 155, 195],
   },
   synthwave: {
@@ -47,10 +47,10 @@ const THEME_AURORAS = {
     ribbons: [
       { colorStart: "rgba(192, 132, 252, 0.48)", colorMid: "rgba(126, 34, 206, 0.28)", colorEnd: "rgba(192, 132, 252, 0)" },
       { colorStart: "rgba(217, 70, 239, 0.42)", colorMid: "rgba(147, 51, 234, 0.28)", colorEnd: "rgba(217, 70, 239, 0)" },
-      { colorStart: "rgba(168, 85, 247, 0.38)", colorMid: "rgba(0, 242, 254, 0.20)", colorEnd: "rgba(168, 85, 247, 0)" },
+      { colorStart: "rgba(168, 85, 247, 0.38)", colorMid: "rgba(217,70,239, 0.20)", colorEnd: "rgba(168, 85, 247, 0)" },
       { colorStart: "rgba(232, 121, 249, 0.32)", colorMid: "rgba(107, 33, 168, 0.20)", colorEnd: "rgba(232, 121, 249, 0)" },
     ],
-    spotlight: { start: "rgba(192, 132, 252, 0.15)", mid: "rgba(0, 242, 254, 0.07)" },
+    spotlight: { start: "rgba(192, 132, 252, 0.15)", mid: "rgba(217,70,239, 0.07)" },
     hues: [275, 290, 310],
   },
   sunset: {
@@ -132,9 +132,9 @@ export default function AuroraBackground() {
         amplitude: 65,
         freq: 0.0018,
         speed: 0.0006,
-        colorStart: "rgba(0, 242, 254, 0.45)", // Hyper Cyan
+        colorStart: "rgba(217,70,239, 0.45)", // Hyper Cyan
         colorMid: "rgba(79, 70, 229, 0.25)",   // Indigo
-        colorEnd: "rgba(0, 242, 254, 0)",
+        colorEnd: "rgba(217,70,239, 0)",
         thickness: 180,
       },
       {
@@ -153,7 +153,7 @@ export default function AuroraBackground() {
         freq: 0.0022,
         speed: 0.00075,
         colorStart: "rgba(0, 255, 163, 0.35)", // Solar Emerald
-        colorMid: "rgba(0, 242, 254, 0.20)",   // Cyan bleed
+        colorMid: "rgba(217,70,239, 0.20)",   // Cyan bleed
         colorEnd: "rgba(0, 255, 163, 0)",
         thickness: 200,
       },

@@ -308,7 +308,7 @@ export default function NimbusCopilot() {
           <div className="p-4 flex items-center gap-3 border-b border-white/10"
             style={{ background: "rgba(255,255,255,0.03)" }}
           >
-            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-cyan-300 border border-cyan-400/40 flex-shrink-0 ${isThinking ? "animate-spin" : "animate-pulse"}`}
+            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-fuchsia-300 border border-fuchsia-400/40 flex-shrink-0 ${isThinking ? "animate-spin" : "animate-pulse"}`}
               style={{ background: "rgba(34,211,238,0.12)" }}
             >
               <Cloud size={20} />
@@ -331,14 +331,14 @@ export default function NimbusCopilot() {
               className="p-2 rounded-xl border border-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer flex-shrink-0"
               style={{ background: input.trim() ? "rgba(34,211,238,0.15)" : "transparent" }}
             >
-              {input.trim() ? <Send size={16} className="text-cyan-300" /> : <X size={16} />}
+              {input.trim() ? <Send size={16} className="text-fuchsia-300" /> : <X size={16} />}
             </button>
           </div>
 
           {/* Context chips */}
           <div className="px-3 py-2 border-b border-white/8" style={{ background: "rgba(0,0,0,0.3)" }}>
             <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1 mb-1.5">
-              <Compass size={9} className="text-cyan-500" />
+              <Compass size={9} className="text-fuchsia-500" />
               Spatial Quick Commands
             </div>
             <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: "none" }}>
@@ -390,10 +390,10 @@ export default function NimbusCopilot() {
                       style={{ background: "rgba(34,211,238,0.08)", border: "1px solid rgba(34,211,238,0.3)" }}
                     >
                       <div className="flex flex-col">
-                        <span className="text-[9px] text-cyan-400 uppercase tracking-widest font-bold mb-0.5">Route Ready</span>
+                        <span className="text-[9px] text-fuchsia-400 uppercase tracking-widest font-bold mb-0.5">Route Ready</span>
                         <div className="text-sm font-bold text-white flex items-center gap-1.5">
                           {msg.waypoints[0].iata}
-                          <ArrowRight size={12} className="text-cyan-400" />
+                          <ArrowRight size={12} className="text-fuchsia-400" />
                           {msg.waypoints[msg.waypoints.length - 1].iata}
                         </div>
                       </div>
@@ -418,7 +418,7 @@ export default function NimbusCopilot() {
               <div className="flex items-center gap-2 px-3 py-2.5 rounded-2xl text-[10px] font-mono animate-pulse"
                 style={{ background: "rgba(34,211,238,0.08)", border: "1px solid rgba(34,211,238,0.2)", color: "#67e8f9" }}
               >
-                <Terminal size={12} className="animate-spin text-cyan-400" />
+                <Terminal size={12} className="animate-spin text-fuchsia-400" />
                 <span>[{decryptText}]</span>
               </div>
             )}
@@ -456,7 +456,7 @@ export default function NimbusCopilot() {
           onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 0 50px rgba(34,211,238,0.6)")}
           onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 0 30px rgba(34,211,238,0.35)")}
         >
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-cyan-300 transition-transform group-hover:scale-110"
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-fuchsia-300 transition-transform group-hover:scale-110"
             style={{ background: "rgba(34,211,238,0.15)", border: "1px solid rgba(34,211,238,0.4)" }}
           >
             <Cloud size={18} className="animate-pulse" />

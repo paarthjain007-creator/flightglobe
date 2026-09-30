@@ -14,6 +14,10 @@ const CURRENCY_RATES = {
   GBP: { symbol: "£", rate: 0.0094 },
   AED: { symbol: "AED ", rate: 0.044 },
   SGD: { symbol: "S$", rate: 0.016 },
+  JPY: { symbol: "¥", rate: 1.85 },
+  AUD: { symbol: "A$", rate: 0.018 },
+  CAD: { symbol: "CA$", rate: 0.016 },
+  CHF: { symbol: "CHF ", rate: 0.011 },
 };
 
 export function formatPrice(inrAmount, currency = "INR") {
@@ -69,7 +73,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -3 }}
       transition={{ type: "spring", stiffness: 260, damping: 22, delay: index * 0.06 }}
-      className="glass-card glass-interactive-cyan rounded-2xl p-5 border border-white/10 hover:border-cyan-400/50 shadow-xl transition-all duration-200 relative overflow-hidden"
+      className="glass-card glass-interactive-cyan rounded-2xl p-5 border border-white/10 hover:border-fuchsia-400/50 shadow-xl transition-all duration-200 relative overflow-hidden"
     >
       {/* ── Top row: tag + airline name + code ── */}
       <div className="flex items-center justify-between mb-4">
@@ -99,7 +103,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
           <div className="text-3xl font-black mono tracking-tight text-[#F8FAFC] leading-none">
             {flight.dep}
           </div>
-          <div className="text-[11px] font-bold mono mt-1.5 text-cyan-400 tracking-wide">
+          <div className="text-[11px] font-bold mono mt-1.5 text-fuchsia-400 tracking-wide">
             {flight.from}
           </div>
         </div>
@@ -111,9 +115,9 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
             {flight.dur}
           </div>
           <div className="w-full flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-cyan-400/80 flex-shrink-0" />
+            <div className="w-2 h-2 rounded-full bg-fuchsia-400/80 flex-shrink-0" />
             <div className="flex-1 h-px bg-gradient-to-r from-cyan-400 via-indigo-400 to-indigo-500" />
-            <Plane size={13} className="text-cyan-400 flex-shrink-0" />
+            <Plane size={13} className="text-fuchsia-400 flex-shrink-0" />
             <div className="flex-1 h-px bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-400" />
             <div className="w-2 h-2 rounded-full bg-indigo-500/80 flex-shrink-0" />
           </div>
@@ -127,7 +131,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
           <div className="text-3xl font-black mono tracking-tight text-[#F8FAFC] leading-none">
             {flight.arr}
           </div>
-          <div className="text-[11px] font-bold mono mt-1.5 text-cyan-300 tracking-wide">
+          <div className="text-[11px] font-bold mono mt-1.5 text-fuchsia-300 tracking-wide">
             {flight.to}
           </div>
         </div>
@@ -160,7 +164,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-center gap-1.5 mt-4 pt-3 text-[11px] font-semibold text-slate-500 hover:text-cyan-300 transition-colors cursor-pointer border-t border-white/5"
+        className="w-full flex items-center justify-center gap-1.5 mt-4 pt-3 text-[11px] font-semibold text-slate-500 hover:text-fuchsia-300 transition-colors cursor-pointer border-t border-white/5"
       >
         <span>{expanded ? "Hide Details" : "Aircraft Specs & Amenities"}</span>
         <ChevronDown
@@ -188,7 +192,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
               ].map(({ icon: Icon, label, value }) => (
                 <div key={label}>
                   <div className="text-[9px] uppercase tracking-widest mono text-slate-500 flex items-center gap-1 mb-1">
-                    <Icon size={9} className="text-cyan-400" />
+                    <Icon size={9} className="text-fuchsia-400" />
                     {label}
                   </div>
                   <div className="text-xs font-bold text-white/90 truncate">{value}</div>
@@ -226,7 +230,7 @@ function FareMatrixBar({ basePrice, currency, onSelectDate }) {
   return (
     <div className="glass rounded-2xl border border-white/10 p-4 mb-1 shadow-lg">
       <div className="flex items-center justify-between mb-3">
-        <span className="flex items-center gap-2 text-[11px] font-bold mono text-cyan-300">
+        <span className="flex items-center gap-2 text-[11px] font-bold mono text-fuchsia-300">
           <TrendingDown size={13} />
           7-Day Lowest Fare Forecast
         </span>
@@ -317,7 +321,7 @@ export default function DepartureCards({ origin, dest, onSelect, currency = "INR
             onClick={() => { sound.playClick(); setFilter(id); }}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-bold transition-all cursor-pointer whitespace-nowrap ${
               filter === id
-                ? "bg-cyan-500/15 text-cyan-300 border border-cyan-400/35 shadow-sm"
+                ? "bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/35 shadow-sm"
                 : "glass text-slate-400 hover:text-white hover:bg-white/8"
             }`}
           >

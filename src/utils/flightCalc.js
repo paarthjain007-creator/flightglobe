@@ -27,14 +27,22 @@ export function estimateFlightTime(distKm) {
   return { hours: h, minutes: m, totalHours: hours };
 }
 
-const CURRENCY_RATES = {
+export const CURRENCY_RATES = {
   USD: 1.0,
   EUR: 0.92,
-  GBP: 0.78,
-  INR: 83.5,
+  GBP: 0.79,
+  INR: 86.5,
   AED: 3.67,
-  JPY: 155.0,
+  JPY: 154.2,
   SGD: 1.35,
+  CHF: 0.90,
+  AUD: 1.54,
+  CAD: 1.39,
+  CNY: 7.25,
+  NZD: 1.68,
+  SAR: 3.75,
+  QAR: 3.64,
+  THB: 36.5,
 };
 
 export function estimateTicketCost(distKm, currency = "USD") {

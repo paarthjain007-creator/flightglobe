@@ -159,7 +159,7 @@ export function useSpatialCommandDispatcher() {
         }
 
         case SPATIAL_COMMANDS.SHOW_DASHBOARD: {
-          navigate("/dashboard");
+          navigate("/passport");
           result.message = "Opening Trip Telemetry Dashboard.";
           result.navigated = true;
           break;

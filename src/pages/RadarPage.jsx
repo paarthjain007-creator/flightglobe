@@ -23,9 +23,9 @@ const EARTH_TEXTURE = "https://unpkg.com/three-globe/example/img/earth-night.jpg
 const EARTH_BUMP    = "https://unpkg.com/three-globe/example/img/earth-topology.png";
 
 const LOD_CONFIG = {
-  LOW:    { max: 10,  label: "LITE",   color: "#00FFA3", desc: "10 planes — 60 FPS guaranteed" },
-  MEDIUM: { max: 50,  label: "MEDIUM", color: "#FBBF24", desc: "50 planes — high-performance mode" },
-  MATRIX: { max: 200, label: "MATRIX", color: "#FF3B69", desc: "200 planes — global fleet view" },
+  LOW:    { max: 10,  label: "LITE",   color: "#30d158", desc: "10 planes — 60 FPS guaranteed" },
+  MEDIUM: { max: 50,  label: "MEDIUM", color: "#ff9f0a", desc: "50 planes — high-performance mode" },
+  MATRIX: { max: 200, label: "MATRIX", color: "#2997ff", desc: "200 planes — global fleet view" },
 };
 const TEN_MINUTES_MS = 10 * 60 * 1000;
 
@@ -50,7 +50,7 @@ export default function RadarPage() {
 
   const globeRef     = useRef(null);
   const containerRef = useRef(null);
-  const [dims, setDims]             = useState({ w: window.innerWidth, h: window.innerHeight - 88 });
+  const [dims, setDims] = useState({ w: window.innerWidth, h: window.innerHeight - 56 });
   const [filterOnGround, setFilterOnGround] = useState(true);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [hoverPlane, setHoverPlane] = useState(null);
@@ -62,9 +62,12 @@ export default function RadarPage() {
 
   // Responsive resize
   useEffect(() => {
-    const onResize = () => setDims({ w: window.innerWidth, h: window.innerHeight - 88 });
+    const onResize = () => setDims({ w: window.innerWidth, h: window.innerHeight - 56 });
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      document.body.style.cursor = "auto";
+    };
   }, []);
 
   // Initial globe camera viewpoint
@@ -139,15 +142,15 @@ export default function RadarPage() {
     <div
       id="radar-page"
       ref={containerRef}
-      className="relative overflow-hidden"
-      style={{ height: `${dims.h}px`, marginTop: "88px", background: themeConf.bg }}
+      className="relative overflow-hidden w-full"
+      style={{ height: `${dims.h}px`, marginTop: "56px", background: themeConf.bg }}
       onMouseMove={handleMouseMove}
       onClick={(e) => { if (e.target === containerRef.current) setSelectedPlane(null); }}
     >
       {/* ── Globe Canvas with Small Rotated Airplane Models ─────────────── */}
       <ErrorBoundary fallback={
-        <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 bg-slate-950 text-cyan-300 font-mono text-sm">
-          <Radio size={28} className="text-cyan-400 animate-pulse mb-3" />
+        <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 bg-slate-950 text-blue-300 font-mono text-sm">
+          <Radio size={28} className="text-[#2997ff] animate-pulse mb-3" />
           <div className="font-bold text-white text-base mb-1">Tactical Radar Standby</div>
           <p className="text-xs text-slate-400 max-w-sm">
             Live ADS-B transponder feeds active. The 3D planetary mesh is refreshing.
@@ -190,8 +193,8 @@ export default function RadarPage() {
                     width: 34px;
                     height: 34px;
                     border-radius: 50%;
-                    border: 1.5px solid #00f0ff;
-                    box-shadow: 0 0 12px rgba(0,240,255,0.8);
+                    border: 1.5px solid #2997ff;
+                    box-shadow: 0 0 12px rgba(41,151,255,0.6);
                     pointer-events: none;
                   "></div>
                 ` : ""}
@@ -199,8 +202,8 @@ export default function RadarPage() {
                   transform: rotate(${rot}deg);
                   font-size: ${isSelected ? "20px" : "15px"};
                   line-height: 1;
-                  color: ${isSelected ? "#00f0ff" : "#60a5fa"};
-                  filter: drop-shadow(0 0 6px ${isSelected ? "rgba(0,240,255,0.9)" : "rgba(96,165,250,0.8)"});
+                  color: ${isSelected ? "#2997ff" : "#86868b"};
+                  filter: drop-shadow(0 0 4px ${isSelected ? "rgba(41,151,255,0.8)" : "rgba(255,255,255,0.2)"});
                   cursor: pointer;
                   user-select: none;
                   transition: transform 0.2s ease;
@@ -229,30 +232,30 @@ export default function RadarPage() {
       {/* ── Tactical Reticle Scope Overlay ──────────────────────────────── */}
       {showScope && (
         <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center overflow-hidden">
-          <svg className="w-full h-full max-w-[840px] max-h-[840px] opacity-35" viewBox="0 0 800 800">
+          <svg className="w-full h-full max-w-[840px] max-h-[840px] opacity-40" viewBox="0 0 800 800">
             {/* Concentric distance rings */}
-            <circle cx="400" cy="400" r="140" fill="none" stroke="#00F2FE" strokeWidth="1" strokeDasharray="4 4" />
-            <circle cx="400" cy="400" r="240" fill="none" stroke="#00F2FE" strokeWidth="1" strokeDasharray="6 6" />
-            <circle cx="400" cy="400" r="340" fill="none" stroke="#00F2FE" strokeWidth="1.2" />
+            <circle cx="400" cy="400" r="140" fill="none" stroke="#2997ff" strokeWidth="1" strokeDasharray="4 4" />
+            <circle cx="400" cy="400" r="240" fill="none" stroke="#2997ff" strokeWidth="1" strokeDasharray="6 6" />
+            <circle cx="400" cy="400" r="340" fill="none" stroke="#2997ff" strokeWidth="1.2" />
 
             {/* Crosshairs */}
-            <line x1="60" y1="400" x2="740" y2="400" stroke="#00F2FE" strokeWidth="0.8" strokeDasharray="4 8" />
-            <line x1="400" y1="60" x2="400" y2="740" stroke="#00F2FE" strokeWidth="0.8" strokeDasharray="4 8" />
+            <line x1="60" y1="400" x2="740" y2="400" stroke="#2997ff" strokeWidth="0.8" strokeDasharray="4 8" />
+            <line x1="400" y1="60" x2="400" y2="740" stroke="#2997ff" strokeWidth="0.8" strokeDasharray="4 8" />
 
             {/* Cardinal direction labels */}
-            <text x="400" y="45" textAnchor="middle" fill="#00F2FE" fontSize="11" fontFamily="monospace" fontWeight="bold">000° N</text>
-            <text x="765" y="404" textAnchor="start" fill="#00F2FE" fontSize="11" fontFamily="monospace" fontWeight="bold">090° E</text>
-            <text x="400" y="765" textAnchor="middle" fill="#00F2FE" fontSize="11" fontFamily="monospace" fontWeight="bold">180° S</text>
-            <text x="35" y="404" textAnchor="end" fill="#00F2FE" fontSize="11" fontFamily="monospace" fontWeight="bold">270° W</text>
+            <text x="400" y="45" textAnchor="middle" fill="#2997ff" fontSize="11" fontFamily="monospace" fontWeight="bold">000° N</text>
+            <text x="765" y="404" textAnchor="start" fill="#2997ff" fontSize="11" fontFamily="monospace" fontWeight="bold">090° E</text>
+            <text x="400" y="765" textAnchor="middle" fill="#2997ff" fontSize="11" fontFamily="monospace" fontWeight="bold">180° S</text>
+            <text x="35" y="404" textAnchor="end" fill="#2997ff" fontSize="11" fontFamily="monospace" fontWeight="bold">270° W</text>
 
             {/* Distance markers */}
-            <text x="408" y="265" fill="rgba(0,242,254,0.7)" fontSize="9" fontFamily="monospace">500 NM</text>
-            <text x="408" y="165" fill="rgba(0,242,254,0.7)" fontSize="9" fontFamily="monospace">1000 NM</text>
-            <text x="408" y="65" fill="rgba(0,242,254,0.7)" fontSize="9" fontFamily="monospace">1500 NM</text>
+            <text x="408" y="265" fill="rgba(41,151,255,0.7)" fontSize="9" fontFamily="monospace">500 NM</text>
+            <text x="408" y="165" fill="rgba(41,151,255,0.7)" fontSize="9" fontFamily="monospace">1000 NM</text>
+            <text x="408" y="65" fill="rgba(41,151,255,0.7)" fontSize="9" fontFamily="monospace">1500 NM</text>
 
             {/* 360° Phosphor Radar Sweep Beam */}
             <g className="radar-sweep-beam">
-              <line x1="400" y1="400" x2="400" y2="60" stroke="#00F2FE" strokeWidth="1.8" />
+              <line x1="400" y1="400" x2="400" y2="60" stroke="#2997ff" strokeWidth="1.8" />
               <path
                 d="M 400 400 L 400 60 A 340 340 0 0 1 540 89 Z"
                 fill="url(#radarSweepGradient)"
@@ -261,8 +264,8 @@ export default function RadarPage() {
             </g>
             <defs>
               <linearGradient id="radarSweepGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#00F2FE" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#00F2FE" stopOpacity="0" />
+                <stop offset="0%" stopColor="#2997ff" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
               </linearGradient>
             </defs>
           </svg>
@@ -297,7 +300,7 @@ export default function RadarPage() {
         <button
           id="shuffle-planes-btn"
           onClick={handleManualShuffle}
-          className="glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold cursor-pointer hover:border-cyan-400 transition-all text-cyan-300 shadow-md"
+          className="glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold cursor-pointer hover:border-blue-400 transition-all text-blue-300 shadow-md"
           title={`Reshuffle ${lod.max} global flights`}
         >
           <Shuffle size={12} />
@@ -311,8 +314,8 @@ export default function RadarPage() {
           onClick={() => setFilterOnGround((v) => !v)}
           className="glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold cursor-pointer hover:opacity-90 transition-all shadow-md"
           style={{
-            color: filterOnGround ? "#4ade80" : "#94A3B8",
-            borderColor: filterOnGround ? "rgba(74,222,128,0.4)" : "rgba(255, 255, 255, 0.1)",
+            color: filterOnGround ? "#30d158" : "#94A3B8",
+            borderColor: filterOnGround ? "rgba(48,209,88,0.4)" : "rgba(255, 255, 255, 0.1)",
           }}
         >
           <Filter size={12} />
@@ -323,11 +326,11 @@ export default function RadarPage() {
         <button
           onClick={() => setShowScope((s) => !s)}
           className={`glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold cursor-pointer transition-all shadow-md ${
-            showScope ? "border-cyan-400 text-cyan-300 shadow-[0_0_14px_rgba(0,242,254,0.35)]" : "text-slate-400 hover:text-white"
+            showScope ? "border-blue-400 text-blue-300 shadow-[0_0_14px_rgba(41,151,255,0.35)]" : "text-slate-400 hover:text-white"
           }`}
           title="Toggle Tactical Air-Traffic Reticle Scope Overlay"
         >
-          <Crosshair size={12} className={showScope ? "text-cyan-400 animate-spin" : "text-slate-400"} />
+          <Crosshair size={12} className={showScope ? "text-blue-400 animate-spin" : "text-slate-400"} />
           <span>{showScope ? "Scope ON" : "Scope"}</span>
         </button>
 
@@ -340,10 +343,10 @@ export default function RadarPage() {
 
         {/* Zoom controls */}
         <div className="flex gap-1">
-          <button onClick={zoomIn} className="glass p-1.5 sm:p-2 rounded-xl flex items-center justify-center cursor-pointer hover:opacity-90 shadow-md" style={{ color: "#00F2FE" }} title="Zoom In">
+          <button onClick={zoomIn} className="glass p-1.5 sm:p-2 rounded-xl flex items-center justify-center cursor-pointer hover:opacity-90 shadow-md text-blue-400" title="Zoom In">
             <ZoomIn size={13} />
           </button>
-          <button onClick={zoomOut} className="glass p-1.5 sm:p-2 rounded-xl flex items-center justify-center cursor-pointer hover:opacity-90 shadow-md" style={{ color: "#00F2FE" }} title="Zoom Out">
+          <button onClick={zoomOut} className="glass p-1.5 sm:p-2 rounded-xl flex items-center justify-center cursor-pointer hover:opacity-90 shadow-md text-blue-400" title="Zoom Out">
             <ZoomOut size={13} />
           </button>
         </div>

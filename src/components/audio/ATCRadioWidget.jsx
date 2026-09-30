@@ -87,12 +87,12 @@ export default function ATCRadioWidget() {
   return (
     <div className="fixed bottom-14 left-3 sm:left-4 z-40 pointer-events-auto select-none max-w-[calc(100vw-24px)]">
       <div
-        className="rounded-2xl backdrop-blur-2xl transition-all duration-300 overflow-hidden shadow-2xl border flex flex-col"
+        className="rounded-2xl backdrop-blur-sm transition-all duration-300 overflow-hidden shadow-2xl border flex flex-col"
         style={{
           background: "rgba(8, 12, 22, 0.94)",
-          borderColor: atcRadioEnabled ? "rgba(0, 242, 254, 0.35)" : "rgba(255, 255, 255, 0.10)",
+          borderColor: atcRadioEnabled ? "rgba(41, 151, 255, 0.40)" : "rgba(255, 255, 255, 0.10)",
           boxShadow: atcRadioEnabled
-            ? "0 0 30px rgba(0, 242, 254, 0.15), 0 12px 32px rgba(0,0,0,0.6)"
+            ? "0 0 30px rgba(41, 151, 255, 0.20), 0 12px 32px rgba(0,0,0,0.6)"
             : "0 8px 24px rgba(0,0,0,0.5)",
           width: expanded ? "min(310px, calc(100vw - 24px))" : "auto",
         }}
@@ -108,23 +108,23 @@ export default function ATCRadioWidget() {
             <div
               className="w-6 h-6 rounded-lg flex items-center justify-center transition-all"
               style={{
-                background: atcRadioEnabled ? "rgba(0, 242, 254, 0.20)" : "rgba(255, 255, 255, 0.06)",
-                border: `1px solid ${atcRadioEnabled ? "rgba(0, 242, 254, 0.50)" : "rgba(255, 255, 255, 0.12)"}`,
+                background: atcRadioEnabled ? "rgba(41, 151, 255, 0.25)" : "rgba(255, 255, 255, 0.06)",
+                border: `1px solid ${atcRadioEnabled ? "rgba(41, 151, 255, 0.55)" : "rgba(255, 255, 255, 0.12)"}`,
               }}
             >
-              <Radio size={13} style={{ color: atcRadioEnabled ? "#00F2FE" : "#64748B" }} />
+              <Radio size={13} style={{ color: atcRadioEnabled ? "#2997ff" : "#64748B" }} />
             </div>
 
             <div className="flex flex-col text-left">
               <div className="flex items-center gap-1.5">
-                <span className="mono text-[9px] font-bold tracking-widest text-cyan-400">
+                <span className="mono text-[9px] font-bold tracking-widest text-blue-400">
                   ATC RADIO
                 </span>
                 <span
                   className="w-1.5 h-1.5 rounded-full"
                   style={{
-                    background: atcRadioEnabled ? (transmitting ? "#00FFA3" : "#00F2FE") : "#475569",
-                    boxShadow: transmitting ? "0 0 8px #00FFA3" : "none",
+                    background: atcRadioEnabled ? (transmitting ? "#30d158" : "#2997ff") : "#475569",
+                    boxShadow: transmitting ? "0 0 8px rgba(48,209,88,0.5)" : "none",
                   }}
                 />
               </div>
@@ -143,7 +143,7 @@ export default function ATCRadioWidget() {
                   className="w-1 rounded-full transition-all duration-75"
                   style={{
                     height: `${h}px`,
-                    background: transmitting ? "#00FFA3" : "rgba(0, 242, 254, 0.6)",
+                    background: transmitting ? "#30d158" : "rgba(41, 151, 255, 0.6)",
                   }}
                 />
               ))}
@@ -166,15 +166,15 @@ export default function ATCRadioWidget() {
           <div className="p-3 border-t border-white/10 space-y-3 animate-fade-in text-[10px] mono">
             {/* Live Ticker display */}
             <div
-              className="p-2 rounded-xl bg-black/40 border border-white/10 text-cyan-300 font-mono text-[10px] leading-relaxed flex items-start gap-2"
+              className="p-2 rounded-xl bg-black/40 border border-white/10 text-slate-200 font-mono text-[10px] leading-relaxed flex items-start gap-2"
             >
-              <Activity size={12} className={`flex-shrink-0 mt-0.5 ${transmitting ? "text-emerald-400 animate-pulse" : "text-slate-500"}`} />
+              <Activity size={12} className={`flex-shrink-0 mt-0.5 ${transmitting ? "text-[#30d158] animate-pulse" : "text-[#86868b]"}`} />
               <p className="line-clamp-2">{currentCallout}</p>
             </div>
 
             {/* Channels Grid */}
             <div className="space-y-1">
-              <span className="text-slate-500 text-[9px] tracking-wider">VHF FREQUENCIES</span>
+              <span className="text-[#86868b] text-[9px] tracking-wider">VHF FREQUENCIES</span>
               <div className="grid grid-cols-2 gap-1.5">
                 {ATC_CHANNELS.map((ch) => {
                   const isCur = ch.freq === atcRadioFrequency;
@@ -190,9 +190,9 @@ export default function ATCRadioWidget() {
                       }}
                       className="px-2.5 py-1.5 rounded-xl flex items-center justify-between text-left cursor-pointer transition-all border"
                       style={{
-                        background: isCur ? "rgba(0, 242, 254, 0.15)" : "rgba(255, 255, 255, 0.04)",
-                        borderColor: isCur ? "rgba(0, 242, 254, 0.45)" : "rgba(255, 255, 255, 0.08)",
-                        color: isCur ? "#00F2FE" : "#94A3B8",
+                        background: isCur ? "rgba(41, 151, 255, 0.15)" : "rgba(255, 255, 255, 0.04)",
+                        borderColor: isCur ? "rgba(41, 151, 255, 0.45)" : "rgba(255, 255, 255, 0.08)",
+                        color: isCur ? "#2997ff" : "#86868b",
                       }}
                     >
                       <span className="font-bold">{ch.name}</span>
@@ -209,7 +209,7 @@ export default function ATCRadioWidget() {
                 type="button"
                 onClick={handleTestSquelch}
                 disabled={!atcRadioEnabled}
-                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-cyan-500/15 border border-white/10 text-cyan-300 font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-40"
+                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-fuchsia-500/15 border border-white/10 text-fuchsia-300 font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-40"
               >
                 <Mic size={11} />
                 <span>TEST SQUELCH</span>

@@ -412,7 +412,7 @@ export default function Globe3D({
             onClick={() => setMode(btn.id)}
             className={`px-2.5 py-1 rounded-xl text-[10px] font-bold mono transition-all cursor-pointer ${
               mode === btn.id
-                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm"
+                ? "bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-400/40 shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >

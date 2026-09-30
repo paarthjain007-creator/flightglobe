@@ -12,13 +12,13 @@ const DAY_TEXTURE   = "https://unpkg.com/three-globe/example/img/earth-day.jpg";
 const TOPOLOGY_BUMP = "https://unpkg.com/three-globe/example/img/earth-topology.png";
 
 const THEME_ATMOSPHERE = {
-  space:     { color: "#38bdf8", altitude: 0.16 },
-  holodeck:  { color: "#00f0ff", altitude: 0.18 },
-  synthwave: { color: "#ff2a85", altitude: 0.20 },
-  atmosphera:{ color: "#a5f3fc", altitude: 0.18 },
-  cyberpunk: { color: "#c084fc", altitude: 0.20 },
-  sunset:    { color: "#fb923c", altitude: 0.18 },
-  daylight:  { color: "#3b82f6", altitude: 0.15 },
+  space:     { color: "#2997ff", altitude: 0.16 },
+  holodeck:  { color: "#2997ff", altitude: 0.16 },
+  synthwave: { color: "#bf5af2", altitude: 0.18 },
+  atmosphera:{ color: "#60a5fa", altitude: 0.16 },
+  cyberpunk: { color: "#818cf8", altitude: 0.18 },
+  sunset:    { color: "#fb923c", altitude: 0.16 },
+  daylight:  { color: "#0071e3", altitude: 0.15 },
 };
 
 export default function Interactive3DGlobeTracker({
@@ -29,23 +29,31 @@ export default function Interactive3DGlobeTracker({
   isCockpitView = false,
   showWindVectors = false,
   onPlanePosChange,
+  autoRotate: externalAutoRotate,
+  onToggleAutoRotate,
 }) {
   const theme = useStore((s) => s.theme || "space");
   const currentAtmo = THEME_ATMOSPHERE[theme] || THEME_ATMOSPHERE.space;
   const showDayNight = useStore((s) => s.showDayNight ?? false);
   const activeOverlay = useStore((s) => s.activeOverlayLayer || "none");
+  const globeFocusTarget = useStore((s) => s.globeFocusTarget);
   const globeTexture = showDayNight ? DAY_TEXTURE : NIGHT_TEXTURE;
   const globeRef = useRef(null);
   const containerRef = useRef(null);
   const wasCockpitRef = useRef(false);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
   const [progress, setProgress] = useState(0.45);
-  const [autoRotate, setAutoRotate] = useState(false);
+  const [internalAutoRotate, setInternalAutoRotate] = useState(false);
+  const autoRotate = externalAutoRotate !== undefined ? externalAutoRotate : internalAutoRotate;
 
-  const origLat = origin?.lat ?? 40.6413;
-  const origLng = origin?.lon ?? origin?.lng ?? -73.7781;
-  const destLat = destination?.lat ?? 51.4700;
-  const destLng = destination?.lon ?? destination?.lng ?? -0.4543;
+  // PHASE 4: ENFORCE UI VALIDATION - Strictly bind telemetry globe view to GDS coordinates
+  const displayOrigin = origin || { lat: 40.6413, lng: -73.7781, iata: "JFK", city: "New York" };
+  const displayDest = destination || { lat: 51.4700, lng: -0.4543, iata: "LHR", city: "London" };
+
+  const origLat = displayOrigin.lat;
+  const origLng = displayOrigin.lon ?? displayOrigin.lng;
+  const destLat = displayDest.lat;
+  const destLng = displayDest.lon ?? displayDest.lng;
 
   const flightCode = activeFlight?.code || "AA 100";
   const airlineName = activeFlight?.airline || "American Airlines";
@@ -150,6 +158,15 @@ export default function Interactive3DGlobeTracker({
     }
   };
 
+  const handleToggleAutoRotate = () => {
+    sound.playClick();
+    if (externalAutoRotate !== undefined && onToggleAutoRotate) {
+      onToggleAutoRotate(!autoRotate);
+    } else {
+      setInternalAutoRotate(!autoRotate);
+    }
+  };
+
   useEffect(() => {
     if (globeRef.current && !isCockpitView) {
       const midLat = (origLat + destLat) / 2;
@@ -157,6 +174,20 @@ export default function Interactive3DGlobeTracker({
       globeRef.current.pointOfView({ lat: midLat, lng: midLng, altitude: 2.2 }, 1200);
     }
   }, [origLat, origLng, destLat, destLng, isCockpitView]);
+
+  // Glide camera smoothly to globeFocusTarget when requested
+  useEffect(() => {
+    if (globeRef.current && globeFocusTarget?.lat !== undefined && globeFocusTarget?.lng !== undefined) {
+      globeRef.current.pointOfView(
+        {
+          lat: globeFocusTarget.lat,
+          lng: globeFocusTarget.lng,
+          altitude: globeFocusTarget.altitude || 2.1,
+        },
+        1200
+      );
+    }
+  }, [globeFocusTarget]);
 
   // Arcs data for 3D trajectory
   const arcsData = useMemo(() => {
@@ -166,7 +197,7 @@ export default function Interactive3DGlobeTracker({
         startLng: origLng,
         endLat: destLat,
         endLng: destLng,
-        color: ["#4F46E5", "#06B6D4"],
+        color: ["#2997ff", "#6366f1"],
         stroke: 1.2,
         altitude: 0.22,
       },
@@ -180,14 +211,14 @@ export default function Interactive3DGlobeTracker({
         lat: origLat,
         lng: origLng,
         size: 0.6,
-        color: "#06B6D4",
+        color: "#2997ff",
         label: `${origin?.code || origin?.iata || "ORIG"} · ${origin?.city || "Origin"}`,
       },
       {
         lat: destLat,
         lng: destLng,
         size: 0.6,
-        color: "#8B5CF6",
+        color: "#bf5af2",
         label: `${destination?.code || destination?.iata || "DEST"} · ${destination?.city || "Destination"}`,
       },
       {
@@ -205,8 +236,8 @@ export default function Interactive3DGlobeTracker({
     return (
       <div ref={containerRef} className="absolute inset-0 w-full h-full overflow-hidden pointer-events-auto">
         <ErrorBoundary fallback={
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 text-cyan-300 font-mono text-xs">
-            <Radio size={24} className="animate-pulse mb-2 text-cyan-400" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 text-[#86868b] font-mono text-xs">
+            <Radio size={24} className="animate-pulse mb-2 text-[#2997ff]" />
             <span>3D Planetary Canvas Resting · Telemetry Active</span>
           </div>
         }>
@@ -245,8 +276,8 @@ export default function Interactive3DGlobeTracker({
             hexBinPointLng="lng"
             hexBinPointWeight="weight"
             hexBinResolution={3}
-            hexTopColor={() => "#38bdf8"}
-            hexSideColor={() => "rgba(56, 189, 248, 0.35)"}
+            hexTopColor={() => "#2997ff"}
+            hexSideColor={() => "rgba(41, 151, 255, 0.25)"}
             hexAltitude={(d) => Math.min(0.25, d.sumWeight * 0.025)}
             width={dimensions.width}
             height={dimensions.height}
@@ -254,28 +285,28 @@ export default function Interactive3DGlobeTracker({
           />
         </ErrorBoundary>
         {/* Subtle radial vignette overlay matching active theme void */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.45) 70%, var(--void) 100%)" }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.45) 70%, var(--void, #000000) 100%)" }} />
       </div>
     );
   }
 
   return (
-    <div className="obsidian-panel rounded-3xl p-5 sm:p-6 flex flex-col h-full relative overflow-hidden shadow-2xl border border-white/10">
+    <div className="glass rounded-3xl p-5 sm:p-6 flex flex-col h-full relative overflow-hidden shadow-2xl border border-white/10">
       
       {/* ─── Top Telemetry Status Header ─────────────────────────────── */}
       <div className="flex items-center justify-between flex-wrap gap-2 z-20 mb-2">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-black uppercase tracking-widest text-cyan-400 mono flex items-center gap-1.5">
-              <Radio size={13} className="animate-pulse text-cyan-400" />
+            <span className="text-[11px] font-bold uppercase tracking-widest text-blue-400 mono flex items-center gap-1.5">
+              <Radio size={13} className="animate-pulse text-blue-400" />
               INTERACTIVE 3D FLIGHT TRACKER
             </span>
           </div>
 
           <div className="flex items-center gap-3 mt-1">
-            <div className="text-xl sm:text-2xl font-black mono text-white tracking-tight flex items-center gap-2">
+            <div className="text-xl sm:text-2xl font-bold mono text-white tracking-tight flex items-center gap-2">
               <span>{flightCode}</span>
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
             </div>
             <span className="text-xs text-slate-400 mono">· {airlineName}</span>
           </div>
@@ -285,9 +316,9 @@ export default function Interactive3DGlobeTracker({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => { sound.playClick(); setAutoRotate(!autoRotate); }}
+            onClick={handleToggleAutoRotate}
             className={`px-3 py-1.5 rounded-xl text-xs mono font-bold transition-all cursor-pointer ${
-              autoRotate ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40" : "glass text-slate-400 hover:text-white"
+              autoRotate ? "bg-blue-500/20 text-blue-300 border border-blue-400/40" : "glass text-slate-400 hover:text-white"
             }`}
           >
             {autoRotate ? "Auto-Orbit ON" : "Orbit"}
@@ -295,7 +326,7 @@ export default function Interactive3DGlobeTracker({
           <button
             type="button"
             onClick={handleResetCamera}
-            className="p-2 rounded-xl glass text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer"
+            className="p-2 rounded-xl glass text-slate-400 hover:text-blue-300 transition-colors cursor-pointer"
             title="Recenter Camera on Trajectory"
           >
             <RotateCcw size={14} />
@@ -306,16 +337,16 @@ export default function Interactive3DGlobeTracker({
       {/* Progress Track Bar */}
       <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mb-3 z-20">
         <div
-          className="h-full bg-gradient-to-r from-cyan-400 via-indigo-400 to-indigo-500 rounded-full transition-all duration-300"
+          className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300"
           style={{ width: `${Math.round(progress * 100)}%` }}
         />
       </div>
 
       {/* ─── 3D WebGL Globe Viewport ─────────────────────────────────── */}
-      <div ref={containerRef} className="flex-1 min-h-[280px] w-full relative rounded-2xl overflow-hidden flex items-center justify-center">
+      <div ref={containerRef} className="flex-1 min-h-[300px] w-full relative rounded-2xl overflow-hidden flex items-center justify-center">
         <ErrorBoundary fallback={
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-slate-950/80 rounded-2xl border border-cyan-500/20">
-            <Radio size={22} className="text-cyan-400 animate-pulse mb-2" />
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-black/80 rounded-2xl border border-blue-500/20">
+            <Radio size={22} className="text-blue-400 animate-pulse mb-2" />
             <div className="text-xs font-bold text-white">Spatial Telemetry Standby</div>
             <p className="text-[10px] text-slate-400 max-w-xs mt-1">
               3D WebGL context is initializing or resting. Coordinates and flight telemetry remain fully synchronized.
@@ -357,8 +388,8 @@ export default function Interactive3DGlobeTracker({
             hexBinPointLng="lng"
             hexBinPointWeight="weight"
             hexBinResolution={3}
-            hexTopColor={() => "#38bdf8"}
-            hexSideColor={() => "rgba(56, 189, 248, 0.35)"}
+            hexTopColor={() => "#2997ff"}
+            hexSideColor={() => "rgba(41, 151, 255, 0.25)"}
             hexAltitude={(d) => Math.min(0.25, d.sumWeight * 0.025)}
             width={dimensions.width}
             height={dimensions.height}
@@ -367,15 +398,15 @@ export default function Interactive3DGlobeTracker({
         </ErrorBoundary>
 
         {/* Ambient Gradient Glow Backdrop */}
-        <div className="absolute inset-0 pointer-events-none bg-radial from-cyan-500/10 via-transparent to-transparent opacity-60" />
+        <div className="absolute inset-0 pointer-events-none bg-radial from-blue-500/10 via-transparent to-transparent opacity-60" />
 
         {/* Live Coordinate Badges */}
         <div className="absolute bottom-3 left-3 glass px-3 py-1.5 rounded-xl text-[10px] mono text-slate-300 flex items-center gap-2 border border-white/10 pointer-events-none">
-          <Navigation size={11} className="text-cyan-400" />
-          <span>POS: {planePos.lat.toFixed(2)}°N, {planePos.lng.toFixed(2)}°W</span>
+          <Navigation size={11} className="text-blue-400" />
+          <span>POS: {planePos ? `${planePos.lat.toFixed(2)}°N, ${planePos.lng.toFixed(2)}°W` : "INITIALIZING..."}</span>
         </div>
 
-        <div className="absolute bottom-3 right-3 glass px-3 py-1.5 rounded-xl text-[10px] mono text-emerald-400 font-bold border border-white/10 pointer-events-none">
+        <div className="absolute bottom-3 right-3 glass px-3 py-1.5 rounded-xl text-[10px] mono text-[#30d158] font-semibold border border-white/10 pointer-events-none">
           CRUISING · FL380 · 492 KTS
         </div>
       </div>

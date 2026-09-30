@@ -18,11 +18,7 @@ const CONTEXT_SUGGESTIONS = {
     { text: "🇮🇳 Compare IndiGo vs SpiceJet vs Air India fares", action: "COMPARE_CARRIERS" },
     { text: "💱 Switch rates display to INR (₹) or EUR (€)", action: "SWITCH_CURRENCY" },
   ],
-  "/dashboard": [
-    { text: "🌧️ High rain forecast on arrival. Build indoor itinerary?", action: "WEATHER_ITINERARY" },
-    { text: "🛂 Verify visa requirements & vibe score", action: "CHECK_VISA" },
-    { text: "🌱 Calculate carbon offset & green flight option", action: "CHECK_CARBON" },
-  ],
+
   "/radar": [
     { text: "🛰️ Filter 10 live flights by Boeing 787 Dreamliners", action: "FILTER_AIRCRAFT" },
     { text: "🔀 Reshuffle 10 random global flight vectors", action: "RESHUFFLE" },
@@ -46,6 +42,7 @@ export default function GlobalCopilotFloatingWidget() {
   const removeTrip = useStore((s) => s.removeTrip);
 
   const [isOpen, setIsOpen] = useState(false);
+
   const [messages, setMessages] = useState([
     {
       id: "init",
@@ -114,10 +111,13 @@ export default function GlobalCopilotFloatingWidget() {
 
       const agentResult = await sendAgentChatMessageAPI(query, historyPayload);
 
-      if (agentResult && agentResult.text) {
+      const replyText = agentResult?.text || agentResult?.data?.text || agentResult?.data?.reply || agentResult?.reply;
+      const actions = agentResult?.actions || agentResult?.data?.actions || agentResult?.data?.clientActions || agentResult?.clientActions;
+
+      if (replyText) {
         // Dispatch autonomous agent actions
-        if (Array.isArray(agentResult.actions)) {
-          for (const act of agentResult.actions) {
+        if (Array.isArray(actions)) {
+          for (const act of actions) {
             if (act.type === "BOOKING_CREATED" && act.booking) {
               addTrip(act.booking);
             } else if (act.type === "BOOKING_CANCELLED" && act.bookingId) {
@@ -129,15 +129,17 @@ export default function GlobalCopilotFloatingWidget() {
               if ((v === "trips" || v === "passport") && pathname !== "/passport") navigate("/passport");
               else if ((v === "tracker" || v === "radar") && pathname !== "/radar") navigate("/radar");
               else if ((v === "search" || v === "booking") && pathname !== "/booking") navigate("/booking");
-              else if (v === "dashboard" && pathname !== "/dashboard") navigate("/dashboard");
+
               else if ((v === "explore" || v === "globe") && pathname !== "/explore") navigate("/explore");
               else if (v === "copilot" && pathname !== "/copilot") navigate("/copilot");
             } else if (act.type === "SET_ROUTE") {
               const origAirport = getAirportByIata(act.origin);
               const destAirport = getAirportByIata(act.destination);
-              setSearchOrigin(origAirport);
-              setSearchDestination(destAirport);
-              setWaypoints([origAirport, destAirport]);
+              if (origAirport && destAirport) {
+                setSearchOrigin(origAirport);
+                setSearchDestination(destAirport);
+                setWaypoints([origAirport, destAirport]);
+              }
             }
           }
         }
@@ -146,7 +148,7 @@ export default function GlobalCopilotFloatingWidget() {
           id: `ai-${Date.now()}`,
           sender: "ai",
           title: "Nimbus Autonomous Agent",
-          text: agentResult.text,
+          text: replyText,
           timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
         };
 
@@ -233,37 +235,37 @@ export default function GlobalCopilotFloatingWidget() {
     <div id="global-copilot-widget" className="fixed bottom-4 right-3 sm:bottom-6 sm:right-6 z-50 font-sans max-w-[calc(100vw-24px)]">
       {/* ── EXPANDED CHAT PANEL ────────────────────────────────────────────── */}
       {isOpen ? (
-        <GlassCard className="w-[calc(100vw-24px)] sm:w-[420px] max-w-[420px] h-[min(520px,calc(100vh-100px))] flex flex-col border border-cyan-400/40 shadow-[0_0_40px_rgba(0,240,255,0.25)] rounded-3xl overflow-hidden animate-slide-up relative">
+        <GlassCard className="w-[calc(100vw-24px)] sm:w-[420px] max-w-[420px] h-[min(520px,calc(100vh-100px))] flex flex-col border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.7)] rounded-3xl overflow-hidden animate-slide-up relative">
           
           {/* Header Bar */}
-          <div className="p-4 bg-slate-950/80 border-b border-white/10 flex items-center justify-between">
+          <div className="p-4 bg-[#121214] border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-300 shadow-inner">
+              <div className="w-8 h-8 rounded-xl bg-blue-500/15 border border-blue-400/30 flex items-center justify-center text-[#2997ff]">
                 <Sparkles size={16} className="animate-pulse" />
               </div>
               <div>
                 <h3 className="text-xs font-bold text-white flex items-center gap-1.5">
                   <span>AI Flight Commander</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-ping" />
                 </h3>
-                <p className="text-[10px] text-slate-400 font-mono">
-                  Context: <strong className="text-cyan-300">{pathname}</strong>
+                <p className="text-[10px] text-[#86868b] font-mono">
+                  Context: <strong className="text-[#2997ff]">{pathname}</strong>
                 </p>
               </div>
             </div>
 
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-xl glass text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl glass text-[#86868b] hover:text-white transition-colors cursor-pointer"
             >
               <X size={15} />
             </button>
           </div>
 
           {/* Contextual Proactive Chips Bar */}
-          <div className="px-3 py-2 bg-slate-900/60 border-b border-white/10 space-y-1.5">
-            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-              <Compass size={11} className="text-cyan-400" />
+          <div className="px-3 py-2 bg-black/40 border-b border-white/10 space-y-1.5">
+            <div className="text-[9px] font-bold text-[#86868b] uppercase tracking-wider flex items-center gap-1">
+              <Compass size={11} className="text-[#2997ff]" />
               <span>Proactive Route Suggestions:</span>
             </div>
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
@@ -271,7 +273,7 @@ export default function GlobalCopilotFloatingWidget() {
                 <button
                   key={idx}
                   onClick={() => handleActionClick(item)}
-                  className="px-2.5 py-1 rounded-xl text-[10px] font-semibold bg-white/5 border border-white/10 hover:border-cyan-400 text-slate-200 hover:text-cyan-300 transition-all whitespace-nowrap cursor-pointer flex-shrink-0 flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-xl text-[10px] font-semibold bg-white/5 border border-white/10 hover:border-[#2997ff] text-slate-200 hover:text-[#2997ff] transition-all whitespace-nowrap cursor-pointer flex-shrink-0 flex items-center gap-1"
                 >
                   <span>{item.text}</span>
                 </button>
@@ -289,12 +291,12 @@ export default function GlobalCopilotFloatingWidget() {
                 <div
                   className={`max-w-[85%] p-3 rounded-2xl space-y-1.5 ${
                     msg.sender === "user"
-                      ? "bg-cyan-500/25 border border-cyan-400/40 text-cyan-100 rounded-br-none"
-                      : "bg-slate-900/90 border border-white/15 text-slate-200 rounded-bl-none shadow-lg"
+                      ? "bg-[#0071e3] text-white rounded-br-none shadow-md"
+                      : "bg-[#1c1c1e] border border-white/10 text-slate-200 rounded-bl-none shadow-lg"
                   }`}
                 >
                   {msg.title && (
-                    <div className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
+                    <div className="text-xs font-bold text-[#2997ff] flex items-center gap-1.5">
                       <Zap size={12} />
                       <span>{msg.title}</span>
                     </div>
@@ -306,7 +308,7 @@ export default function GlobalCopilotFloatingWidget() {
                     <div className="space-y-1 pt-1.5 border-t border-white/10 text-[10px] text-slate-300 font-mono">
                       {msg.insights.map((ins, i) => (
                         <div key={i} className="flex items-center gap-1">
-                          <Check size={10} className="text-emerald-400" />
+                          <Check size={10} className="text-[#30d158]" />
                           <span>{ins}</span>
                         </div>
                       ))}
@@ -315,12 +317,12 @@ export default function GlobalCopilotFloatingWidget() {
 
                   {msg.waypoints && msg.waypoints.length >= 2 && (
                     <div className="pt-2 flex items-center justify-between">
-                      <span className="text-[10px] text-cyan-300 font-mono">
+                      <span className="text-[10px] text-[#2997ff] font-mono">
                         Route: {msg.waypoints[0].iata} ✈️ {msg.waypoints[msg.waypoints.length - 1].iata}
                       </span>
                       <button
-                        onClick={() => navigate("/booking")}
-                        className="px-2.5 py-1 rounded-xl text-[10px] font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 flex items-center gap-1 cursor-pointer"
+                        onClick={() => navigate("/search")}
+                        className="px-2.5 py-1 rounded-xl text-[10px] font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] flex items-center gap-1 cursor-pointer transition-colors"
                       >
                         <span>Book Now</span>
                         <ArrowRight size={10} />
@@ -329,13 +331,13 @@ export default function GlobalCopilotFloatingWidget() {
                   )}
                 </div>
 
-                <span className="text-[9px] text-slate-500 font-mono mt-1 px-1">{msg.timestamp}</span>
+                <span className="text-[9px] text-[#86868b] font-mono mt-1 px-1">{msg.timestamp}</span>
               </div>
             ))}
 
             {/* Terminal Decryption Processing Animation */}
             {isProcessing && (
-              <div className="flex items-center gap-2 p-3 rounded-2xl bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 font-mono text-[10px] animate-pulse">
+              <div className="flex items-center gap-2 p-3 rounded-2xl bg-blue-500/10 border border-blue-400/30 text-blue-300 font-mono text-[10px] animate-pulse">
                 <Terminal size={12} className="animate-spin" />
                 <span>[{decryptionText}]</span>
               </div>
@@ -350,7 +352,7 @@ export default function GlobalCopilotFloatingWidget() {
               e.preventDefault();
               handleSend();
             }}
-            className="p-3 bg-slate-950/90 border-t border-white/10 flex items-center gap-2"
+            className="p-3 bg-[#121214] border-t border-white/10 flex items-center gap-2"
           >
             <input
               type="text"
@@ -358,12 +360,12 @@ export default function GlobalCopilotFloatingWidget() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Copilot (e.g. Fly me to Munich)..."
               disabled={isProcessing}
-              className="flex-1 px-3.5 py-2 rounded-xl bg-slate-900 border border-white/15 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-sans text-base sm:text-xs"
+              className="flex-1 px-3.5 py-2 rounded-xl bg-black/40 border border-white/10 text-white placeholder-[#86868b] focus:outline-none focus:border-[#2997ff] font-sans text-base sm:text-xs"
             />
             <button
               type="submit"
               disabled={isProcessing || !input.trim()}
-              className="p-2 rounded-xl bg-cyan-400 text-slate-950 hover:bg-cyan-300 disabled:opacity-40 cursor-pointer shadow-lg transition-all"
+              className="p-2 rounded-xl bg-[#0071e3] text-white hover:bg-[#0077ed] disabled:opacity-40 cursor-pointer shadow-md transition-all"
             >
               <Send size={14} />
             </button>
@@ -373,19 +375,19 @@ export default function GlobalCopilotFloatingWidget() {
         /* ── COLLAPSED FLOATING ORB BUTTON ───────────────────────────────── */
         <button
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-2 sm:gap-2.5 px-3 py-2 sm:px-4 sm:py-3 rounded-full glass border border-cyan-400/40 shadow-[0_0_25px_rgba(0,240,255,0.4)] hover:shadow-[0_0_35px_rgba(0,240,255,0.7)] transition-all duration-300 cursor-pointer animate-bounce-slow"
+          className="group relative flex items-center gap-2 sm:gap-2.5 px-3 py-2 sm:px-4 sm:py-3 rounded-full glass border border-white/12 shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:border-white/20 transition-all duration-300 cursor-pointer"
         >
-          <div className="w-7 h-7 rounded-full bg-cyan-500/30 border border-cyan-400 flex items-center justify-center text-cyan-300 shadow-inner group-hover:scale-110 transition-transform">
+          <div className="w-7 h-7 rounded-full bg-blue-500/15 border border-blue-400/30 flex items-center justify-center text-[#2997ff] shadow-inner group-hover:scale-105 transition-transform">
             <Sparkles size={15} className="animate-pulse" />
           </div>
 
           <div className="text-left font-sans">
             <div className="text-xs font-bold text-white flex items-center gap-1.5">
               <span>AI Copilot</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-ping" />
             </div>
-            <div className="text-[10px] text-cyan-300 font-mono">
-              Proactive Insights
+            <div className="text-[10px] text-[#86868b] font-mono">
+              Live Assistant
             </div>
           </div>
         </button>
@@ -393,3 +395,4 @@ export default function GlobalCopilotFloatingWidget() {
     </div>
   );
 }
+

@@ -3,14 +3,13 @@ import { Info } from "lucide-react";
 import GlassCard from "../ui/GlassCard";
 import WeatherWidget from "./WeatherWidget";
 import FlightStatusCard from "./FlightStatusCard";
-import ExpenseBreakdown from "./ExpenseBreakdown";
-import CurrencyConverter from "./CurrencyConverter";
 import TimezoneCompare from "./TimezoneCompare";
-import CarbonWidget from "./CarbonWidget";
-import VisaVibeCard from "./VisaVibeCard";
+import CurrencyConverter from "./CurrencyConverter";
+import { useStore } from "../../store/useStore";
 
 export default function RightPanel({ origin, destination, workerResult, workerLoading }) {
   const hasRoute = origin && destination;
+  const storeCurrency = useStore((s) => s.currency || "USD");
 
   return (
     <GlassCard
@@ -21,15 +20,15 @@ export default function RightPanel({ origin, destination, workerResult, workerLo
       <div className="flex items-center gap-2">
         <div
           className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: "rgba(0, 242, 254, 0.12)", border: "1px solid rgba(0, 242, 254, 0.25)" }}
+          style={{ background: "rgba(41, 151, 255, 0.12)", border: "1px solid rgba(41, 151, 255, 0.25)" }}
         >
-          <Info size={15} style={{ color: "#00F2FE" }} />
+          <Info size={15} style={{ color: "#2997ff" }} />
         </div>
         <div>
-          <div className="text-sm font-bold" style={{ color: "#F8FAFC" }}>
+          <div className="text-sm font-bold text-[#f5f5f7]">
             Destination Insights
           </div>
-          <div className="text-xs text-slate-400">
+          <div className="text-xs text-[#86868b]">
             {destination ? `${destination.city}, ${destination.country}` : "Select a destination"}
           </div>
         </div>
@@ -43,12 +42,12 @@ export default function RightPanel({ origin, destination, workerResult, workerLo
         {/* Empty state */}
         {!hasRoute && (
           <div className="text-center py-8">
-            <div className="text-4xl mb-3">✈️</div>
+            <div className="text-4xl mb-3">🛫</div>
             <p className="text-sm font-medium mb-1" style={{ color: "#F8FAFC" }}>
               Plan Your Journey
             </p>
             <p className="text-xs leading-relaxed text-slate-400">
-              Select origin & destination to unlock weather, timezones, CO₂ tracking, visa info, and more
+              Select origin & destination to unlock weather, timezones, and flight status.
             </p>
           </div>
         )}
@@ -62,24 +61,6 @@ export default function RightPanel({ origin, destination, workerResult, workerLo
         {/* Flight Status */}
         {hasRoute && <FlightStatusCard origin={origin} destination={destination} />}
 
-        {/* Carbon Footprint (NEW — from Web Worker) */}
-        {hasRoute && (
-          <CarbonWidget workerResult={workerResult} loading={workerLoading} />
-        )}
-
-        {/* Expense Breakdown */}
-        {workerResult?.totalKm && (
-          <ExpenseBreakdown
-            costs={{
-              economy:  Math.round(workerResult.totalKm * (workerResult.totalKm < 2000 ? 0.16 : 0.10)),
-              business: Math.round(workerResult.totalKm * (workerResult.totalKm < 2000 ? 0.45 : 0.28)),
-              first:    Math.round(workerResult.totalKm * (workerResult.totalKm < 2000 ? 0.88 : 0.55)),
-            }}
-            distKm={workerResult.totalKm}
-            flightTime={workerResult.totalTime}
-          />
-        )}
-
         {/* Currency Converter */}
         {hasRoute && (
           <CurrencyConverter
@@ -87,9 +68,6 @@ export default function RightPanel({ origin, destination, workerResult, workerLo
             destCurrency={destination?.currency}
           />
         )}
-
-        {/* Visa & Vibe Check (NEW) */}
-        {destination && <VisaVibeCard destination={destination} />}
       </div>
     </GlassCard>
   );

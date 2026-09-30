@@ -60,94 +60,92 @@ export default function DispatchRoom({ onClose }) {
 
   return React.createElement("div", {
     className: "fixed inset-0 z-[120] flex items-center justify-center p-4",
-    style: { background: "rgba(4,5,8,0.88)", backdropFilter: "blur(20px)" }
+    style: { background: "rgba(0,0,0,0.75)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }
   },
     React.createElement(motion.div, {
-      initial: { scale: 0.92, opacity: 0, y: 16 },
+      initial: { scale: 0.94, opacity: 0, y: 16 },
       animate: { scale: 1, opacity: 1, y: 0 },
       className: "relative w-full max-w-sm rounded-3xl overflow-hidden",
-      style: { background: "rgba(10,14,24,0.96)", border: "1px solid rgba(0,242,254,0.20)", boxShadow: "0 0 60px rgba(0,242,254,0.12)" }
+      style: { background: "rgba(22,22,24,0.96)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 24px 60px rgba(0,0,0,0.7)" }
     },
-      React.createElement("div", { className: "h-0.5 w-full", style: { background: "linear-gradient(90deg, #00F2FE, #7928CA, #00FFA3)" } }),
+      React.createElement("div", { className: "h-0.5 w-full", style: { background: "linear-gradient(90deg, #2997ff, #bf5af2)" } }),
       React.createElement("div", { className: "flex items-center justify-between px-5 pt-5 pb-3" },
         React.createElement("div", { className: "flex items-center gap-2" },
-          React.createElement(Users, { size: 14, style: { color: "#00F2FE" } }),
-          React.createElement("span", { className: "mono text-xs font-bold tracking-widest", style: { color: "#E8EAF0" } }, "DISPATCH ROOM"),
-          room && React.createElement("span", { className: "w-2 h-2 rounded-full", style: { background: "#00FFA3", boxShadow: "0 0 6px #00FFA3" } })
+          React.createElement(Users, { size: 15, style: { color: "#2997ff" } }),
+          React.createElement("span", { className: "mono text-xs font-semibold tracking-widest", style: { color: "#f5f5f7" } }, "DISPATCH ROOM"),
+          room && React.createElement("span", { className: "w-2 h-2 rounded-full", style: { background: "#30d158", boxShadow: "0 0 6px rgba(48,209,88,0.5)" } })
         ),
-        React.createElement("button", { type: "button", onClick: onClose, className: "p-1.5 rounded-lg cursor-pointer hover:bg-white/10", style: { color: "#64748B" } },
+        React.createElement("button", { type: "button", onClick: onClose, className: "p-1.5 rounded-lg cursor-pointer hover:bg-white/10 text-[#86868b] hover:text-white" },
           React.createElement(X, { size: 15 })
         )
       ),
       React.createElement("div", { className: "px-5 pb-5 space-y-4" },
         tab === "lobby"
           ? React.createElement(React.Fragment, null,
-              React.createElement("p", { className: "text-[11px] leading-relaxed", style: { color: "#64748B" } }, "Share your globe with travel partners. Create a room or join with a code."),
+              React.createElement("p", { className: "text-xs leading-relaxed text-[#86868b]" }, "Share your globe with travel partners. Create a collaborative room or join with a room code."),
               React.createElement("button", {
                 type: "button", onClick: handleCreate,
-                className: "w-full py-3 rounded-2xl mono font-bold text-xs tracking-wider cursor-pointer transition-all",
-                style: { background: "rgba(0,242,254,0.12)", border: "1px solid rgba(0,242,254,0.35)", color: "#00F2FE" }
+                className: "btn-aurora w-full py-3 rounded-2xl mono font-bold text-xs tracking-wider cursor-pointer"
               }, "+ CREATE ROOM"),
               React.createElement("div", { className: "flex items-center gap-2" },
                 React.createElement("input", {
                   value: joinInput,
                   onChange: e => setJoinInput(e.target.value),
                   placeholder: "ROOM-XXXXXX",
-                  className: "flex-1 px-3 py-2 rounded-xl mono text-xs font-bold outline-none",
-                  style: { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "#E8EAF0" },
+                  className: "flex-1 px-3 py-2.5 rounded-xl mono text-xs font-semibold outline-none focus:border-[#2997ff]",
+                  style: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "#f5f5f7" },
                   onKeyDown: e => e.key === "Enter" && handleJoin(),
                 }),
                 React.createElement("button", {
                   type: "button", onClick: handleJoin,
-                  className: "px-3 py-2 rounded-xl mono text-xs font-bold cursor-pointer",
-                  style: { background: "rgba(0,255,163,0.12)", border: "1px solid rgba(0,255,163,0.30)", color: "#00FFA3" }
+                  className: "px-4 py-2.5 rounded-xl mono text-xs font-bold cursor-pointer bg-white/[0.08] hover:bg-white/[0.14] text-white border border-white/15"
                 }, "JOIN")
               )
             )
           : React.createElement(React.Fragment, null,
               React.createElement("div", {
-                className: "flex items-center justify-between px-3 py-2.5 rounded-xl",
-                style: { background: "rgba(0,242,254,0.08)", border: "1px solid rgba(0,242,254,0.22)" }
+                className: "flex items-center justify-between px-3.5 py-2.5 rounded-xl",
+                style: { background: "rgba(41,151,255,0.10)", border: "1px solid rgba(41,151,255,0.25)" }
               },
-                React.createElement("span", { className: "mono font-black text-sm tracking-widest", style: { color: "#00F2FE" } }, room),
-                React.createElement("button", { type: "button", onClick: handleCopy, className: "cursor-pointer" },
-                  copied ? React.createElement(Check, { size: 14, style: { color: "#00FFA3" } }) : React.createElement(Copy, { size: 14, style: { color: "#64748B" } })
+                React.createElement("span", { className: "mono font-bold text-sm tracking-widest text-[#2997ff]" }, room),
+                React.createElement("button", { type: "button", onClick: handleCopy, className: "cursor-pointer p-1 rounded-lg hover:bg-white/10" },
+                  copied ? React.createElement(Check, { size: 14, style: { color: "#30d158" } }) : React.createElement(Copy, { size: 14, style: { color: "#86868b" } })
                 )
               ),
               React.createElement("div", { className: "space-y-1.5" },
-                React.createElement("div", { className: "mono text-[9px] tracking-widest text-slate-500" }, "ACTIVE PLANNERS"),
+                React.createElement("div", { className: "mono text-[9px] tracking-widest text-[#86868b]" }, "ACTIVE PLANNERS"),
                 React.createElement("div", {
-                  className: "flex items-center gap-2.5 px-2.5 py-2 rounded-xl",
-                  style: { background: "rgba(0,242,254,0.06)", border: "1px solid rgba(0,242,254,0.15)" }
+                  className: "flex items-center gap-2.5 px-3 py-2 rounded-xl",
+                  style: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }
                 },
                   React.createElement("span", { className: "text-base" }, "pilot"),
                   React.createElement("div", { className: "flex-1" },
-                    React.createElement("div", { className: "text-xs font-bold", style: { color: "#E8EAF0" } }, "You (Commander)"),
-                    React.createElement("div", { className: "mono text-[9px]", style: { color: "#00F2FE" } },
+                    React.createElement("div", { className: "text-xs font-semibold text-[#f5f5f7]" }, "You (Commander)"),
+                    React.createElement("div", { className: "mono text-[9px] text-[#2997ff]" },
                       (searchOrigin?.iata || "---") + " to " + (searchDest?.iata || "---")
                     )
                   ),
-                  React.createElement(Radio, { size: 10, className: "animate-pulse", style: { color: "#00FFA3" } })
+                  React.createElement(Radio, { size: 10, className: "animate-pulse", style: { color: "#30d158" } })
                 ),
                 ...peers.map(p => (
                   React.createElement("div", {
                     key: p.id,
-                    className: "flex items-center gap-2.5 px-2.5 py-2 rounded-xl",
-                    style: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }
+                    className: "flex items-center gap-2.5 px-3 py-2 rounded-xl",
+                    style: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }
                   },
                     React.createElement("span", { className: "text-sm" }, p.avatar),
                     React.createElement("div", { className: "flex-1" },
-                      React.createElement("div", { className: "text-[11px] font-semibold", style: { color: "#E8EAF0" } }, p.name),
-                      React.createElement("div", { className: "mono text-[9px]", style: { color: p.color } }, p.city)
+                      React.createElement("div", { className: "text-[11px] font-semibold text-[#f5f5f7]" }, p.name),
+                      React.createElement("div", { className: "mono text-[9px] text-[#86868b]" }, p.city)
                     ),
-                    React.createElement(Wifi, { size: 9, style: { color: p.color, opacity: 0.7 } })
+                    React.createElement(Wifi, { size: 9, style: { color: "#30d158", opacity: 0.7 } })
                   )
                 ))
               ),
               React.createElement("button", {
                 type: "button", onClick: handleLeave,
-                className: "w-full py-2 rounded-xl mono text-[10px] font-bold cursor-pointer",
-                style: { background: "rgba(255,59,105,0.08)", border: "1px solid rgba(255,59,105,0.20)", color: "#FF3B69" }
+                className: "w-full py-2.5 rounded-xl mono text-[10px] font-semibold cursor-pointer transition-colors",
+                style: { background: "rgba(255,69,58,0.10)", border: "1px solid rgba(255,69,58,0.25)", color: "#ff453a" }
               }, "LEAVE ROOM")
             )
       )

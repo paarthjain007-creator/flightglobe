@@ -122,7 +122,7 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
           <DataRow
             icon={<Navigation size={11} />}
             label="Heading"
-            value={`${Math.round(plane.trueTrack)}°`}
+            value={plane.trueTrack != null ? `${Math.round(plane.trueTrack)}°` : "—"}
           />
           <DataRow
             icon={<Radio size={11} />}
@@ -139,7 +139,7 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
         >
           <span>📍 Coords</span>
           <span className="text-white font-semibold">
-            {plane.lat.toFixed(2)}°, {plane.lng.toFixed(2)}°
+            {plane.lat != null ? plane.lat.toFixed(2) : "—"}°, {plane.lng != null ? plane.lng.toFixed(2) : "—"}°
           </span>
         </div>
 
@@ -150,12 +150,12 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
               type="button"
               onClick={() => {
                 onClose?.();
-                navigate(`/booking?from=${nearestAirport.iata}`);
+                navigate(`/search?from=${nearestAirport.iata}`);
               }}
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 hover:text-white text-[10px] font-bold mono transition-all cursor-pointer shadow-sm"
+              className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 border border-blue-400/40 text-blue-300 hover:text-white text-[11px] font-semibold transition-all cursor-pointer shadow-sm"
               title={`Search flights originating from ${nearestAirport.city} (${nearestAirport.iata})`}
             >
-              <Plane size={11} className="text-cyan-400" />
+              <Plane size={11} className="text-blue-400" />
               <span>Search Flights from {nearestAirport.iata} ↗</span>
             </button>
           </div>

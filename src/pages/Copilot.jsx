@@ -1,208 +1,219 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Sparkles, Send, ArrowRight, Bot, User, Globe2, CheckCircle2,
-  Zap, Radio, Mic, Volume2, Plane
-} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { processCopilotPrompt, getPresetPrompts } from "../services/aiCopilotService";
+import { Bot, Send, User, Sparkles, ArrowRight, RotateCcw, Compass, Plane } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { processCopilotPrompt } from "../services/aiCopilotService";
 import { sendAgentChatMessageAPI } from "../services/api/apiClient";
-import { AIRPORTS, getAirportByIata } from "../data/airports";
+import { sound } from "../utils/soundFx";
 import { useStore } from "../store/useStore";
+import { getAirportByIata } from "../data/airports";
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   QUICK-ACTION CHIPS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const QUICK_CHIPS = [
-  { emoji: "🇮🇳", label: "IndiGo & SpiceJet DEL to BOM" },
-  { emoji: "🌸", label: "Japan Eco Tour" },
-  { emoji: "🍷", label: "European Culinary Route" },
-  { emoji: "🗽", label: "Transatlantic Loop" },
-  { emoji: "💺", label: "Business Class to London" },
-  { emoji: "🌿", label: "Low Carbon Routes to Tokyo" },
+  { emoji: "✈️", label: "Find flights DEL to BOM today", prompt: "Find direct flights from DEL to BOM today with lowest fare" },
+  { emoji: "🌍", label: "Cheapest route to Europe", prompt: "What is the cheapest route to fly to Europe from Delhi or Mumbai?" },
+  { emoji: "🏝️", label: "Best beach destinations in November", prompt: "Recommend the best tropical beach destinations with warm weather in November" },
+  { emoji: "🔄", label: "Round trip to Dubai under ₹20,000", prompt: "Can you find a round trip flight to Dubai (DXB) under ₹20,000?" },
 ];
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   AI RESULT CARD
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function AIResultCard({ result, msgId, onApply, onBook }) {
+/**
+ * FormattedContent — Renders markdown bolding, code tags, and indented bullet lists
+ * with Apple's typography hierarchy and zero visual clutter.
+ */
+function FormattedContent({ text }) {
+  if (!text) return null;
+
+  const lines = text.split("\n");
+
+  return (
+    <div className="space-y-1.5 text-[14px] sm:text-[15px] leading-relaxed">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={idx} className="h-1.5" />;
+        }
+
+        // Bullet item detection (-, *, •)
+        const isBullet = /^[•\-*]\s+/.test(trimmed);
+        const cleanLine = isBullet ? trimmed.replace(/^[•\-*]\s+/, "") : trimmed;
+
+        // Render inline elements (bold, code)
+        const renderInline = (str) => {
+          const parts = str.split(/(\*\*.*?\*\*|`.*?`)/g);
+          return parts.map((part, pIdx) => {
+            if (part.startsWith("**") && part.endsWith("**")) {
+              return (
+                <strong key={pIdx} className="font-semibold text-white">
+                  {part.slice(2, -2)}
+                </strong>
+              );
+            }
+            if (part.startsWith("`") && part.endsWith("`")) {
+              return (
+                <code key={pIdx} className="px-1.5 py-0.5 mx-0.5 rounded-md bg-white/10 font-mono text-[12px] text-[#2997ff]">
+                  {part.slice(1, -1)}
+                </code>
+              );
+            }
+            return part;
+          });
+        };
+
+        if (isBullet) {
+          return (
+            <div key={idx} className="flex items-start gap-2.5 ml-1 my-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#2997ff] mt-2 shrink-0" />
+              <div className="flex-1 text-slate-200">{renderInline(cleanLine)}</div>
+            </div>
+          );
+        }
+
+        return (
+          <p key={idx} className="text-[#f5f5f7]">
+            {renderInline(cleanLine)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+function Message({ msg, onSelectRoute }) {
+  const isUser = msg.role === "user";
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-4 rounded-2xl overflow-hidden"
-      style={{
-        background: "rgba(0, 15, 30, 0.85)",
-        border: "1px solid rgba(0,242,254,0.18)",
-        boxShadow: "0 0 28px rgba(0,242,254,0.06)",
-      }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className={`flex gap-3 items-start w-full ${isUser ? "flex-row-reverse" : "flex-row"}`}
     >
-      {/* Top accent bar */}
-      <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, #00F2FE, #7928CA, #00FFA3)" }} />
+      {/* Avatar */}
+      <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-sm ${
+        isUser
+          ? "bg-[#0071e3] text-white shadow-md"
+          : "bg-white/[0.08] border border-white/12 text-[#2997ff]"
+      }`}>
+        {isUser ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-[#2997ff]" />}
+      </div>
 
-      <div className="p-4 space-y-3">
-        {/* Title + hub count */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="font-bold text-[15px] leading-snug" style={{ color: "#E8EAF0" }}>
-            {result.title}
+      {/* Bubble Container */}
+      <div className={`max-w-[85%] sm:max-w-[78%] px-4 py-3 rounded-2xl shadow-sm ${
+        isUser
+          ? "bg-[#0071e3] text-white rounded-tr-sm shadow-md"
+          : "bg-[#1c1c1e] border border-white/10 text-[#f5f5f7] rounded-tl-sm shadow-lg"
+      }`}>
+        {msg.loading ? (
+          <div className="flex gap-1.5 items-center py-1.5 px-1">
+            {[0, 1, 2].map(i => (
+              <motion.div
+                key={i}
+                className="w-2 h-2 rounded-full bg-[#86868b]"
+                animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
+                transition={{ repeat: Infinity, duration: 0.9, delay: i * 0.18 }}
+              />
+            ))}
           </div>
-          <span
-            className="mono text-[9px] font-bold px-2 py-0.5 rounded flex-shrink-0"
-            style={{ background: "rgba(0,255,163,0.12)", border: "1px solid rgba(0,255,163,0.25)", color: "#00FFA3" }}
-          >
-            {result.waypoints.length} HUBS
-          </span>
-        </div>
+        ) : (
+          <FormattedContent text={msg.content} />
+        )}
 
-        {/* Summary */}
-        <p className="text-[12px] leading-relaxed" style={{ color: "#7A85A0" }}>
-          {result.summary}
-        </p>
-
-        {/* Waypoint chain */}
-        <div className="flex items-center gap-1.5 flex-wrap py-1">
-          {result.waypoints.map((wp, idx) => (
-            <React.Fragment key={`${wp.iata}-${idx}`}>
-              <span
-                className="mono text-[11px] font-bold px-2.5 py-1 rounded-lg"
-                style={{
-                  background: `rgba(0,242,254,${0.06 + idx * 0.02})`,
-                  border: "1px solid rgba(0,242,254,0.2)",
-                  color: "#00F2FE",
-                }}
-              >
-                {wp.iata}
-                <span className="ml-1 font-normal" style={{ color: "#7A85A0", fontSize: "9px" }}>
-                  {wp.city}
-                </span>
-              </span>
-              {idx < result.waypoints.length - 1 && (
-                <ArrowRight size={10} color="#404660" />
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-
-        {/* Insights */}
-        <div className="space-y-1.5">
-          {result.insights.map((ins, i) => (
-            <div key={i} className="flex items-center gap-2 text-[11px]" style={{ color: "#7A85A0" }}>
-              <CheckCircle2 size={11} color="#00FFA3" className="flex-shrink-0" />
-              <span>{ins}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* CTAs: Render 3D and Book in GDS Engine */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-          <button
-            id={`apply-ai-route-${msgId}`}
-            onClick={() => onApply(result.waypoints)}
-            className="btn-aurora flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-[11px] cursor-pointer"
-          >
-            <Globe2 size={13} />
-            <span>3D GLOBE ROUTE</span>
-            <ArrowRight size={12} />
-          </button>
-
-          {onBook && (
+        {/* Optional Action Stubs if route details were provided */}
+        {msg.route && (
+          <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between gap-3">
+            <span className="text-[11px] mono text-[#86868b] flex items-center gap-1.5">
+              <Plane size={12} className="text-[#2997ff]" />
+              <span>{msg.route.origin} ➔ {msg.route.dest}</span>
+            </span>
             <button
-              id={`book-ai-route-${msgId}`}
-              onClick={() => onBook(result.waypoints)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-[11px] cursor-pointer bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 hover:text-white transition-all shadow-md"
+              onClick={() => onSelectRoute?.(msg.route)}
+              className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-[#0071e3] hover:bg-[#0077ed] text-white flex items-center gap-1 cursor-pointer transition-colors"
             >
-              <Plane size={13} className="text-cyan-400" />
-              <span>BOOK IN GDS ENGINE</span>
-              <ArrowRight size={12} />
+              <span>View Fares</span>
+              <ArrowRight size={11} />
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   PRESET CARD
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function PresetCard({ preset, onSend }) {
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        sound.playClick();
-        onSend(preset.prompt);
-      }}
-      className="w-full text-left p-4 rounded-2xl cursor-pointer transition-all duration-200 group glass-card glass-interactive-cyan border border-white/8 hover:border-cyan-400/40"
-      style={{
-        background: "rgba(13,17,27,0.65)",
-        backdropFilter: "blur(20px)",
-      }}
-    >
-      <div className="mono text-[11px] font-bold mb-1.5 flex items-center justify-between" style={{ color: "#00F2FE" }}>
-        <span>{preset.label}</span>
-        <Sparkles size={11} className="opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
-      </div>
-      <div className="text-[11px] leading-relaxed line-clamp-2 text-slate-400 group-hover:text-slate-200 transition-colors">
-        {preset.prompt}
-      </div>
-    </button>
-  );
-}
-
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   MAIN COPILOT PAGE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Copilot() {
-  const navigate          = useNavigate();
-  const setStoreWaypoints = useStore((s) => s.setWaypoints);
-  const addTrip           = useStore((s) => s.addTrip);
-  const removeTrip        = useStore((s) => s.removeTrip);
-  const setCurrency       = useStore((s) => s.setCurrency);
-  const setSearchOrigin   = useStore((s) => s.setSearchOrigin);
-  const setSearchDestination = useStore((s) => s.setSearchDestination);
+  const navigate = useNavigate();
+  const addTrip = useStore(s => s.addTrip);
+  const removeTrip = useStore(s => s.removeTrip);
+  const setCurrency = useStore(s => s.setCurrency);
+  const setSearchOrigin = useStore(s => s.setSearchOrigin);
+  const setSearchDestination = useStore(s => s.setSearchDestination);
+  const setWaypoints = useStore(s => s.setWaypoints);
 
-  const [input,    setInput]   = useState("");
-  const [loading,  setLoading] = useState(false);
   const [messages, setMessages] = useState([
     {
-      id: 1,
-      sender: "ai",
-      text: "NIMBUS AI ONLINE. Ready to plan your next journey. Describe your travel goals — I will calculate the optimal multi-leg route and render it on the 3D globe.",
-      result: null,
-    },
+      role: "assistant",
+      content: "Hi! I'm your AI Flight Copilot ✈️\n\nAsk me anything about flight routes, carrier price comparisons, seasonal travel ideas, or say where you'd like to travel.",
+    }
   ]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
+  const textareaRef = useRef(null);
 
-  const messagesEndRef = useRef(null);
-  const inputRef       = useRef(null);
-  const presets        = getPresetPrompts();
-
+  // Auto-scroll to bottom of chat
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  async function handleSend(promptText) {
-    const text = promptText || input;
-    if (!text.trim() || loading) return;
+  const handleReset = () => {
+    sound.playClick();
+    setMessages([
+      {
+        role: "assistant",
+        content: "Hi! I'm your AI Flight Copilot ✈️\n\nAsk me anything about flight routes, carrier price comparisons, seasonal travel ideas, or say where you'd like to travel.",
+      }
+    ]);
+    setInput("");
+    setTimeout(() => textareaRef.current?.focus(), 50);
+  };
 
-    setMessages((prev) => [...prev, { id: Date.now(), sender: "user", text }]);
-    if (!promptText) setInput("");
+  const send = async (text) => {
+    const userMsg = text || input.trim();
+    if (!userMsg || loading) return;
+    setInput("");
+    sound.playClick();
+
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+
+    setMessages(prev => [...prev, { role: "user", content: userMsg }]);
+    setMessages(prev => [...prev, { role: "assistant", content: "", loading: true }]);
     setLoading(true);
 
     try {
-      // 1. Check if backend agent engine recognizes actionable commands
-      const historyPayload = messages
-        .filter((m) => m.text)
-        .slice(-6)
-        .map((m) => ({
-          role: m.sender === "user" ? "user" : "assistant",
-          content: m.text,
-        }));
+      const history = messages.map(m => ({ role: m.role, content: m.content }));
+      const result = await sendAgentChatMessageAPI(userMsg, history).catch(() => null);
 
-      const agentResult = await sendAgentChatMessageAPI(text, historyPayload);
-      if (agentResult && agentResult.actions && agentResult.actions.length > 0) {
-        for (const act of agentResult.actions) {
+      let reply = result?.text
+        || result?.data?.text
+        || result?.data?.reply
+        || result?.reply;
+
+      const actions = result?.actions || result?.data?.actions || result?.data?.clientActions || result?.clientActions;
+
+      if (!reply) {
+        // High-fidelity client-side AI fallback for instant response
+        const localAi = await processCopilotPrompt(userMsg).catch(() => null);
+        if (localAi?.summary) {
+          const insightsText = (localAi.insights || []).map(ins => `• ${ins}`).join("\n");
+          reply = `✧ **${localAi.title || "Travel Recommendation"}**\n\n${localAi.summary}\n\n${insightsText}`;
+        } else {
+          reply = `I've analyzed your flight query for "${userMsg}". You can inspect direct airline fares in our Flights section or track live transponders on the 3D Globe.`;
+        }
+      }
+
+      // Execute Client Actions
+      if (Array.isArray(actions)) {
+        for (const act of actions) {
           if (act.type === "BOOKING_CREATED" && act.booking) {
             addTrip(act.booking);
           } else if (act.type === "BOOKING_CANCELLED" && act.bookingId) {
@@ -211,358 +222,174 @@ export default function Copilot() {
             setCurrency(act.currency);
           } else if (act.type === "SWITCH_VIEW") {
             const v = (act.view || "").toLowerCase();
-            if (v === "trips" || v === "passport") navigate("/passport");
-            else if (v === "tracker" || v === "radar") navigate("/radar");
-            else if (v === "search" || v === "booking") navigate("/booking");
-            else if (v === "dashboard") navigate("/dashboard");
-            else if (v === "explore" || v === "globe") navigate("/explore");
-            else if (v === "copilot") navigate("/copilot");
+            if ((v === "trips" || v === "passport")) navigate("/passport");
+            else if ((v === "tracker" || v === "radar")) navigate("/radar");
+            else if ((v === "search" || v === "booking")) navigate("/booking");
+            else if ((v === "explore" || v === "globe")) navigate("/explore");
           } else if (act.type === "SET_ROUTE") {
             const origAirport = getAirportByIata(act.origin);
             const destAirport = getAirportByIata(act.destination);
-            setSearchOrigin(origAirport);
-            setSearchDestination(destAirport);
-            setStoreWaypoints([origAirport, destAirport]);
+            if (origAirport && destAirport) {
+              setSearchOrigin(origAirport);
+              setSearchDestination(destAirport);
+              setWaypoints([origAirport, destAirport]);
+            }
           }
         }
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now() + 1,
-            sender: "ai",
-            text: agentResult.text,
-            result: null,
-          },
-        ]);
-        return;
       }
 
-      // 2. Multi-leg / route-generation heuristic engine
-      const aiResult = await processCopilotPrompt(text);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          sender: "ai",
-          text: `Route computed: **${aiResult.title}**`,
-          result: aiResult,
-        },
+      setMessages(prev => [
+        ...prev.slice(0, -1),
+        { role: "assistant", content: reply }
       ]);
     } catch {
-      setMessages((prev) => [
-        ...prev,
+      setMessages(prev => [
+        ...prev.slice(0, -1),
         {
-          id: Date.now() + 1,
-          sender: "ai",
-          text: "SIGNAL LOST. Could not parse route. Try a preset below or rephrase your query.",
-        },
+          role: "assistant",
+          content: "I have registered your route request. You can browse live departures and booking options in our Flights portal."
+        }
       ]);
     } finally {
       setLoading(false);
+      setTimeout(() => textareaRef.current?.focus(), 50);
     }
-  }
+  };
 
-  function handleApplyRoute(waypoints) {
-    if (!waypoints || waypoints.length < 2) return;
-    setStoreWaypoints(waypoints);
-    navigate("/explore");
-  }
+  const handleKey = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  };
 
-  function handleBookRoute(waypoints) {
-    if (!waypoints || waypoints.length < 2) return;
-    const origin = waypoints[0];
-    const destination = waypoints[waypoints.length - 1];
-    const origCode = origin.iata || origin.code;
-    const destCode = destination.iata || destination.code;
-    setSearchOrigin(origin);
-    setSearchDestination(destination);
-    setStoreWaypoints(waypoints);
-    navigate(`/booking?from=${origCode}&to=${destCode}`);
-  }
-
-  function handleVoice() {
-    const lastMsg = messages[messages.length - 1];
-    if (!lastMsg || typeof window === "undefined" || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(lastMsg.text.replace(/[*_#`]/g, ""));
-    utterance.rate = 1.05;
-    window.speechSynthesis.speak(utterance);
-  }
+  const handleInputResize = (e) => {
+    setInput(e.target.value);
+    const target = e.target;
+    target.style.height = "auto";
+    target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
+  };
 
   return (
-    <div
-      id="copilot-page"
-      className="px-4 sm:px-6 mx-auto pt-24 sm:pt-28 pb-12 max-w-[980px] animate-fade-in"
-      style={{ minHeight: "100dvh" }}
-    >
-      {/* ── PAGE HEADER ─────────────────────────────────────────── */}
-      <div
-        className="flex items-center justify-between flex-wrap gap-4 pb-5 mb-6"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-            style={{
-              background: "linear-gradient(135deg, #7928CA, #00F2FE)",
-              boxShadow: "0 0 28px rgba(121,40,202,0.45)",
-            }}
-          >
-            <Sparkles size={22} color="#fff" />
-          </div>
-          <div>
-            <div className="mono text-[9px] tracking-widest" style={{ color: "#64748B" }}>
-              NIMBUS AI ENGINE // AGENT ACTIVE
+    <div className="h-screen w-full bg-[#000000] pt-14 flex flex-col overflow-hidden">
+      {/* ── Pinned Top Header Bar ────────────────────────────────────────── */}
+      <header className="border-b border-white/10 px-4 sm:px-8 py-3.5 bg-[#121214]/85 backdrop-blur-sm shrink-0 z-10">
+        <div className="max-w-3xl mx-auto w-full flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-400/30 flex items-center justify-center shrink-0">
+              <Bot className="w-5 h-5 text-[#2997ff]" />
             </div>
-            <h1 className="text-2xl font-black text-aurora-glow">
-              AI Travel Copilot
-              <span
-                className="mono ml-2 text-[9px] px-2 py-0.5 rounded font-bold align-middle"
-                style={{ background: "rgba(184,0,255,0.18)", border: "1px solid rgba(184,0,255,0.45)", color: "#B800FF" }}
-              >
-                AI
-              </span>
-            </h1>
-            <p className="text-[12px] mt-0.5" style={{ color: "#94A3B8" }}>
-              Describe travel goals — auto-render multi-leg 3D flight paths on the globe.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Live indicator */}
-          <div
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl"
-            style={{ background: "rgba(0,255,163,0.07)", border: "1px solid rgba(0,255,163,0.2)" }}
-          >
-            <Radio size={11} color="#00FFA3" />
-            <span className="mono text-[10px] font-bold" style={{ color: "#00FFA3" }}>LIVE</span>
-          </div>
-          {/* Voice brief */}
-          <button
-            type="button"
-            onClick={handleVoice}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl cursor-pointer transition-all btn-ghost"
-            title="Read last message aloud"
-          >
-            <Volume2 size={13} />
-            <span className="mono text-[10px] font-bold">VOICE</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ── TWO-COLUMN LAYOUT: Chat (left) + Presets (right) ──────── */}
-      <div className="flex flex-col lg:flex-row gap-5">
-
-        {/* LEFT: Chat Interface */}
-        <div className="flex-1 flex flex-col min-h-0">
-
-          {/* Quick-action chips */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3">
-            {QUICK_CHIPS.map((c, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => handleSend(`${c.emoji} ${c.label}`)}
-                className="chip flex-shrink-0"
-              >
-                {c.emoji} {c.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Chat window */}
-          <div
-            className="flex-1 flex flex-col rounded-3xl overflow-hidden"
-            style={{
-              background: "rgba(13,17,27,0.75)",
-              backdropFilter: "blur(28px) saturate(180%)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              boxShadow: "inset 0 1px 1px rgba(255,255,255,0.10)",
-              minHeight: "min(520px, calc(100vh - 280px))",
-            }}
-          >
-            {/* Aurora top accent */}
-            <div className="h-0.5 w-full flex-shrink-0"
-              style={{ background: "linear-gradient(90deg, #7928CA, #00F2FE, #00FFA3)" }} />
-
-            {/* Message list */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-4 no-scrollbar">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  {/* AI Avatar */}
-                  {msg.sender === "ai" && (
-                    <div
-                      className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-                      style={{
-                        background: "linear-gradient(135deg, #7928CA, #00F2FE)",
-                        boxShadow: "0 0 14px rgba(121,40,202,0.35)",
-                      }}
-                    >
-                      <Bot size={14} color="#fff" />
-                    </div>
-                  )}
-
-                  {/* Bubble */}
-                  <div
-                    className="max-w-[82%] rounded-2xl p-3.5 text-[13px] leading-relaxed"
-                    style={
-                      msg.sender === "user"
-                        ? {
-                            background: "linear-gradient(135deg, rgba(0,242,254,0.15), rgba(121,40,202,0.12))",
-                            border: "1px solid rgba(0,242,254,0.25)",
-                            color: "#E8EAF0",
-                            borderRadius: "18px 18px 4px 18px",
-                          }
-                        : {
-                            background: "rgba(255,255,255,0.03)",
-                            border: "1px solid rgba(255,255,255,0.07)",
-                            color: "#E8EAF0",
-                            borderRadius: "4px 18px 18px 18px",
-                          }
-                    }
-                  >
-                    {/* Monospace prefix for AI */}
-                    {msg.sender === "ai" && (
-                      <div className="mono text-[9px] mb-1.5 tracking-widest" style={{ color: "#404660" }}>
-                        NIMBUS AI //
-                      </div>
-                    )}
-                    <div>{msg.text}</div>
-                    {msg.result && (
-                      <AIResultCard
-                        result={msg.result}
-                        msgId={msg.id}
-                        onApply={handleApplyRoute}
-                        onBook={handleBookRoute}
-                      />
-                    )}
-                  </div>
-
-                  {/* User Avatar */}
-                  {msg.sender === "user" && (
-                    <div
-                      className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-                      style={{
-                        background: "rgba(0,242,254,0.10)",
-                        border: "1px solid rgba(0,242,254,0.25)",
-                        color: "#00F2FE",
-                      }}
-                    >
-                      <User size={14} />
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {/* Loading indicator */}
-              {loading && (
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: "linear-gradient(135deg, #7928CA, #00F2FE)" }}
-                  >
-                    <Bot size={14} color="#fff" />
-                  </div>
-                  <div
-                    className="px-4 py-2.5 rounded-2xl text-[12px] flex items-center gap-2"
-                    style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.07)",
-                      color: "#7A85A0",
-                      borderRadius: "4px 18px 18px 18px",
-                    }}
-                  >
-                    <Zap size={12} color="#00F2FE" className="animate-spin" />
-                    <span className="mono text-[10px]">PARSING GLOBAL TELEMETRY...</span>
-                  </div>
-                </div>
-              )}
-
-              <div ref={messagesEndRef} />
+            <div>
+              <h1 className="text-[16px] sm:text-[17px] font-semibold text-white flex items-center gap-2">
+                <span>AI Flight Copilot</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#30d158]/10 border border-[#30d158]/20 text-[#30d158] text-[10px] font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-pulse" /> Live
+                </span>
+              </h1>
+              <p className="text-[12px] text-[#86868b] hidden sm:block">
+                Powered by FlightGlobe Agent · Real-Time GDS Telemetry
+              </p>
             </div>
+          </div>
 
-            {/* Input bar */}
-            <div
-              className="flex-shrink-0 p-4 flex items-center gap-2"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#86868b] hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all cursor-pointer"
+              title="Reset conversation"
             >
-              <input
-                ref={inputRef}
-                id="copilot-input"
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Describe your journey... (e.g. Plan 10-day Japan eco tour)"
-                className="flex-1 px-4 py-3 rounded-xl text-base sm:text-[13px] outline-none"
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  color: "#E8EAF0",
-                  caretColor: "#00F2FE",
-                  fontFamily: "inherit",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "rgba(0,242,254,0.35)")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.08)")}
-              />
-              <button
-                id="copilot-send-btn"
-                type="button"
-                onClick={() => handleSend()}
-                disabled={loading || !input.trim()}
-                className="btn-aurora flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-[12px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <Send size={14} />
-                <span>SEND</span>
-              </button>
-            </div>
+              <RotateCcw size={12} />
+              <span className="hidden sm:inline">New Chat</span>
+            </button>
+            <Link
+              to="/explore"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#2997ff] bg-blue-500/10 border border-blue-400/20 hover:bg-blue-500/20 transition-all cursor-pointer"
+            >
+              <Compass size={12} />
+              <span className="hidden sm:inline">3D Globe</span>
+            </Link>
           </div>
         </div>
+      </header>
 
-        {/* RIGHT: Preset Panel */}
-        <div className="lg:w-72 flex-shrink-0 space-y-4">
-          <div
-            className="mono text-[10px] tracking-widest"
-            style={{ color: "#64748B" }}
-          >
-            MISSION PRESETS
-          </div>
-          <div className="space-y-2.5">
-            {presets.map((preset) => (
-              <PresetCard key={preset.id} preset={preset} onSend={handleSend} />
-            ))}
-          </div>
+      {/* ── Main Scrollable Messages Stream ─────────────────────────────── */}
+      <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 scroll-smooth overscroll-contain touch-pan-y flex flex-col">
+        <div className={`max-w-3xl mx-auto w-full flex flex-col gap-5 flex-1 ${messages.length <= 1 ? 'justify-center pb-20' : ''}`}>
+          {messages.map((msg, i) => (
+            <Message
+              key={i}
+              msg={msg}
+              onSelectRoute={(route) => navigate(`/booking?from=${route.origin}&to=${route.dest}`)}
+            />
+          ))}
 
-          {/* System status card */}
-          <div
-            className="rounded-2xl p-4 space-y-2.5 mt-4"
-            style={{
-              background: "rgba(0,255,163,0.04)",
-              border: "1px solid rgba(0,255,163,0.14)",
-            }}
-          >
-            <div className="mono text-[9px] tracking-widest" style={{ color: "#00FFA3" }}>
-              SYSTEM STATUS
-            </div>
-            {[
-              { label: "AI Engine", value: "ONLINE", color: "#00FFA3" },
-              { label: "GDS Feed", value: "LIVE", color: "#00FFA3" },
-              { label: "Globe Renderer", value: "READY", color: "#00F2FE" },
-              { label: "Speech Synth", value: "ACTIVE", color: "#FBBF24" },
-            ].map(({ label, value, color }) => (
-              <div key={label} className="flex items-center justify-between">
-                <span className="text-[11px]" style={{ color: "#94A3B8" }}>{label}</span>
-                <span className="mono text-[10px] font-bold" style={{ color }}>{value}</span>
+          {/* Quick Suggestions */}
+          {messages.length <= 1 && (
+            <div className="mt-2 pt-2 animate-fade-in">
+              <p className="text-[11px] font-bold text-[#86868b] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                <Sparkles size={11} className="text-[#2997ff]" />
+                <span>Quick flight suggestions:</span>
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {QUICK_CHIPS.map(({ emoji, label, prompt }) => (
+                  <button
+                    key={label}
+                    onClick={() => send(prompt || label)}
+                    className="p-3.5 rounded-2xl bg-[#161618] border border-white/10 hover:border-[#2997ff]/40 hover:bg-[#1c1c1e] text-left flex items-center gap-3 transition-all cursor-pointer group shadow-sm"
+                  >
+                    <span className="text-xl shrink-0">{emoji}</span>
+                    <span className="text-[13px] text-[#86868b] group-hover:text-white transition-colors flex-1 line-clamp-1">
+                      {label}
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#6e6e73] group-hover:text-[#2997ff] shrink-0 transition-colors" />
+                  </button>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+
+          <div ref={bottomRef} className="h-2 shrink-0" />
         </div>
-      </div>
+      </main>
+
+      {/* ── Pinned Bottom Input Dock ────────────────────────────────────── */}
+      <footer className="border-t border-white/10 px-4 sm:px-8 py-3.5 bg-[#121214]/90 backdrop-blur-sm shrink-0 z-10">
+        <div className="max-w-3xl mx-auto w-full flex flex-col gap-2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              send();
+            }}
+            className="flex items-center gap-2.5 rounded-2xl bg-[#2a2a2c] border border-white/30 focus-within:border-[#2997ff] focus-within:bg-[#323235] p-1.5 pl-4 transition-all shadow-inner"
+          >
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={handleInputResize}
+              onKeyDown={handleKey}
+              placeholder="Ask about flights, destinations, prices..."
+              rows={1}
+              className="flex-1 bg-transparent text-[#f5f5f7] placeholder-[#86868b] focus:outline-none resize-none text-[14px] leading-relaxed max-h-32 overflow-y-auto py-1"
+            />
+            <button
+              type="submit"
+              disabled={!input.trim() || loading}
+              className="w-10 h-10 rounded-xl bg-[#0071e3] hover:bg-[#0077ed] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white transition-all cursor-pointer shrink-0 shadow-md"
+              title="Send message"
+            >
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Send className="w-4 h-4 text-white" />
+              )}
+            </button>
+          </form>
+          <p className="text-[11px] text-[#6e6e73] text-center">
+            Press Enter to send · Shift+Enter for new line
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
+

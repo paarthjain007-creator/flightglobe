@@ -32,8 +32,8 @@ function Seat({ row, col, status, selected, onClick }) {
     <motion.button
       type="button"
       onClick={handleClick}
-      whileHover={!isTaken ? { scale: 1.15, y: -3 } : {}}
-      whileTap={!isTaken   ? { scale: 0.9 } : {}}
+      whileHover={!isTaken ? { scale: 1.12, y: -2 } : {}}
+      whileTap={!isTaken   ? { scale: 0.94 } : {}}
       transition={{ type: "spring", stiffness: 350, damping: 20 }}
       disabled={isTaken}
       className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl font-mono text-xs font-bold cursor-pointer transition-all flex items-center justify-center ${ringing ? "seat-ring" : ""}`}
@@ -41,23 +41,23 @@ function Seat({ row, col, status, selected, onClick }) {
         background: isTaken
           ? "rgba(255,255,255,0.03)"
           : isSelected
-          ? "linear-gradient(135deg, #4F46E5, #06B6D4)"
+          ? "#0071e3"
           : isBusiness
-          ? "rgba(79,70,229,0.22)"
+          ? "rgba(255,159,10,0.15)"
           : "rgba(255,255,255,0.06)",
         border: isTaken
           ? "1px solid rgba(255,255,255,0.05)"
           : isSelected
-          ? "1px solid #06B6D4"
+          ? "1px solid #2997ff"
           : isBusiness
-          ? "1px solid rgba(79,70,229,0.5)"
+          ? "1px solid rgba(255,159,10,0.4)"
           : "1px solid rgba(255,255,255,0.12)",
         color: isTaken   ? "#334155"
              : isSelected ? "#ffffff"
-             : isBusiness  ? "#A5B4FC"
+             : isBusiness  ? "#ff9f0a"
              : "var(--text)",
         cursor: isTaken ? "not-allowed" : "pointer",
-        boxShadow: isSelected ? "0 0 20px rgba(6,182,212,0.6)" : "none",
+        boxShadow: isSelected ? "0 4px 14px rgba(41,151,255,0.3)" : "none",
       }}
       title={isTaken ? `Seat ${seatCode} (Occupied)` : `Seat ${seatCode} (${isBusiness ? "Business Flatbed" : "Economy"})`}
     >
@@ -69,9 +69,9 @@ function Seat({ row, col, status, selected, onClick }) {
           className="absolute bottom-0 inset-x-0 h-1 rounded-b-xl"
           style={{
             background: isSelected
-              ? "rgba(6,182,212,0.6)"
+              ? "rgba(41,151,255,0.6)"
               : isBusiness
-              ? "rgba(79,70,229,0.3)"
+              ? "rgba(255,159,10,0.3)"
               : "rgba(255,255,255,0.08)",
           }}
         />
@@ -102,17 +102,17 @@ export default function SeatMap({
       <div>
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
-              <Sparkles size={16} className="text-cyan-400" />
+            <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <Sparkles size={16} className="text-[#2997ff]" />
               Kinetic Seat Selection
             </h3>
-            <p className="text-xs text-slate-400 mono mt-0.5">
+            <p className="text-xs text-[#86868b] mono mt-0.5">
               {flight ? `${flight.code} · ${flight.from} → ${flight.to}` : "Choose your seat"}
             </p>
           </div>
 
           {selectedSeat && (
-            <div className="px-3 py-1 rounded-xl bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 mono text-xs font-bold shadow-md">
+            <div className="px-3 py-1 rounded-xl bg-blue-500/15 border border-blue-400/30 text-blue-400 mono text-xs font-semibold shadow-sm">
               Seat {selectedSeat} ({isBusinessSelected ? "Business" : "Economy"})
             </div>
           )}
@@ -120,11 +120,11 @@ export default function SeatMap({
 
         {/* Business Cabin Header */}
         <div className="flex items-center gap-3 my-2.5">
-          <div className="flex-1 h-px bg-gradient-to-r from-indigo-500/50 to-transparent" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mono">
+          <div className="flex-1 h-px bg-white/10" />
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-[#ff9f0a] mono">
             Business Class Flatbed (Rows 1–2)
           </span>
-          <div className="flex-1 h-px bg-gradient-to-l from-indigo-500/50 to-transparent" />
+          <div className="flex-1 h-px bg-white/10" />
         </div>
 
         {/* Seat Grid */}
@@ -136,11 +136,11 @@ export default function SeatMap({
               <React.Fragment key={r}>
                 {isDivider && (
                   <div className="w-full flex items-center gap-3 my-1.5">
-                    <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-transparent" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mono">
+                    <div className="flex-1 h-px bg-white/10" />
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b] mono">
                       Economy Class (Rows 3–6)
                     </span>
-                    <div className="flex-1 h-px bg-gradient-to-l from-cyan-500/50 to-transparent" />
+                    <div className="flex-1 h-px bg-white/10" />
                   </div>
                 )}
 
@@ -192,15 +192,15 @@ export default function SeatMap({
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center gap-3 mt-3 text-[10px] mono text-slate-400 flex-wrap">
+        <div className="flex items-center justify-center gap-3 mt-3 text-[10px] mono text-[#86868b] flex-wrap">
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded-lg bg-white/5 border border-white/15" /> Available
           </div>
           <div className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-lg bg-indigo-500/20 border border-indigo-400/40" /> Business
+            <span className="w-3 h-3 rounded-lg bg-amber-500/20 border border-amber-400/40" /> Business
           </div>
           <div className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500" /> Selected
+            <span className="w-3 h-3 rounded-lg bg-[#0071e3]" /> Selected
           </div>
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded-lg bg-white/5 border border-white/5 opacity-40" /> Taken
@@ -211,10 +211,10 @@ export default function SeatMap({
       {/* Confirmation Box */}
       <div className="pt-3 border-t border-white/10 space-y-2.5">
         <div className="flex items-center justify-between text-xs mono">
-          <span className="text-slate-400">
-            Assigned Seat: <strong className="text-cyan-300">{selectedSeat || "None"}</strong>
+          <span className="text-[#86868b]">
+            Assigned Seat: <strong className="text-white">{selectedSeat || "None"}</strong>
           </span>
-          <span className="text-white font-black text-sm">
+          <span className="text-white font-bold text-sm">
             Total: {formatPrice(totalPrice, currency)}
           </span>
         </div>
@@ -228,12 +228,12 @@ export default function SeatMap({
             sound.playBookingChime();
             selectedSeat && flight && onConfirm?.({ flight, seat: selectedSeat, totalPrice });
           }}
-          className="w-full py-3 rounded-2xl font-bold text-xs text-white cursor-pointer flex items-center justify-center gap-2 shadow-xl"
+          className="w-full py-3 rounded-2xl font-semibold text-xs text-white cursor-pointer flex items-center justify-center gap-2 shadow-lg transition-all"
           style={{
             background: selectedSeat && flight
-              ? "linear-gradient(135deg, #4F46E5, #06B6D4)"
+              ? "#0071e3"
               : "rgba(255,255,255,0.06)",
-            boxShadow: selectedSeat && flight ? "0 0 24px rgba(6,182,212,0.4)" : "none",
+            boxShadow: selectedSeat && flight ? "0 4px 16px rgba(0, 113, 227, 0.35)" : "none",
             cursor: selectedSeat && flight ? "pointer" : "not-allowed",
           }}
         >

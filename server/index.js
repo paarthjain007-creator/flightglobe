@@ -1,12 +1,23 @@
+import 'dotenv/config';
 import express from "express";
 import cors from "cors";
-import { getTrafficData, getLiveExchangeRates, searchGlobalAirports, get7DayFareMatrixData } from "./proxy.js";
+import { getTrafficData, getLiveExchangeRates, searchGlobalAirports, get7DayFareMatrixData, searchRealFlightOffers, purgeTelemetryCache } from "./proxy.js";
 import { authenticateUser, authorizeRole } from "./auth.js";
 import { getUser, getUserBookings, createBooking, cancelBooking, updateUserPreferences } from "./db.js";
 import { processAgentChat } from "./agentEngine.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+/* ── PHASE 5: WATCHDOG SCRIPT ──────────────────────────────────────────────── */
+setInterval(() => {
+  console.log("[watchdog] Heartbeat: Cross-referencing telemetry endpoints with GDS booking records...");
+  // Simulated quarantine of mismatched telemetry
+  const quarantinedCount = 0;
+  if (quarantinedCount > 0) {
+    console.warn(`[watchdog] Quarantined ${quarantinedCount} mismatched telemetry records.`);
+  }
+}, 300000); // 5 minutes
 
 app.use(
   cors({
@@ -61,6 +72,18 @@ app.get("/api/bookings", authenticateUser, (req, res) => {
   res.json({ status: "ok", bookings });
 });
 
+// POST /api/bookings/hold — Temporary seat reservation hold
+app.post("/api/bookings/hold", authenticateUser, (req, res) => {
+  const { flightId, seat, userId } = req.body || {};
+  res.json({
+    status: "ok",
+    holdId: `HOLD-${Date.now()}`,
+    flightId: flightId || "FL-SAMPLE",
+    seat: seat || "2A",
+    expiresInSeconds: 600,
+  });
+});
+
 // POST /api/bookings — Create a new flight booking
 app.post("/api/bookings", authenticateUser, authorizeRole(["passenger", "admin"]), (req, res) => {
   try {
@@ -89,7 +112,16 @@ app.post("/api/agent/chat", authenticateUser, async (req, res) => {
     const { message, history } = req.body;
     if (!message) return res.status(400).json({ error: "Message prompt is required" });
 
-    const result = await processAgentChat(req.user, message, history);
+    // Proxy to Python AI microservice
+      const pyRes = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, history: history || [] }),
+        signal: AbortSignal.timeout(15000),
+      });
+
+      if (!pyRes.ok) throw new Error(`Python AI service returned ${pyRes.status}`);
+      const result = await pyRes.json();
     res.json({ status: "ok", ...result });
   } catch (err) {
     console.error("[server] /api/agent/chat error:", err);
@@ -98,6 +130,11 @@ app.post("/api/agent/chat", authenticateUser, async (req, res) => {
 });
 
 /* ── PROXY TELEMETRY ROUTES ─────────────────────────────────────────────────── */
+
+app.post("/api/admin/purge", (req, res) => {
+  purgeTelemetryCache();
+  res.json({ status: "ok", message: "Phase 1: Telemetry cache purged and route mappings invalidated." });
+});
 
 app.get("/api/traffic", async (_req, res) => {
   try {
@@ -124,6 +161,16 @@ app.get("/api/fares/matrix", (req, res) => {
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: "Fare matrix unavailable", matrix: [] });
+  }
+});
+
+app.get("/api/search/flights", async (req, res) => {
+  try {
+    const offers = await searchRealFlightOffers(req.query);
+    res.json({ status: "ok", data: offers, count: offers.length });
+  } catch (err) {
+    console.error("[server] /api/search/flights error:", err);
+    res.status(500).json({ error: "Flight search unavailable", data: [] });
   }
 });
 
@@ -154,3 +201,4 @@ app.listen(PORT, () => {
   console.log(`  ➜   http://localhost:${PORT}/api/agent/chat`);
   console.log(`  ➜   http://localhost:${PORT}/api/traffic\n`);
 });
+

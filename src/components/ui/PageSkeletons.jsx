@@ -86,7 +86,7 @@ export function GlobeSkeleton() {
         />
         {/* Orbit ring */}
         <div
-          className="absolute inset-0 rounded-full border border-cyan-400/20 shimmer"
+          className="absolute inset-0 rounded-full border border-fuchsia-400/20 shimmer"
           style={{ transform: "rotateX(70deg) scale(1.15)" }}
         />
       </div>
@@ -114,7 +114,7 @@ export function PageSpinner() {
   return (
     <div className="min-h-[60vh] flex items-center justify-center" aria-live="polite">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+        <div className="w-12 h-12 rounded-full border-2 border-fuchsia-400 border-t-transparent animate-spin" />
         <p className="text-xs text-slate-400 font-mono">Loading FlightGlobe module…</p>
       </div>
     </div>

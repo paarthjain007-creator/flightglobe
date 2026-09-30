@@ -7,7 +7,7 @@ const PLATFORM_LINKS = [
   { label: "Book Flights",        to: "/booking",   icon: Plane },
   { label: "Live ADS-B Radar",    to: "/radar",     icon: Radio, badge: "LIVE" },
   { label: "AI Flight Copilot",   to: "/copilot",   icon: Sparkles, badge: "AI" },
-  { label: "Delay Analytics",     to: "/dashboard", icon: LayoutDashboard },
+  { label: "Delay Analytics",     to: "/passport", icon: LayoutDashboard },
   { label: "My Passes & Stamps",  to: "/passport",  icon: Ticket },
 ];
 
@@ -35,7 +35,7 @@ export default function Footer() {
   return (
     <footer
       id="app-footer"
-      className="border-t border-white/10 bg-slate-950/95 backdrop-blur-2xl text-slate-300"
+      className="border-t border-white/10 bg-[#121214] text-[#86868b]"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
 
@@ -45,19 +45,19 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-2.5">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-cyan-500/15 border border-cyan-400/30">
-                <Globe2 size={18} className="text-cyan-400" />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-blue-500/10 border border-blue-400/20">
+                <Globe2 size={18} className="text-[#2997ff]" />
               </div>
               <div>
                 <div className="text-lg font-extrabold text-white tracking-tight">
-                  Flight<span className="text-cyan-400">Globe</span>
+                  Flight<span className="text-[#2997ff]">Globe</span>
                 </div>
-                <div className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
+                <div className="text-[10px] font-medium text-[#86868b] uppercase tracking-wider">
                   Global Aerospace Telemetry &amp; GDS Network
                 </div>
               </div>
             </div>
-            <p className="text-sm text-slate-400 max-w-md leading-relaxed">
+            <p className="text-sm text-[#86868b] max-w-md leading-relaxed">
               Real-time 3D planetary flight tracking, live OpenSky ADS-B transponder telemetry, and worldwide GDS multi-carrier airline reservations.
             </p>
           </div>
@@ -90,15 +90,15 @@ export default function Footer() {
                 <li key={label}>
                   <Link
                     to={to}
-                    className="text-sm text-slate-400 hover:text-cyan-400 transition-colors flex items-center gap-2"
+                    className="text-sm text-[#86868b] hover:text-[#2997ff] transition-colors flex items-center gap-2"
                   >
-                    <Icon size={14} className="text-slate-500" />
+                    <Icon size={14} className="text-[#86868b]" />
                     <span>{label}</span>
                     {badge && (
                       <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
                         badge === "LIVE"
-                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                          : "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                          ? "bg-emerald-500/15 text-[#30d158] border border-emerald-500/25"
+                          : "bg-blue-500/15 text-[#2997ff] border border-blue-500/25"
                       }`}>
                         {badge}
                       </span>
@@ -119,9 +119,9 @@ export default function Footer() {
                 <li key={name}>
                   <Link
                     to={route}
-                    className="text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 py-0.5"
+                    className="text-[#86868b] hover:text-[#2997ff] transition-colors flex items-center gap-1.5 py-0.5"
                   >
-                    <Plane size={11} className="text-slate-500 flex-shrink-0" />
+                    <Plane size={11} className="text-[#86868b] flex-shrink-0" />
                     <span className="truncate">{name}</span>
                   </Link>
                 </li>
