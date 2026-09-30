@@ -175,7 +175,7 @@ export async function processCopilotPrompt(userPrompt) {
   if (!resolvedOrigin && resolvedDestination) {
     resolvedOrigin = getAirportByIata("JFK") || AIRPORTS[0];
   } else if (resolvedOrigin && !resolvedDestination) {
-    resolvedDestination = getAirportByIata("LHR") || AIRPORTS[1];
+    return { success: false, title: "Unclear Destination", summary: "I didn't quite catch the destination airport." };
   }
 
   if (resolvedOrigin && resolvedDestination) {

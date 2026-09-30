@@ -93,7 +93,7 @@ export async function sendAgentChatMessageAPI(message, history = []) {
       Authorization: "Bearer usr_commander_1",
     },
     body: JSON.stringify({ message, history }),
-    timeout: 3500,
+    timeout: 15000,
   });
 
   if (result.ok && result.data?.status === "ok") {
