@@ -761,7 +761,7 @@ export default function Explore() {
     <div className="relative w-full h-screen overflow-hidden" style={{ background: "var(--void)" }}>
 
       {/* ── 1. FULL-BLEED 3D GLOBE — centered, vignette-masked ─────────── */}
-      <div className="absolute inset-0 globe-vignette">
+      <div className="absolute inset-0 globe-vignette" style={{ touchAction: "pan-y" }}>
         <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs tracking-widest font-mono">LOADING 3D GLOBE ENGINE...</div>}><Interactive3DGlobeTracker
           origin={origin}
           destination={destination}
@@ -801,7 +801,7 @@ export default function Explore() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.22 }}
-            className="absolute left-4 z-20 pointer-events-auto flex flex-col"
+            className="absolute left-4 z-20 pointer-events-auto hidden md:flex flex-col"
             style={{ top: "188px", bottom: "24px", width: "min(480px, calc(100vw - 32px))" }}
           >
             {/* Minimize toggle button bar */}

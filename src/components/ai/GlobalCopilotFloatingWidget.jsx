@@ -235,7 +235,7 @@ export default function GlobalCopilotFloatingWidget() {
     <div id="global-copilot-widget" className="fixed bottom-4 right-3 sm:bottom-6 sm:right-6 z-50 font-sans max-w-[calc(100vw-24px)]">
       {/* ── EXPANDED CHAT PANEL ────────────────────────────────────────────── */}
       {isOpen ? (
-        <GlassCard className="w-[calc(100vw-24px)] sm:w-[420px] max-w-[420px] h-[min(520px,calc(100vh-100px))] flex flex-col border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.7)] rounded-3xl overflow-hidden animate-slide-up relative">
+        <GlassCard className="pointer-events-auto w-full sm:w-[420px] sm:max-w-[420px] h-[80vh] sm:h-[min(520px,calc(100vh-100px))] flex flex-col border border-white/12 shadow-[0_-20px_50px_rgba(0,0,0,0.8)] sm:shadow-[0_20px_50px_rgba(0,0,0,0.7)] rounded-t-3xl sm:rounded-3xl overflow-hidden animate-slide-up relative mt-auto">
           
           {/* Header Bar */}
           <div className="p-4 bg-[#121214] border-b border-white/10 flex items-center justify-between">
@@ -375,7 +375,7 @@ export default function GlobalCopilotFloatingWidget() {
         /* ── COLLAPSED FLOATING ORB BUTTON ───────────────────────────────── */
         <button
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-2 sm:gap-2.5 px-3 py-2 sm:px-4 sm:py-3 rounded-full glass border border-white/12 shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:border-white/20 transition-all duration-300 cursor-pointer"
+          className="pointer-events-auto group relative flex items-center gap-2 sm:gap-2.5 px-3 py-2 sm:px-4 sm:py-3 rounded-full glass border border-white/12 shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:border-white/20 transition-all duration-300 cursor-pointer mb-4 mr-3 sm:mb-0 sm:mr-0 absolute bottom-0 right-0 sm:static"
         >
           <div className="w-7 h-7 rounded-full bg-blue-500/15 border border-blue-400/30 flex items-center justify-center text-[#2997ff] shadow-inner group-hover:scale-105 transition-transform">
             <Sparkles size={15} className="animate-pulse" />
