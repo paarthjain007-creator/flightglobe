@@ -49,10 +49,7 @@
   to = "/.netlify/functions/bookings"
   status = 200
 
-[[redirects]]
-  from = "/api/agent/chat"
-  to = "/.netlify/functions/agent"
-  status = 200
+
 
 [[redirects]]
   from = "/api/user/*"
@@ -74,3 +71,8 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+
+[[edge_functions]]
+  path = "/api/agent/chat"
+  function = "agent"

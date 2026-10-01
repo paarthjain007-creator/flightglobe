@@ -1,4 +1,4 @@
-export async function handler(event, _context) {
+export default async (req, context) => {
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
@@ -6,27 +6,26 @@ export async function handler(event, _context) {
     "Content-Type": "application/json",
   };
 
-  if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 204, headers, body: "" };
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers });
   }
 
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers });
   }
 
   try {
-    const { message, history = [] } = JSON.parse(event.body || "{}");
+    const { message, history = [] } = await req.json();
     if (!message) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: "Message prompt is required" }) };
+      return new Response(JSON.stringify({ error: "Message prompt is required" }), { status: 400, headers });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = Deno.env.get("GEMINI_API_KEY");
     if (!apiKey) {
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ status: "error", message: "GEMINI_API_KEY missing in Netlify environment variables" })
-      };
+      return new Response(
+        JSON.stringify({ status: "error", message: "GEMINI_API_KEY missing in Netlify environment variables" }),
+        { status: 500, headers }
+      );
     }
 
     const todayDate = new Date().toISOString().split("T")[0];
@@ -92,14 +91,14 @@ Rules:
 
     if (!response.ok) {
       const errorText = await response.text();
-      return { statusCode: response.status, headers, body: JSON.stringify({ status: "error", message: errorText }) };
+      return new Response(JSON.stringify({ status: "error", message: errorText }), { status: response.status, headers });
     }
 
     const data = await response.json();
     const rawContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
     
     if (!rawContent) {
-       return { statusCode: 500, headers, body: JSON.stringify({ status: "error", message: "Empty AI response" }) };
+       return new Response(JSON.stringify({ status: "error", message: "Empty AI response" }), { status: 500, headers });
     }
 
     let parsed;
@@ -133,18 +132,10 @@ Rules:
       clientActions.push({ type: "BOOKING_CANCELLED", bookingId: params.bookingId });
     }
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ status: "ok", reply, clientActions })
-    };
+    return new Response(JSON.stringify({ status: "ok", reply, clientActions }), { status: 200, headers });
 
   } catch (err) {
-    console.error("AI Agent Error:", err);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ status: "error", message: err.message })
-    };
+    console.error("Edge AI Agent Error:", err);
+    return new Response(JSON.stringify({ status: "error", message: err.message }), { status: 500, headers });
   }
-}
+};

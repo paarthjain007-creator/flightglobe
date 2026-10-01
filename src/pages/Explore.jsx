@@ -7,14 +7,14 @@ import {
   Calendar, MapPin, Zap, Globe2, Plus, Minus, Check,
   Eye, Wind, Box, Moon, Sun, CloudRain, ArrowLeftRight
 } from "lucide-react";
-import Interactive3DGlobeTracker from "../components/tracker/Interactive3DGlobeTracker";
-import CockpitHUD from "../components/cockpit/CockpitHUD";
+const Interactive3DGlobeTracker = React.lazy(() => import("../components/tracker/Interactive3DGlobeTracker"));
+const CockpitHUD = React.lazy(() => import("../components/cockpit/CockpitHUD"));
 
 
 import FlightDeckFAB from "../components/ui/FlightDeckFAB";
 import DispatchRoom from "../components/multiplayer/DispatchRoom";
 import FlightStreamMatrix from "../components/itinerary/StaggeredDepartureCards";
-import KineticSeatCanvas from "../components/canvas/KineticSeatCanvas";
+const KineticSeatCanvas = React.lazy(() => import("../components/canvas/KineticSeatCanvas"));
 import { useStore } from "../store/useStore";
 import { sound } from "../utils/soundFx";
 import { AIRPORTS, getAirportByIata } from "../data/airports";
@@ -762,7 +762,7 @@ export default function Explore() {
 
       {/* ── 1. FULL-BLEED 3D GLOBE — centered, vignette-masked ─────────── */}
       <div className="absolute inset-0 globe-vignette">
-        <Interactive3DGlobeTracker
+        <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs tracking-widest font-mono">LOADING 3D GLOBE ENGINE...</div>}><Interactive3DGlobeTracker
           origin={origin}
           destination={destination}
           activeFlight={selectedFlight}
@@ -1050,7 +1050,7 @@ export default function Explore() {
 
       {/* ── 7. FIRST-PERSON COCKPIT HUD OVERLAY ─────────────────────────── */}
       {isCockpitView && (
-        <CockpitHUD
+        <React.Suspense fallback={null}><CockpitHUD
           origin={origin}
           destination={destination}
           progress={planeTelemetry.progress}
