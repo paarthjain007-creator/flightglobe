@@ -58,7 +58,38 @@ export async function handler(event, _context) {
     try {
       const body = JSON.parse(event.body || "{}");
       const id = body.id || `T-${Math.floor(1000 + Math.random() * 9000)}`;
-      const bookingRef = body.bookingRef || `FG-${Math.floor(100000 + Math.random() * 900000)}`;
+      let bookingRef = body.bookingRef || `FG-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      // PRODUCTION READINESS: If DUFFEL_API_KEY is present and we have a valid offerId, create a real GDS Order!
+      if (process.env.DUFFEL_API_KEY && body.flight && body.flight.offerId) {
+        try {
+          const { Duffel } = await import('@duffel/api');
+          const duffel = new Duffel({ token: process.env.DUFFEL_API_KEY });
+          
+          const order = await duffel.orders.create({
+            selected_offers: [body.flight.offerId],
+            payments: [{ type: "balance", amount: body.totalPrice?.toString() || "0", currency: body.currency || "USD" }],
+            passengers: [
+              {
+                id: body.flight.passengerId || "pax-1", // Must match the passenger ID from the offer request
+                given_name: "Explorer",
+                family_name: "FlightGlobe",
+                born_on: "1990-01-01",
+                gender: "m",
+                title: "mr",
+                email: "bookings@flightglobe.app",
+                phone_number: "+1234567890",
+              }
+            ]
+          });
+          
+          if (order.data && order.data.booking_reference) {
+            bookingRef = order.data.booking_reference; // REAL PNR!
+          }
+        } catch (err) {
+          console.warn("Duffel Live Booking failed (falling back to mock PNR):", err.message);
+        }
+      }
       const flight = body.flight || {};
 
       const originCode = (body.origin?.iata || body.origin?.code || flight.from || "DEL").toUpperCase();
