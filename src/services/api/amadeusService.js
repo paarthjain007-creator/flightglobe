@@ -276,6 +276,7 @@ export async function searchAmadeusFlightOffers(params) {
     }
   }
 
+    return await generateFallbackFlightOffers({
     ...params,
     originIata,
     destinationIata,

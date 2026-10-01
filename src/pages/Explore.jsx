@@ -770,7 +770,7 @@ export default function Explore() {
           isCockpitView={isCockpitView}
           showWindVectors={showWindVectors}
           onPlanePosChange={handlePlanePosChange}
-        />
+        /></React.Suspense>
       </div>
 
       {/* ── Deep-space ambient gradient underlays ──────────────────────── */}
@@ -1055,7 +1055,7 @@ export default function Explore() {
           destination={destination}
           progress={planeTelemetry.progress}
           onExitCockpit={() => setIsCockpitView(false)}
-        />
+        /></React.Suspense>
       )}
 
       {/* ── 9. COLLABORATIVE DISPATCH ROOM MODAL ──────────────────────── */}
