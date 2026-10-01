@@ -259,6 +259,7 @@ export async function searchAmadeusFlightOffers(params) {
                   carrierCode: seg.carrierCode,
                   airlineName: REAL_AIRLINE_BRANDS[seg.carrierCode]?.name || seg.carrierCode,
                   number: seg.number,
+                  aircraft: seg.aircraft || "Airbus A320neo",
                 })),
               })),
             };

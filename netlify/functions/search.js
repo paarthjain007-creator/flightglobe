@@ -48,6 +48,7 @@ export async function handler(event, _context) {
             arrival: { iataCode: seg.destination.iata_code, at: seg.arriving_at },
             carrierCode: seg.operating_carrier.iata_code,
             number: seg.operating_carrier_flight_number,
+            aircraft: seg.aircraft?.name || null,
           })),
         })),
         price: { total: offer.total_amount, currency: offer.total_currency },

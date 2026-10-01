@@ -243,7 +243,8 @@ function mapAmadeusOfferToFlightCard(offer, origin, destination, currency, depar
     airline: offer.validatingAirlineName || seg0?.airlineName || "FlightGlobe",
     airlineCode: offer.validatingAirlineCode || seg0?.carrierCode || "FG",
     logo: offer.validatingAirlineLogo || "✈️",
-    callsign: seg0?.number || `${offer.validatingAirlineCode || "FG"}-${200 + idx * 15}`,
+    callsign: seg0?.number ? `${seg0.carrierCode || offer.validatingAirlineCode || "FG"} ${seg0.number}` : `${offer.validatingAirlineCode || "FG"} ${200 + idx * 15}`,
+    code: seg0?.number ? `${seg0.carrierCode || offer.validatingAirlineCode || "FG"} ${seg0.number}` : `${offer.validatingAirlineCode || "FG"} ${200 + idx * 15}`,
     dep: depStr,
     arr: arrStr,
     dur: durFormatted,
@@ -267,8 +268,8 @@ function mapAmadeusOfferToFlightCard(offer, origin, destination, currency, depar
     isPremium: isPrem,
     isDirect,
     seatsRemaining: offer.numberOfBookableSeats || ((idx * 3 + 2) % 6 + 1),
-    origin: { code: origCode, iata: origCode, city: origCity, lat: origin?.lat, lng: origin?.lng },
-    destination: { code: destCode, iata: destCode, city: destCity, lat: destination?.lat, lng: destination?.lng },
+    origin: { code: origCode, iata: origCode, city: origCity, lat: origin?.lat, lng: origin?.lng ?? origin?.lon },
+    destination: { code: destCode, iata: destCode, city: destCity, lat: destination?.lat, lng: destination?.lng ?? destination?.lon },
   };
 }
 
