@@ -199,32 +199,8 @@ export async function searchAmadeusFlightOffers(params) {
   }
 
   // 2. Query our authoritative backend flight engine with real corridor matching
-  if (originIata && destinationIata) {
-    try {
-      
-        const queryParams = {
-          origin: originIata,
-          destination: destinationIata,
-          date: departureDate || "",
-          adults: String(paxCount),
-          cabin: normalizedClass,
-          currency,
-        };
-        if (slicesQuery) queryParams.slicesQuery = slicesQuery;
-        const query = new URLSearchParams(queryParams);
+  // (Disabled: Netlify/Duffel fallback returns incompatible data structure. Using robust local generator instead.)
 
-
-      const res = await fetch(`/api/search/flights?${query}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
-          return data.data;
-        }
-      }
-    } catch (err) {
-      // Offline / static deployment fallback
-    }
-  }
 
   return await generateFallbackFlightOffers({
     ...params,
