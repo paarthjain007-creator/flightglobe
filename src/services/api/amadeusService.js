@@ -198,11 +198,84 @@ export async function searchAmadeusFlightOffers(params) {
     }
   }
 
-  // 2. Query our authoritative backend flight engine with real corridor matching
-  // (Disabled: Netlify/Duffel fallback returns incompatible data structure. Using robust local generator instead.)
+  // 2. Query Duffel API (via our Netlify serverless function)
+  if (originIata && destinationIata) {
+    try {
+      const queryParams = {
+        origin: originIata,
+        destination: destinationIata,
+        date: departureDate || "",
+        adults: String(paxCount),
+        cabin: normalizedClass,
+        currency,
+      };
+      const query = new URLSearchParams(queryParams);
 
+      const res = await fetch(`/api/search/flights?${query}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+          // MAP DUFFEL FORMAT TO AMADEUS FORMAT TO PREVENT UI CRASHES
+          const currConf = CURRENCY_MAP[currency] || CURRENCY_MAP.USD;
+          const mappedOffers = data.data.map((offer) => {
+            const airlineCode = offer.airline || "DL";
+            const airlineMeta = REAL_AIRLINE_BRANDS[airlineCode] || {
+              name: airlineCode,
+              logo: "✈️",
+              baggage: "1x 23kg Included",
+            };
+            
+            const totalRaw = parseFloat(offer.price?.total) || 0;
+            const convertedTotal = Math.round(totalRaw * currConf.rate);
+            const convertedBase = Math.round(convertedTotal * 0.78);
+            const convertedTaxes = Math.round(convertedTotal * 0.14);
+            const convertedFuel = convertedTotal - convertedBase - convertedTaxes;
 
-  return await generateFallbackFlightOffers({
+            return {
+              id: offer.id,
+              source: "DUFFEL_API",
+              validatingAirlineCode: airlineCode,
+              validatingAirlineName: airlineMeta.name,
+              validatingAirlineLogo: airlineMeta.logo,
+              baggageAllowance: airlineMeta.baggage,
+              price: {
+                currency: currency,
+                currencySymbol: currConf.symbol,
+                total: convertedTotal,
+                base: convertedBase,
+                fees: convertedTaxes,
+                fuelSurcharge: convertedFuel,
+                perAdult: Math.round(convertedTotal / paxCount),
+                passengers: paxCount,
+                cabinClass: travelClass,
+                isLowestFare: false,
+              },
+              itineraries: (offer.itineraries || []).map((it) => ({
+                durationMinutes: parseISODuration(it.duration),
+                segments: (it.segments || []).map((seg, sIdx) => ({
+                  id: `seg-${sIdx}`,
+                  departure: seg.departure,
+                  arrival: seg.arrival,
+                  carrierCode: seg.carrierCode,
+                  airlineName: REAL_AIRLINE_BRANDS[seg.carrierCode]?.name || seg.carrierCode,
+                  number: seg.number,
+                })),
+              })),
+            };
+          });
+          
+          if (mappedOffers.length > 0) {
+            mappedOffers.sort((a, b) => a.price.total - b.price.total);
+            mappedOffers[0].price.isLowestFare = true;
+            return mappedOffers;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Duffel fetch failed, falling back to local simulation:", err);
+    }
+  }
+
     ...params,
     originIata,
     destinationIata,
