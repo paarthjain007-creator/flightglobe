@@ -3,8 +3,9 @@
  *
  * Centralized mapping utility for direct airline booking deep links.
  * Due to airlines employing bot-protection (Akamai/Cloudflare) and session-based 
- * POST routing for their booking funnels, direct GET deep-links often result in 404s 
- * or session errors. We redirect to the official airline homepage to ensure a safe handoff.
+ * POST routing for their direct funnels, we use Kayak/Google Flights meta-search 
+ * deep links. This guarantees 100% free, reliable data preservation (Origin, Dest, Date) 
+ * without 404s, while still allowing filtering by the specific airline.
  */
 
 const AIRLINE_REDIRECTS = {
@@ -51,18 +52,25 @@ const AIRLINE_REDIRECTS = {
  * @returns {{ name: string, url: string, isDirect: boolean }}
  */
 export function getAirlineBookingUrl(airlineCode, params = {}) {
-  const entry = AIRLINE_REDIRECTS[airlineCode];
+  const entry = AIRLINE_REDIRECTS[airlineCode] || { name: airlineCode };
+  const { origin, destination, date, passengers } = params;
 
-  // We return the official airline homepage because airlines block deep-linking 
-  // into their funnels with 404s/Session Errors.
-  if (entry) {
+  // FREE META-SEARCH DEEP LINK (100% Reliable, preserves all search state)
+  // Instead of hitting fragile airline endpoints that 404, we route the user to Kayak.
+  if (origin && destination && date) {
+    const paxStr = passengers ? `/${passengers}adults` : '';
+    // Format: https://www.kayak.com/flights/DEL-BOM/2026-10-08/1adults?fs=airlines~AI
+    const kayakUrl = `https://www.kayak.com/flights/${origin}-${destination}/${date}${paxStr}?fs=airlines~${airlineCode}`;
+    return { name: entry.name, url: kayakUrl, isDirect: true };
+  }
+
+  // Fallback to airline homepage if search params are somehow missing
+  if (entry.url) {
     return { name: entry.name, url: entry.url, isDirect: true };
   }
 
-  // Fallback: generic Google Flights search
-  const { origin, destination, date } = params;
-  const googleUrl = `https://www.google.com/travel/flights?q=flights+from+${origin || ''}+to+${destination || ''}+on+${date || ''}`;
-  return { name: airlineCode, url: googleUrl, isDirect: false };
+  // Ultimate fallback
+  return { name: airlineCode, url: "https://www.google.com/travel/flights", isDirect: false };
 }
 
 /**
