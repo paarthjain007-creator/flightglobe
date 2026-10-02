@@ -214,14 +214,25 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
 
       {/* Selected Airport Pill */}
       {value && (
-        <div className="mt-1.5 flex items-center gap-2 px-1 text-xs text-slate-300 font-medium">
+        <button
+          type="button"
+          onClick={() => {
+            const inputEl = document.getElementById(id);
+            if (inputEl) {
+              inputEl.scrollIntoView({ behavior: "smooth", block: "center" });
+              inputEl.focus();
+              setOpen(true);
+            }
+          }}
+          className="mt-1.5 flex items-center gap-2 px-1 text-xs text-slate-300 font-medium cursor-text hover:text-white transition-colors text-left w-full outline-none"
+        >
           <div
             className="w-2 h-2 rounded-full flex-shrink-0 bg-[#30d158] shadow-[0_0_6px_rgba(48,209,88,0.4)]"
           />
           <span className="truncate">
             {value.name} · {value.country}
           </span>
-        </div>
+        </button>
       )}
     </div>
   );

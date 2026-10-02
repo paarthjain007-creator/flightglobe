@@ -452,6 +452,20 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             {showCalendarMatrix ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
 
+          <button
+            type="button"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 border ${
+              showAdvancedFilters || maxDurationFilter !== "ALL" || baggageOnly
+                ? "bg-blue-500/20 text-blue-300 border-blue-400/50 shadow-sm"
+                : "bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:text-white"
+            }`}
+          >
+            <SlidersHorizontal size={13} className="text-blue-400" />
+            <span className="hidden sm:inline">Advanced</span>
+            {showAdvancedFilters ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+
           {availableAirlines.length > 0 && (
             <button
               type="button"
