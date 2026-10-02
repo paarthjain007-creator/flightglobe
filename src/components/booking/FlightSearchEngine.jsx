@@ -40,7 +40,10 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
   const [loading, setLoading] = useState(false);
   const [quickFilter, setQuickFilter] = useState("CHEAPEST");
   const [selectedAirlineFilter, setSelectedAirlineFilter] = useState("ALL");
-  const [showCalendarMatrix, setShowCalendarMatrix] = useState(false);
+  const [showCalendarMatrix, setShowCalendarMatrix] = useState(true);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [maxDurationFilter, setMaxDurationFilter] = useState("ALL");
+  const [baggageOnly, setBaggageOnly] = useState(false);
   const [showAirlineFilter, setShowAirlineFilter] = useState(false);
 
   // Dynamic 7-day Fare Matrix API state
@@ -210,7 +213,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
     }
 
     return result;
-  }, [offers, selectedAirlineFilter, nonStopOnly, quickFilter]);
+  }, [offers, selectedAirlineFilter, nonStopOnly, quickFilter, maxDurationFilter, baggageOnly]);
 
   const availableAirlines = Array.from(new Set(offers.map((o) => o.validatingAirlineCode))).map((code) => {
     const matched = offers.find((o) => o.validatingAirlineCode === code);
@@ -520,7 +523,56 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
         </div>
       )}
 
-      {/* ── Collapsible Airline Fleet Filter Drawer ──────────────── */}
+   {/* 🚀 Collapsible Advanced Filters Drawer ─────────── */}
+      {showAdvancedFilters && (
+        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-4">
+          <h4 className="text-xs font-semibold text-slate-300 mb-2">Advanced Filtering</h4>
+          
+          <div className="flex flex-col sm:flex-row gap-6">
+            {/* Max Layover / Flight Duration */}
+            <div className="space-y-2">
+              <label className="text-[11px] text-slate-400 font-medium">Max Total Duration</label>
+              <div className="flex items-center gap-2 flex-wrap">
+                {[
+                  { label: "Any", val: "ALL" },
+                  { label: "< 6h", val: "360" },
+                  { label: "< 12h", val: "720" },
+                  { label: "< 18h", val: "1080" },
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setMaxDurationFilter(opt.val)}
+                    className={`px-3 py-1 rounded-lg text-xs transition-all cursor-pointer border ${
+                      maxDurationFilter === opt.val
+                        ? "bg-blue-500/20 text-blue-300 border-blue-400/40"
+                        : "bg-white/5 text-slate-400 hover:text-white border-transparent"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Baggage Toggle */}
+            <div className="space-y-2">
+              <label className="text-[11px] text-slate-400 font-medium">Baggage Allowance</label>
+              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer hover:text-white transition-colors h-6">
+                <input
+                  type="checkbox"
+                  checked={baggageOnly}
+                  onChange={(e) => setBaggageOnly(e.target.checked)}
+                  className="rounded border-slate-700 text-blue-400 focus:ring-0 accent-cyan-400 cursor-pointer"
+                />
+                <span>Must include checked baggage</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
+
+         {/* ── Collapsible Airline Fleet Filter Drawer ──────────────── */}
       {showAirlineFilter && availableAirlines.length > 0 && (
         <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/10 overflow-x-auto no-scrollbar">
           <span className="text-xs font-medium text-slate-400 flex-shrink-0">
