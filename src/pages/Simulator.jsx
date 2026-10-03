@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "../store/useStore";
 import { AIRPORTS } from "../data/airports";
 import FlightDeckFAB from "../components/ui/FlightDeckFAB";
