@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { Search, Plane, Calendar, Loader2, ArrowRightLeft, Filter, TrendingDown, Zap, Clock, ArrowUpRight, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Plane, Calendar, Loader2, ArrowRightLeft, Filter, TrendingDown, Zap, Clock, ArrowUpRight, ChevronDown, ChevronUp, SlidersHorizontal, History, X, ArrowRight } from "lucide-react";
 import AirportSearch from "../Search/AirportSearch";
 import BookingCard from "./BookingCard";
 import { searchAmadeusFlightOffers, CURRENCY_MAP, fetch7DayFareMatrixAPI } from "../../services/api/amadeusService";
@@ -34,6 +34,10 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
   const setStoreCurrency = useStore((s) => s.setCurrency);
   const currency = storeCurrency || "USD";
   const setCurrency = setStoreCurrency;
+  const recentSearches = useStore((s) => s.recentSearches);
+  const addRecentSearch = useStore((s) => s.addRecentSearch);
+  const removeRecentSearch = useStore((s) => s.removeRecentSearch);
+  const clearRecentSearches = useStore((s) => s.clearRecentSearches);
 
   // State
   const [offers, setOffers] = useState([]);
@@ -156,7 +160,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
     setOffers(results);
     setLoading(false);
-  }, [origin, destination, departureDate, adults, travelClass, currency, isSameAirport]);
+  }, [origin, destination, departureDate, adults, travelClass, currency, isSameAirport, addRecentSearch]);
 
   // Deep-linking — syncs ?from=DEL&to=BOM with URL and hydrates state on mount
   const { syncUrlParams } = useFlightDeepLink({

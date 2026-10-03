@@ -6,6 +6,17 @@ export const useStore = create(
   persist(
     (set) => ({
       // Route & Global Search Sync State
+      recentSearches: [],
+      addRecentSearch: (search) => set((state) => {
+        const filtered = state.recentSearches.filter(
+          s => !(s.origin.iata === search.origin.iata && s.destination.iata === search.destination.iata && s.date === search.date)
+        );
+        return { recentSearches: [search, ...filtered].slice(0, 5) };
+      }),
+      removeRecentSearch: (index) => set((state) => ({
+        recentSearches: state.recentSearches.filter((_, i) => i !== index)
+      })),
+      clearRecentSearches: () => set({ recentSearches: [] }),
       waypoints: [],
       searchOrigin: AIRPORTS[0],       // Default JFK
       searchDestination: AIRPORTS[1],  // Default LHR
@@ -149,6 +160,7 @@ export const useStore = create(
         currency: state.currency,
         theme: state.theme,
         isLiteMode: state.isLiteMode,
+        recentSearches: state.recentSearches,
         soundEnabled: state.soundEnabled,
         stamps: state.stamps,
         trips: state.trips,
