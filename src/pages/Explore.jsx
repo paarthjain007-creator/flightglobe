@@ -1008,7 +1008,7 @@ export default function Explore() {
               <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                 <div>
-                  <div className="mono text-xs tracking-widest text-cyan-400">CABIN ASSIGNMENT</div>
+                  <div className="mono text-xs tracking-widest text-cyan-400">CABIN CLASS</div>
                   <div className="font-bold text-base" style={{ color: "#E8EAF0" }}>
                     {selectedFlight?.airline} · {selectedFlight?.callsign}
                   </div>
@@ -1039,16 +1039,16 @@ export default function Explore() {
                       <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-500/10 text-blue-400 mb-2">
                         <Box size={24} />
                       </div>
-                      <h3 className="text-xl font-bold text-white">Select Your Seat</h3>
-                      <p className="text-sm text-slate-400">Lite Mode: Automatic Seat Assignment</p>
+                      <h3 className="text-xl font-bold text-white">Select Cabin Class</h3>
+                      <p className="text-sm text-slate-400">Lite Mode: Auto-Assigning Seats via GDS</p>
                     </div>
                     <div className="p-6 rounded-2xl bg-white/5 border border-white/10 w-full max-w-sm">
                       <div className="flex justify-between items-center mb-4">
-                        <span className="text-slate-300">Selected Seat:</span>
+                        <span className="text-slate-300">Assigned Seat:</span>
                         <span className="font-mono text-white font-bold text-lg">12A</span>
                       </div>
                       <div className="flex justify-between items-center mb-6">
-                        <span className="text-slate-300">Seat Type:</span>
+                        <span className="text-slate-300">Cabin:</span>
                         <span className="text-blue-400 text-sm">Window ?" Included</span>
                       </div>
                       <button
@@ -1056,7 +1056,7 @@ export default function Explore() {
                         onClick={() => handleConfirmBooking("12A")}
                         className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]"
                       >
-                        Confirm Booking
+                        Confirm Itinerary
                       </button>
                     </div>
                   </div>

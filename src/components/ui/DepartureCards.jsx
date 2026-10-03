@@ -155,7 +155,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
             onClick={() => { sound.playSeatSelect(); onSelect(flight); }}
             className="btn-aurora flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-[13px] cursor-pointer"
           >
-            Select Seat <ExternalLink size={12} />
+            Select Fare <ExternalLink size={12} />
           </motion.button>
         </div>
       </div>

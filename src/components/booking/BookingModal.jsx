@@ -7,7 +7,7 @@ import { useStore } from "../../store/useStore";
 
 import { AIRPORTS, getAirportByIata } from "../../data/airports";
 
-const SEAT_OPTIONS = ["12A (Window)", "12B (Middle)", "12C (Aisle)", "14A (Window)", "14F (Window)", "18C (Aisle)", "22D (Extra Legroom)"];
+const SEAT_OPTIONS = ["Any (Auto-assign)", "Window Preference", "Aisle Preference", "Extra Legroom (Paid)"];
 
 export default function BookingModal({ offer, onClose }) {
   const [firstName, setFirstName] = useState("");
@@ -90,10 +90,10 @@ export default function BookingModal({ offer, onClose }) {
         totalPrice: priceVal,
         currency: currencyCode,
         currencySymbol: symbol,
-        seat: selectedSeat.split(" ")[0] || "3A",
+        seat: "Auto-Assigned",
         gate: `${String.fromCharCode(65 + Math.floor(Math.random() * 4))}${Math.floor(1 + Math.random() * 24)}`,
         terminal: firstSeg?.departure?.terminal || `T${Math.floor(1 + Math.random() * 3)}`,
-        group: selectedSeat.startsWith("1") || selectedSeat.startsWith("2") ? "A (Priority)" : "B",
+        group: selectedSeat.includes("Paid") ? "A (Priority)" : "B",
         bookingRef: res.bookingReference,
         date: firstSeg?.departure?.at ? firstSeg.departure.at.slice(0, 10) : new Date().toISOString().split("T")[0],
       };
@@ -194,7 +194,7 @@ export default function BookingModal({ offer, onClose }) {
                   <span className="font-bold text-blue-300 text-sm">{firstSeg?.number}</span>
                 </div>
                 <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
-                  <span className="text-xs text-slate-400 block uppercase">Seat Number</span>
+                  <span className="text-xs text-slate-400 block uppercase">Cabin/Seat</span>
                   <span className="font-bold text-emerald-400 text-sm">{selectedSeat.split(" ")[0]}</span>
                 </div>
                 <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
@@ -305,7 +305,7 @@ export default function BookingModal({ offer, onClose }) {
                 </div>
 
                 <div>
-                  <label className="text-[13px] font-semibold text-slate-300 mb-1 block">Seat Assignment</label>
+                  <label className="text-[13px] font-semibold text-slate-300 mb-1 block">Seating Preference</label>
                   <select
                     value={selectedSeat}
                     onChange={(e) => setSelectedSeat(e.target.value)}

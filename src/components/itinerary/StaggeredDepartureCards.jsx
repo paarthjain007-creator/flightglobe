@@ -587,7 +587,7 @@ export default function FlightStreamMatrix({
                       onClick={(e) => { e.stopPropagation(); sound.playSeatSelect(); onSelectFlight(flight); }}
                       className="btn-aurora flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold"
                     >
-                      <span>SELECT SEAT</span>
+                      <span>SELECT FARE</span>
                       <ArrowRight size={11} />
                     </button>
 
