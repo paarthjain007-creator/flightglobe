@@ -140,7 +140,7 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
   return (
     <div ref={containerRef} className="relative w-full">
       {label && (
-        <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider text-slate-300">
+        <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider text-slate-100">
           {label}
         </label>
       )}
@@ -154,7 +154,7 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
         ) : (
           <Search
             size={15}
-            className="absolute left-3.5 pointer-events-none text-[#86868b]"
+            className="absolute left-3.5 pointer-events-none text-slate-100"
           />
         )}
         <input
@@ -167,14 +167,14 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
           onBlur={handleBlur}
           placeholder={placeholder}
           autoComplete="off"
-          className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-black/40 border border-white/10 hover:border-white/20 text-white placeholder-[#86868b] focus:outline-none focus:border-[#2997ff] focus:ring-1 focus:ring-blue-400/20 text-sm font-semibold transition-all"
+          className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-black/80 border border-white/10 hover:border-white/20 text-white placeholder-[#86868b] focus:outline-none focus:border-[#2997ff] focus:ring-1 focus:ring-blue-400/20 text-sm font-semibold transition-all"
           style={{ fontSize: "15px" }}
         />
         {(query || value) && (
           <button
             onClick={handleClear}
             aria-label="Clear airport selection"
-            className="absolute right-3 p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-[#86868b] hover:text-white"
+            className="absolute right-3 p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-slate-100 hover:text-white"
           >
             <X size={14} />
           </button>
@@ -202,11 +202,11 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
                 <div className="text-sm font-bold truncate text-white">
                   {airport.city}, {airport.country}
                 </div>
-                <div className="text-xs truncate text-[#86868b] mt-0.5">
+                <div className="text-xs truncate text-slate-100 mt-0.5">
                   {airport.name}
                 </div>
               </div>
-              <MapPin size={13} className="flex-shrink-0 text-[#86868b]" />
+              <MapPin size={13} className="flex-shrink-0 text-slate-100" />
             </button>
           ))}
         </div>
@@ -224,7 +224,7 @@ export default function AirportSearch({ label, value, onChange, onClear, placeho
               setOpen(true);
             }
           }}
-          className="mt-1.5 flex items-center gap-2 px-1 text-xs text-slate-300 font-medium cursor-text hover:text-white transition-colors text-left w-full outline-none"
+          className="mt-1.5 flex items-center gap-2 px-1 text-xs text-slate-100 font-medium cursor-text hover:text-white transition-colors text-left w-full outline-none"
         >
           <div
             className="w-2 h-2 rounded-full flex-shrink-0 bg-[#30d158] shadow-[0_0_6px_rgba(48,209,88,0.4)]"

@@ -20,8 +20,12 @@ export default function BookingCard({ offer, departureDate, adults }) {
   const firstSeg = segments[0];
   const lastSeg = segments[segments.length - 1];
 
-  const durationHours = Math.floor(itinerary.durationMinutes / 60);
-  const durationMins = itinerary.durationMinutes % 60;
+  let durMins = itinerary.durationMinutes;
+  if (!durMins || isNaN(durMins)) {
+    durMins = Math.round((new Date(lastSeg?.arrival?.at).getTime() - new Date(firstSeg?.departure?.at).getTime()) / 60000) || 120;
+  }
+  const durationHours = Math.floor(durMins / 60);
+  const durationMins = durMins % 60;
   const isDirect = segments.length === 1;
 
   const depDate = firstSeg?.departure?.at ? new Date(firstSeg.departure.at) : new Date();
@@ -179,7 +183,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
         <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs flex-wrap gap-2">
           <div className="flex items-center gap-4 text-xs font-medium text-[#a1a1aa] flex-wrap">
             <span className="flex items-center gap-1">
-              <Luggage size={12} className="text-slate-400" />
+              <Luggage size={12} className="text-slate-200" />
               <span>{offer.baggageAllowance || "1x 23kg included"}</span>
             </span>
             <span>·</span>
@@ -191,7 +195,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
           <button
             type="button"
             onClick={() => setDetailsOpen(!detailsOpen)}
-            className="text-xs font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-1 cursor-pointer ml-auto"
+            className="text-xs font-medium text-slate-200 hover:text-white transition-colors flex items-center gap-1 cursor-pointer ml-auto"
           >
             <span>{detailsOpen ? "Hide details" : "Flight details"}</span>
             {detailsOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
@@ -203,7 +207,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
           <div className="p-4 rounded-xl bg-slate-950/60 border border-white/5 text-xs space-y-4 animate-slide-up">
             {/* Segments list */}
             <div className="space-y-3">
-              <div className="text-xs font-semibold text-slate-300">Flight Route</div>
+              <div className="text-xs font-semibold text-slate-100">Flight Route</div>
               {segments.map((seg, idx) => {
                 const segDepAirport = getAirportByIata(seg.departure?.iataCode);
                 const segArrAirport = getAirportByIata(seg.arrival?.iataCode);
@@ -214,29 +218,31 @@ export default function BookingCard({ offer, departureDate, adults }) {
                   <div key={seg.id || idx} className="p-3 rounded-lg bg-white/[0.03] border border-white/5 space-y-2">
                     <div className="flex items-center justify-between text-xs font-medium text-white flex-wrap gap-2">
                       <span className="flex items-center gap-2">
-                        <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-slate-300">Leg {idx + 1}</span>
+                        <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-slate-100">Leg {idx + 1}</span>
                         <span>{segDepAirport?.city || seg.departure?.iataCode} ({seg.departure?.iataCode}) → {segArrAirport?.city || seg.arrival?.iataCode} ({seg.arrival?.iataCode})</span>
                       </span>
-                      <span className="text-slate-400 text-[11px]">
+                      <span className="text-slate-200 text-[11px]">
                         {seg.number} · {seg.aircraft || "Modern Jet"}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-400 pt-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-200 pt-1">
                       <div>
-                        <span className="text-slate-500 block text-[10px]">Depart</span>
+                        <span className="text-slate-300 block text-[10px]">Depart</span>
                         <span className="text-slate-200 font-medium">{formatTime(segDep)} · {seg.departure?.terminal ? `Term ${seg.departure.terminal}` : "T1"}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block text-[10px]">Arrive</span>
+                        <span className="text-slate-300 block text-[10px]">Arrive</span>
                         <span className="text-slate-200 font-medium">{formatTime(segArr)} · {seg.arrival?.terminal ? `Term ${seg.arrival.terminal}` : "T2"}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block text-[10px]">Duration</span>
-                        <span className="text-slate-200 font-medium">{Math.floor((seg.durationMinutes || 0) / 60)}h {(seg.durationMinutes || 0) % 60}m</span>
+                        <span className="text-slate-300 block text-[10px]">Duration</span>
+                        <span className="text-slate-200 font-medium">
+                          {Math.floor((seg.durationMinutes || Math.round((new Date(seg.arrival?.at).getTime() - new Date(seg.departure?.at).getTime()) / 60000) || 120) / 60)}h {(seg.durationMinutes || Math.round((new Date(seg.arrival?.at).getTime() - new Date(seg.departure?.at).getTime()) / 60000) || 120) % 60}m
+                        </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block text-[10px]">Carrier</span>
+                        <span className="text-slate-300 block text-[10px]">Carrier</span>
                         <span className="text-slate-200 font-medium">{seg.airlineName || airlineName}</span>
                       </div>
                     </div>
@@ -256,24 +262,24 @@ export default function BookingCard({ offer, departureDate, adults }) {
             {/* Price & Baggage Breakdown */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 border-t border-white/5">
               <div className="p-2.5 rounded-lg bg-white/[0.02]">
-                <div className="text-slate-400 text-[10px]">Base Fare</div>
+                <div className="text-slate-200 text-[10px]">Base Fare</div>
                 <div className="text-white font-semibold mt-0.5">{formattedBase}</div>
               </div>
               <div className="p-2.5 rounded-lg bg-white/[0.02]">
-                <div className="text-slate-400 text-[10px]">Taxes & Fees</div>
+                <div className="text-slate-200 text-[10px]">Taxes & Fees</div>
                 <div className="text-white font-semibold mt-0.5">{formattedFees}</div>
               </div>
               <div className="p-2.5 rounded-lg bg-white/[0.02]">
-                <div className="text-slate-400 text-[10px]">Baggage Allowance</div>
+                <div className="text-slate-200 text-[10px]">Baggage Allowance</div>
                 <div className="text-emerald-400 font-semibold mt-0.5">{offer.baggageAllowance || "1x 23kg included"}</div>
               </div>
             </div>
 
             {/* Included amenities */}
-            <div className="flex items-center gap-4 text-[11px] text-slate-400 pt-1">
+            <div className="flex items-center gap-4 text-[11px] text-slate-200 pt-1">
               <span className="flex items-center gap-1 text-emerald-400"><Check size={12} /> Standard Seat</span>
               <span className="flex items-center gap-1 text-blue-300"><Check size={12} /> Wi-Fi Onboard</span>
-              <span className="flex items-center gap-1 text-slate-300"><Check size={12} /> E-Boarding Pass</span>
+              <span className="flex items-center gap-1 text-slate-100"><Check size={12} /> E-Boarding Pass</span>
             </div>
           </div>
         )}

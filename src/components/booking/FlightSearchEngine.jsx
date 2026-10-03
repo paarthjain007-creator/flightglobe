@@ -233,15 +233,15 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
         
         {/* Top utility row: Trip Type & Currency Switcher */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10 flex-wrap gap-2 text-xs">
-          <div className="flex items-center gap-2 text-slate-300 font-medium">
-            <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white">One-way</span>
-            <span className="text-slate-500">·</span>
-            <span className="text-slate-400">Direct bookings & live GDS inventory</span>
+          <div className="flex items-center gap-2 text-slate-100 font-medium">
+            <span className="px-2.5 py-1 rounded-lg bg-white/10 border border-white/10 text-white">One-way</span>
+            <span className="text-slate-300">·</span>
+            <span className="text-slate-200">Direct bookings & live GDS inventory</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-slate-400 text-xs hidden sm:inline">Currency:</span>
-            <div className="flex items-center gap-1 p-0.5 rounded-xl bg-white/5 border border-white/10">
+            <span className="text-slate-200 text-xs hidden sm:inline">Currency:</span>
+            <div className="flex items-center gap-1 p-0.5 rounded-xl bg-white/10 border border-white/10">
               {Object.entries(CURRENCY_MAP).map(([code, conf]) => (
                 <button
                   key={code}
@@ -251,7 +251,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                   className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1 ${
                     currency === code
                       ? "bg-blue-500/20 text-blue-300 border border-blue-400/40 shadow-sm"
-                      : "text-slate-400 hover:text-white"
+                      : "text-slate-200 hover:text-white"
                   }`}
                 >
                   <span className="text-[11px]">{conf.flag}</span>
@@ -268,7 +268,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
             {/* Origin Airport */}
             <div className="md:col-span-5 relative z-30">
-              <label className="text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
+              <label className="text-xs font-medium text-slate-100 mb-1.5 flex items-center gap-1.5">
                 <Plane size={13} className="text-blue-400" />
                 <span>Departure City or Airport</span>
               </label>
@@ -287,7 +287,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                 onClick={handleSwapAirports}
                 title="Swap Origin and Destination"
                 aria-label="Swap Origin and Destination"
-                className="w-10 h-10 rounded-full bg-slate-900 border border-white/15 text-slate-300 hover:text-blue-300 hover:border-blue-400/50 hover:bg-white/5 flex items-center justify-center transition-all cursor-pointer active:scale-90 active:rotate-180 shadow-md"
+                className="w-10 h-10 rounded-full bg-slate-900 border border-white/15 text-slate-100 hover:text-blue-300 hover:border-blue-400/50 hover:bg-white/10 flex items-center justify-center transition-all cursor-pointer active:scale-90 active:rotate-180 shadow-md"
               >
                 <ArrowRightLeft size={14} />
               </button>
@@ -295,7 +295,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
             {/* Destination Airport */}
             <div className="md:col-span-5 relative z-20">
-              <label className="text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
+              <label className="text-xs font-medium text-slate-100 mb-1.5 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Plane size={13} className="text-emerald-400 rotate-90" />
                   <span>Destination City or Airport</span>
@@ -323,7 +323,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             
             {/* Departure Date */}
             <div className="md:col-span-4">
-              <label className="text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
+              <label className="text-xs font-medium text-slate-100 mb-1.5 flex items-center gap-1.5">
                 <Calendar size={13} className="text-blue-400" />
                 <span>Departure Date</span>
               </label>
@@ -339,7 +339,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
             {/* Cabin Class */}
             <div className="md:col-span-3">
-              <label className="text-xs font-medium text-slate-300 mb-1.5 block">Cabin Class</label>
+              <label className="text-xs font-medium text-slate-100 mb-1.5 block">Cabin Class</label>
               <select
                 value={travelClass}
                 onChange={(e) => setTravelClass(e.target.value)}
@@ -355,7 +355,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
             {/* Passengers */}
             <div className="md:col-span-2">
-              <label className="text-xs font-medium text-slate-300 mb-1.5 block">Travelers</label>
+              <label className="text-xs font-medium text-slate-100 mb-1.5 block">Travelers</label>
               <select
                 value={adults}
                 onChange={(e) => setAdults(Number(e.target.value))}
@@ -406,7 +406,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
           <div className="h-4 w-px bg-white/10 hidden sm:block" />
 
           {/* Sort Buttons */}
-          <div className="flex items-center gap-1 p-0.5 rounded-xl bg-white/5 border border-white/10 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 p-0.5 rounded-xl bg-white/10 border border-white/10 overflow-x-auto no-scrollbar">
             {SORT_OPTIONS.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -415,7 +415,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                   quickFilter === id
                     ? "bg-blue-500/20 text-blue-300 border border-blue-400/40 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    : "text-slate-200 hover:text-white hover:bg-white/10 border border-transparent"
                 }`}
               >
                 <Icon size={12} />
@@ -425,7 +425,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
           </div>
 
           {/* Direct flights checkbox */}
-          <label className="hidden lg:flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer hover:text-white transition-colors ml-1">
+          <label className="hidden lg:flex items-center gap-1.5 text-xs text-slate-100 cursor-pointer hover:text-white transition-colors ml-1">
             <input
               type="checkbox"
               checked={nonStopOnly}
@@ -444,7 +444,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 border ${
               showCalendarMatrix
                 ? "bg-blue-500/20 text-blue-300 border-blue-400/50 shadow-sm"
-                : "bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:text-white"
+                : "bg-white/10 text-slate-100 border-white/10 hover:border-white/20 hover:text-white"
             }`}
           >
             <TrendingDown size={13} className={showCalendarMatrix ? "text-blue-300" : "text-emerald-400"} />
@@ -458,7 +458,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 border ${
               showAdvancedFilters || maxDurationFilter !== "ALL" || baggageOnly
                 ? "bg-blue-500/20 text-blue-300 border-blue-400/50 shadow-sm"
-                : "bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:text-white"
+                : "bg-white/10 text-slate-100 border-white/10 hover:border-white/20 hover:text-white"
             }`}
           >
             <SlidersHorizontal size={13} className="text-blue-400" />
@@ -473,7 +473,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 border ${
                 showAirlineFilter || selectedAirlineFilter !== "ALL"
                   ? "bg-blue-500/20 text-blue-300 border-blue-400/50 shadow-sm"
-                  : "bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:text-white"
+                  : "bg-white/10 text-slate-100 border-white/10 hover:border-white/20 hover:text-white"
               }`}
             >
               <Filter size={13} className="text-blue-400" />
@@ -487,7 +487,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
       {/* ── Collapsible 7-Day Fare Matrix Drawer ─────────────────── */}
       {showCalendarMatrix && (
         <div className="p-4 border border-white/10 bg-slate-900/90 space-y-3">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-300 flex-wrap gap-2">
+          <div className="flex items-center justify-between text-xs font-semibold text-slate-100 flex-wrap gap-2">
             <div className="flex items-center gap-1.5">
               <TrendingDown size={14} className="text-emerald-400" />
               <span>7-Day Fare Trends ({origin?.iata || "DEL"} → {destination?.iata || "BOM"})</span>
@@ -498,7 +498,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
           {matrixLoading ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
               {Array.from({ length: 7 }).map((_, idx) => (
-                <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/10 text-center animate-pulse space-y-1.5">
+                <div key={idx} className="p-3 rounded-xl bg-white/10 border border-white/10 text-center animate-pulse space-y-1.5">
                   <div className="h-2.5 bg-slate-700/60 rounded w-12 mx-auto" />
                   <div className="h-4 bg-blue-500/20 rounded w-16 mx-auto" />
                 </div>
@@ -520,10 +520,10 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                       ? "bg-blue-500/20 border-blue-400 text-cyan-200 shadow-md"
                       : item.isCheapest
                       ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:border-emerald-400/60"
-                      : "bg-white/5 border-white/10 text-slate-300 hover:border-white/20"
+                      : "bg-white/10 border-white/10 text-slate-100 hover:border-white/20"
                   }`}
                 >
-                  <div className="text-[11px] text-slate-400">{item.dayName} {item.dayNumber}</div>
+                  <div className="text-[11px] text-slate-200">{item.dayName} {item.dayNumber}</div>
                   <div className="text-xs font-bold mt-1 truncate">
                     {item.symbol}{item.price.toLocaleString()}
                   </div>
@@ -539,13 +539,13 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
    {/* 🚀 Collapsible Advanced Filters Drawer ─────────── */}
       {showAdvancedFilters && (
-        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-4">
-          <h4 className="text-xs font-semibold text-slate-300 mb-2">Advanced Filtering</h4>
+        <div className="p-4 rounded-xl bg-white/10 border border-white/10 space-y-4">
+          <h4 className="text-xs font-semibold text-slate-100 mb-2">Advanced Filtering</h4>
           
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Max Layover / Flight Duration */}
             <div className="space-y-2">
-              <label className="text-[11px] text-slate-400 font-medium">Max Total Duration</label>
+              <label className="text-[11px] text-slate-200 font-medium">Max Total Duration</label>
               <div className="flex items-center gap-2 flex-wrap">
                 {[
                   { label: "Any", val: "ALL" },
@@ -560,7 +560,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                     className={`px-3 py-1 rounded-lg text-xs transition-all cursor-pointer border ${
                       maxDurationFilter === opt.val
                         ? "bg-blue-500/20 text-blue-300 border-blue-400/40"
-                        : "bg-white/5 text-slate-400 hover:text-white border-transparent"
+                        : "bg-white/10 text-slate-200 hover:text-white border-transparent"
                     }`}
                   >
                     {opt.label}
@@ -571,8 +571,8 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
             {/* Baggage Toggle */}
             <div className="space-y-2">
-              <label className="text-[11px] text-slate-400 font-medium">Baggage Allowance</label>
-              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer hover:text-white transition-colors h-6">
+              <label className="text-[11px] text-slate-200 font-medium">Baggage Allowance</label>
+              <label className="flex items-center gap-2 text-xs text-slate-100 cursor-pointer hover:text-white transition-colors h-6">
                 <input
                   type="checkbox"
                   checked={baggageOnly}
@@ -588,8 +588,8 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
          {/* ── Collapsible Airline Fleet Filter Drawer ──────────────── */}
       {showAirlineFilter && availableAirlines.length > 0 && (
-        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/10 overflow-x-auto no-scrollbar">
-          <span className="text-xs font-medium text-slate-400 flex-shrink-0">
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 border border-white/10 overflow-x-auto no-scrollbar">
+          <span className="text-xs font-medium text-slate-200 flex-shrink-0">
             Filter:
           </span>
           <button
@@ -598,7 +598,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex-shrink-0 border ${
               selectedAirlineFilter === "ALL"
                 ? "bg-blue-500/20 text-blue-300 border-blue-400/40"
-                : "bg-white/5 text-slate-400 hover:text-white border-transparent"
+                : "bg-white/10 text-slate-200 hover:text-white border-transparent"
             }`}
           >
             All Airlines ({offers.length})
@@ -611,12 +611,12 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 flex-shrink-0 border ${
                 selectedAirlineFilter === airline.code
                   ? "bg-blue-500/20 text-blue-300 border-blue-400/40"
-                  : "bg-white/5 text-slate-400 hover:text-white border-transparent"
+                  : "bg-white/10 text-slate-200 hover:text-white border-transparent"
               }`}
             >
               <span>{airline.logo}</span>
               <span>{airline.name}</span>
-              <span className="text-[10px] text-slate-500">({airline.count})</span>
+              <span className="text-[10px] text-slate-300">({airline.count})</span>
             </button>
           ))}
         </div>
@@ -630,7 +630,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
           <div className="p-12 text-center space-y-3 border border-white/10">
             <div className="text-4xl" role="img" aria-label="Airplane">✈️</div>
             <h3 className="text-base font-semibold text-white">No Flights Found</h3>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            <p className="text-xs text-slate-200 max-w-sm mx-auto">
               No flight options matched your current filter criteria. Try selecting "All Airlines" or changing your dates.
             </p>
           </div>

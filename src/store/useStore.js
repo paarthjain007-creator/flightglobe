@@ -15,6 +15,7 @@ export const useStore = create(
       currency: "USD",
 
       // UI Themes & Preferences
+      isLiteMode: typeof window !== "undefined" ? window.innerWidth < 768 : false,
       theme: "space",
       soundEnabled: true,
       soundVolume: 1.0,          // 0 | 0.5 | 1.0 — three level volume
@@ -93,6 +94,7 @@ export const useStore = create(
       setTravelers: (travelers) => set({ travelers }),
       setCurrency: (currency) => set({ currency }),
       setTheme: (theme) => set({ theme }),
+      setIsLiteMode: (isLiteMode) => set({ isLiteMode }),
       setSoundEnabled: (soundEnabled) => set({ soundEnabled }),
       setSoundVolume: (soundVolume) => set({ soundVolume }),
       setTrafficDensity: (trafficDensity) => set({ trafficDensity }),
@@ -146,6 +148,7 @@ export const useStore = create(
         travelClass: state.travelClass,
         currency: state.currency,
         theme: state.theme,
+        isLiteMode: state.isLiteMode,
         soundEnabled: state.soundEnabled,
         stamps: state.stamps,
         trips: state.trips,

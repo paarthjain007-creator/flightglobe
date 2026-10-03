@@ -493,7 +493,8 @@ async function generateFallbackFlightOffers({ originIata, destinationIata, depar
       });
     }
 
-    const totalDuration = segments.reduce((sum, s) => sum + s.durationMinutes, 0) + (!isDirect ? Math.round((segments[1].departure.at - segments[0].arrival.at) / 60000) : 0);
+    const layoverMinutes = !isDirect ? Math.round((new Date(segments[1].departure.at).getTime() - new Date(segments[0].arrival.at).getTime()) / 60000) : 0;
+    const totalDuration = segments.reduce((sum, s) => sum + (s.durationMinutes || 0), 0) + (isNaN(layoverMinutes) ? 0 : layoverMinutes);
 
     return {
       id: `offer-${airline.code}-${idx}-${Math.random().toString(36).substring(2, 7)}`,

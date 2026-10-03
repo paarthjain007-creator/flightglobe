@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Globe2, Radio, Compass, LayoutDashboard, Sparkles, Ticket, Plane,
-  Volume2, VolumeX, User, Settings, ChevronDown, Menu, X, Search
+  Volume2, VolumeX, User, Settings, ChevronDown, Menu, X, Search, BatteryCharging, Battery
 } from "lucide-react";
 import ThemeSelector from "./ui/ThemeSelector";
 import VolumeControl from "./ui/VolumeControl";
@@ -215,6 +215,24 @@ export default function NavBar({ onOpenCommandPalette }) {
 
           {/* Theme */}
           <ThemeSelector activeTheme={theme} onThemeChange={handleThemeChange} />
+
+          {/* Lite Mode Toggle */}
+          <button
+            type="button"
+            onClick={() => {
+              sound.playClick();
+              setIsLiteMode(!isLiteMode);
+            }}
+            title={isLiteMode ? "Lite Mode Active (Fast 2D)" : "Immersive Mode Active (WebGL 3D)"}
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border ${
+              isLiteMode
+                ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-[0_0_10px_rgba(52,211,153,0.2)]"
+                : "bg-white/5 text-slate-400 hover:text-white border-white/10 hover:border-white/20"
+            }`}
+          >
+            {isLiteMode ? <BatteryCharging size={13} /> : <Battery size={13} />}
+            <span>{isLiteMode ? "Lite" : "3D"}</span>
+          </button>
 
           {/* Profile beacon */}
           <button

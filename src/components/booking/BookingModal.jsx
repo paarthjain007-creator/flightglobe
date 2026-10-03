@@ -52,8 +52,9 @@ export default function BookingModal({ offer, onClose }) {
       const depAirport = getAirportByIata(depIata);
       const arrAirport = getAirportByIata(arrIata);
 
-      const durationStr = itinerary?.durationMinutes
-        ? `${Math.floor(itinerary.durationMinutes / 60)}h ${itinerary.durationMinutes % 60}m`
+      const durMins = itinerary?.durationMinutes || Math.round((new Date(lastSeg?.arrival?.at).getTime() - new Date(firstSeg?.departure?.at).getTime()) / 60000);
+      const durationStr = (durMins && !isNaN(durMins))
+        ? `${Math.floor(durMins / 60)}h ${durMins % 60}m`
         : itinerary?.duration?.replace("PT", "").toLowerCase() || "7h 15m";
 
       const depTime = firstSeg?.departure?.at ? firstSeg.departure.at.slice(11, 16) : "08:30";

@@ -762,15 +762,25 @@ export default function Explore() {
 
       {/* ── 1. FULL-BLEED 3D GLOBE — centered, vignette-masked ─────────── */}
       <div className="absolute inset-0 globe-vignette" style={{ touchAction: "pan-y" }}>
-        <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs tracking-widest font-mono">LOADING 3D GLOBE ENGINE...</div>}><Interactive3DGlobeTracker
-          origin={origin}
-          destination={destination}
-          activeFlight={selectedFlight}
-          fullBleed={true}
-          isCockpitView={isCockpitView}
-          showWindVectors={showWindVectors}
-          onPlanePosChange={handlePlanePosChange}
-        /></React.Suspense>
+        {isLiteMode ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 overflow-hidden">
+            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: "url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')", backgroundSize: 'cover', backgroundPosition: 'center', filter: 'invert(1)' }}></div>
+            <div className="z-10 p-6 rounded-3xl bg-slate-800/80 backdrop-blur-md border border-white/10 text-center max-w-sm">
+              <Globe2 size={48} className="mx-auto mb-4 text-emerald-400 opacity-80" />
+              <h3 className="text-lg font-bold text-white mb-2">Lite Mode Active</h3>
+              <p className="text-sm text-slate-300">
+                3D WebGL rendering is paused to save battery and data. Use the toggle in the navigation bar to re-enable Immersive 3D mode.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs tracking-widest font-mono">LOADING 3D GLOBE ENGINE...</div>}><Interactive3DGlobeTracker
+            origin={origin}
+            destination={destination}
+            activeFlight={selectedFlight}
+            isDispatchMode={isDispatchMode}
+          /></React.Suspense>
+        )}
       </div>
 
       {/* ── Deep-space ambient gradient underlays ──────────────────────── */}
@@ -1026,11 +1036,42 @@ export default function Explore() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
-                <KineticSeatCanvas
-                  selectedFlight={selectedFlight}
-                  onConfirmBooking={handleConfirmBooking}
-                  currency={currency}
-                />
+                {isLiteMode ? (
+                  <div className="flex flex-col items-center justify-center h-full space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-500/10 text-blue-400 mb-2">
+                        <Box size={24} />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">Select Your Seat</h3>
+                      <p className="text-sm text-slate-400">Lite Mode: Automatic Seat Assignment</p>
+                    </div>
+                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 w-full max-w-sm">
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="text-slate-300">Selected Seat:</span>
+                        <span className="font-mono text-white font-bold text-lg">12A</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-6">
+                        <span className="text-slate-300">Seat Type:</span>
+                        <span className="text-blue-400 text-sm">Window ?" Included</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleConfirmBooking("12A")}
+                        className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]"
+                      >
+                        Confirm Booking
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <React.Suspense fallback={<div className="text-center text-slate-400 mt-20">Loading 3D Cabin...</div>}>
+                    <KineticSeatCanvas
+                      selectedFlight={selectedFlight}
+                      onConfirmBooking={handleConfirmBooking}
+                      currency={currency}
+                    />
+                  </React.Suspense>
+                )}
               </div>
             </motion.div>
           </div>
@@ -1049,7 +1090,7 @@ export default function Explore() {
       </AnimatePresence>
 
       {/* ── 7. FIRST-PERSON COCKPIT HUD OVERLAY ─────────────────────────── */}
-      {isCockpitView && (
+      {isCockpitView && !isLiteMode && (
         <React.Suspense fallback={null}><CockpitHUD
           origin={origin}
           destination={destination}
