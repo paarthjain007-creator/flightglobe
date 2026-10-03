@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useStore } from "../../store/useStore";
 import {
-  Palette, Moon, Zap, Sun, Cpu, Radio, Sparkles, ChevronDown, Check,
+  Palette, Moon, Zap, Sun, Cpu, Radio, Sparkles, ChevronDown, Check, Lock,
 } from "lucide-react";
 
 const THEMES = [
@@ -11,46 +12,7 @@ const THEMES = [
     icon: Moon,
     dot: "#60a5fa",
     gradient: "from-blue-950 to-slate-950",
-  },
-  {
-    id: "holodeck",
-    label: "Holo-Deck",
-    description: "Neon cyan holographic",
-    icon: Cpu,
-    dot: "#00f0ff",
-    gradient: "from-cyan-950 to-teal-950",
-  },
-  {
-    id: "synthwave",
-    label: "Synthwave",
-    description: "Retro pink & magenta",
-    icon: Radio,
-    dot: "#ff2a85",
-    gradient: "from-pink-950 to-purple-950",
-  },
-  {
-    id: "atmosphera",
-    label: "Atmosphera",
-    description: "Arctic sky blue tones",
-    icon: Sparkles,
-    dot: "#a5f3fc",
-    gradient: "from-sky-950 to-cyan-950",
-  },
-  {
-    id: "cyberpunk",
-    label: "Cyberpunk",
-    description: "Purple neon city glow",
-    icon: Zap,
-    dot: "#c084fc",
-    gradient: "from-purple-950 to-violet-950",
-  },
-  {
-    id: "sunset",
-    label: "Sunset",
-    description: "Warm amber & orange",
-    icon: Sun,
-    dot: "#fb923c",
-    gradient: "from-orange-950 to-amber-950",
+    requiredStamps: 0,
   },
   {
     id: "daylight",
@@ -59,6 +21,52 @@ const THEMES = [
     icon: Sun,
     dot: "#2563eb",
     gradient: "from-sky-100 to-blue-200",
+    requiredStamps: 0,
+  },
+  {
+    id: "atmosphera",
+    label: "Atmosphera",
+    description: "Arctic sky blue tones",
+    icon: Sparkles,
+    dot: "#a5f3fc",
+    gradient: "from-sky-950 to-cyan-950",
+    requiredStamps: 0,
+  },
+  {
+    id: "sunset",
+    label: "Sunset",
+    description: "Warm amber & orange",
+    icon: Sun,
+    dot: "#fb923c",
+    gradient: "from-orange-950 to-amber-950",
+    requiredStamps: 2,
+  },
+  {
+    id: "synthwave",
+    label: "Synthwave",
+    description: "Retro pink & magenta",
+    icon: Radio,
+    dot: "#ff2a85",
+    gradient: "from-pink-950 to-purple-950",
+    requiredStamps: 4,
+  },
+  {
+    id: "holodeck",
+    label: "Holo-Deck",
+    description: "Neon cyan holographic",
+    icon: Cpu,
+    dot: "#00f0ff",
+    gradient: "from-cyan-950 to-teal-950",
+    requiredStamps: 6,
+  },
+  {
+    id: "cyberpunk",
+    label: "Cyberpunk",
+    description: "Purple neon city glow",
+    icon: Zap,
+    dot: "#c084fc",
+    gradient: "from-purple-950 to-violet-950",
+    requiredStamps: 8,
   },
 ];
 
@@ -66,6 +74,8 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const stamps = useStore((s) => s.stamps);
+  const stampCount = stamps.length;
   const activeThemeData = THEMES.find((t) => t.id === activeTheme) || THEMES[0];
   const ActiveIcon = activeThemeData.icon;
 
@@ -134,30 +144,34 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
             {THEMES.map((t) => {
               const Icon = t.icon;
               const isActive = activeTheme === t.id;
+              const isLocked = stampCount < (t.requiredStamps || 0);
+              
               return (
                 <button
                   key={t.id}
                   id={`theme-btn-${t.id}`}
                   onClick={() => {
+                    if (isLocked) return;
                     onThemeChange(t.id);
                     setOpen(false);
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all cursor-pointer group"
+                  disabled={isLocked}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all group ${isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
                   style={{
                     background: isActive ? "rgba(41, 151, 255, 0.12)" : "transparent",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                    if (!isActive && !isLocked) e.currentTarget.style.background = "rgba(255,255,255,0.05)";
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive) e.currentTarget.style.background = "transparent";
+                    if (!isActive && !isLocked) e.currentTarget.style.background = "transparent";
                   }}
                 >
                   {/* Color Swatch */}
                   <span
                     className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm"
                     style={{
-                      background: t.dot,
+                      background: isLocked ? "#555" : t.dot,
                       boxShadow: isActive ? `0 0 6px ${t.dot}` : "none",
                     }}
                   />
@@ -166,13 +180,14 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
                   {/* Labels */}
                   <div className="flex-1 min-w-0">
                     <div
-                      className="text-xs font-bold leading-tight"
+                      className="text-xs font-bold leading-tight flex items-center gap-1.5"
                       style={{ color: isActive ? "#2997ff" : "#F8FAFC" }}
                     >
                       {t.label}
+                      {isLocked && <Lock size={10} className="text-rose-400" />}
                     </div>
                     <div className="text-[10px] leading-tight text-[#86868b]">
-                      {t.description}
+                      {isLocked ? `Unlock at ${t.requiredStamps} Passport Stamps` : t.description}
                     </div>
                   </div>
                   {/* Active Check */}

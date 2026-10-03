@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Globe2, Trash2, Plane, MapPin, Ticket, QrCode, ArrowRight,
   ShieldCheck, Sparkles, Plus, Clock, Luggage, Wifi, Award,
-  CheckCircle2, Navigation, Compass, Share2
+  CheckCircle2, Navigation, Compass, Share2, Heart
 } from "lucide-react";
 import { useStore } from "../store/useStore";
 import { readStampsFromLocalStorage } from "../hooks/usePassportStamps";
@@ -481,6 +481,8 @@ export default function Passport() {
   
   const removeTrip  = useStore((s) => s.removeTrip);
   const setStoreWps = useStore((s) => s.setWaypoints);
+    const savedFlights = useStore((s) => s.savedFlights);
+    const toggleSavedFlight = useStore((s) => s.toggleSavedFlight);
 
   const [activeTab, setActiveTab] = useState("passes"); // "passes" | "stamps"
 
@@ -565,7 +567,34 @@ export default function Passport() {
           </p>
         </div>
 
-        {/* View Switcher Segmented Control */}
+        {/* 🚀 Elite Status Gamification Panel */}
+      <div className="p-4 sm:p-5 rounded-3xl mb-8 relative overflow-hidden group" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="absolute -right-8 -top-8 text-indigo-500/5 group-hover:text-indigo-500/10 transition-colors pointer-events-none">
+          <Award size={140} />
+        </div>
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-[13px] font-bold text-white flex items-center gap-1.5"><Award size={15} className="text-[#bf5af2]" /> Frequent Flyer Status</h3>
+            <p className="text-[11px] text-[#94A3B8] mt-1.5 max-w-sm leading-relaxed">You have collected <span className="font-bold text-white">{uniqueStamps.length}</span> digital stamps. Book flights to earn stamps and unlock exclusive UI themes (like <span className="text-[#c084fc]">Cyberpunk</span> and <span className="text-[#ff2a85]">Synthwave</span>).</p>
+          </div>
+          <div className="flex-1 max-w-sm w-full bg-black/40 p-3 rounded-2xl border border-white/5">
+            <div className="flex justify-between text-[10px] text-[#bf5af2] font-bold mb-2 uppercase tracking-wider">
+              <span>{uniqueStamps.length < 2 ? "Novice" : uniqueStamps.length < 8 ? "Explorer" : "Elite Tier"}</span>
+              <span>{uniqueStamps.length < 2 ? "2 Stamps to Sunset Theme" : uniqueStamps.length < 4 ? "4 Stamps to Synthwave" : uniqueStamps.length < 8 ? "8 Stamps to Cyberpunk" : "All Themes Unlocked"}</span>
+            </div>
+            <div className="h-2 rounded-full bg-slate-900/80 border border-white/5 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-1000 relative" 
+                style={{ width: `${Math.min(100, (uniqueStamps.length / 8) * 100)}%` }}
+              >
+                <div className="absolute inset-0 bg-white/20 w-full animate-[shimmer_2s_infinite]" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* View Switcher Segmented Control */}
         <div className="flex items-center gap-3 flex-wrap relative z-50">
           <div
             className="flex items-center gap-1 p-1 rounded-2xl"
@@ -618,6 +647,29 @@ export default function Passport() {
                 }}
               >
                 {uniqueStamps.length}
+              </span>
+            </button>
+
+            {/* WATCHLIST TAB */}
+            <button
+              type="button"
+              onClick={() => { sound.playClick(); setActiveTab("watchlist"); }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+              style={{
+                background: activeTab === "watchlist" ? "rgba(244,63,94,0.12)" : "transparent",
+                border: activeTab === "watchlist" ? "1px solid rgba(244,63,94,0.3)" : "1px solid transparent",
+                color: activeTab === "watchlist" ? "#f43f5e" : "#86868b",
+              }}
+            >
+              <span><Heart size={13} className="inline mr-1" /> WATCHLIST</span>
+              <span
+                className="mono w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center"
+                style={{
+                  background: activeTab === "watchlist" ? "#f43f5e" : "rgba(255,255,255,0.08)",
+                  color: "#fff",
+                }}
+              >
+                {savedFlights ? savedFlights.length : 0}
               </span>
             </button>
           </div>
@@ -706,7 +758,57 @@ export default function Passport() {
       )}
 
       {/* ════════════════════ TAB 2: PASSPORT STAMPS ════════════════════ */}
-      {activeTab === "stamps" && (
+      {/* TAB 3: WATCHLIST */}
+        {activeTab === "watchlist" && (
+          <div className="animate-slide-up space-y-4">
+            {(!savedFlights || savedFlights.length === 0) ? (
+              <div className="p-12 text-center rounded-3xl flex flex-col items-center" style={{ background: "rgba(13, 17, 27, 0.65)", border: "1px dashed rgba(255,255,255,0.12)" }}>
+                <Heart size={32} className="text-[#86868b] mb-4" />
+                <h3 className="text-sm font-bold text-white mb-2">No Saved Flights</h3>
+                <p className="text-xs text-[#86868b] max-w-sm mx-auto leading-relaxed">Use the heart icon on any flight booking card to watch prices and save itineraries for later.</p>
+                <button onClick={() => navigate("/booking")} className="mt-6 px-5 py-2.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 font-bold text-xs rounded-xl hover:bg-rose-500/20 transition-all">Find Flights</button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {savedFlights.map((item, idx) => (
+                  <div key={idx} className="p-5 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-rose-500/30 transition-all group relative cursor-default shadow-lg">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="text-xs font-bold text-[#86868b] tracking-widest uppercase flex items-center gap-1.5">
+                          {item.searchContext.origin} <ArrowRight size={10} /> {item.searchContext.destination}
+                        </div>
+                        <div className="text-2xl font-black text-white mt-1 tracking-tighter">{item.flight.price?.currencySymbol || "$"}{(item.flight.price?.total || 0).toLocaleString()}</div>
+                      </div>
+                      <button 
+                        onClick={() => toggleSavedFlight(item.flight, item.searchContext)}
+                        className="text-rose-400 p-2 rounded-xl hover:bg-rose-500/10 transition-colors"
+                      >
+                        <Heart size={18} fill="currentColor" />
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-xs text-slate-300 mb-5">
+                      <div className="flex items-center gap-2">
+                        <Clock size={12} className="text-[#2997ff]" />
+                        <span>{new Date(item.searchContext.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-md bg-white/5 font-semibold text-[10px] uppercase tracking-wider">{item.searchContext.travelClass}</span>
+                    </div>
+
+                    <button 
+                      onClick={() => navigate(`/booking?from=${item.searchContext.origin}&to=${item.searchContext.destination}`)}
+                      className="w-full py-2.5 bg-[#2997ff]/10 hover:bg-[#2997ff]/20 text-[#2997ff] text-xs font-bold rounded-xl transition-colors border border-[#2997ff]/20"
+                    >
+                      Check Live Price
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "stamps" && (
         <div className="space-y-6">
           {uniqueStamps.length === 0 ? (
             /* Empty State */
