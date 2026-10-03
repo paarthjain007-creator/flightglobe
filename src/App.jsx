@@ -88,6 +88,7 @@ export default function App() {
             <Routes location={location} key={location.pathname}>
               <Route path="/"          element={<Navigate to="/explore" replace />} />
               <Route path="/explore"   element={<Explore />} />
+              <Route path="/simulator" element={<Simulator />} />
               <Route path="/search"    element={<Explore />} />
               <Route path="/booking"   element={<BookingPage />} />
               <Route path="/dashboard" element={<Navigate to="/passport" replace />} />

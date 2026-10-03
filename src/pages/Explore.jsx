@@ -8,11 +8,8 @@ import {
   Eye, Wind, Box, Moon, Sun, CloudRain, ArrowLeftRight
 } from "lucide-react";
 const Interactive3DGlobeTracker = React.lazy(() => import("../components/tracker/Interactive3DGlobeTracker"));
-const CockpitHUD = React.lazy(() => import("../components/cockpit/CockpitHUD"));
 
 
-import FlightDeckFAB from "../components/ui/FlightDeckFAB";
-import DispatchRoom from "../components/multiplayer/DispatchRoom";
 import FlightStreamMatrix from "../components/itinerary/StaggeredDepartureCards";
 const KineticSeatCanvas = React.lazy(() => import("../components/canvas/KineticSeatCanvas"));
 import { useStore } from "../store/useStore";
