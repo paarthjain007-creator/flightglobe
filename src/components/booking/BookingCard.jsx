@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Plane, Clock, ArrowRight, ChevronDown, ChevronUp, Luggage, ExternalLink, Check, ShieldCheck } from "lucide-react";
+import { Plane, Clock, ArrowRight, ChevronDown, ChevronUp, Luggage, ExternalLink, Check, ShieldCheck, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useStore } from "../../store/useStore";
 import { getAirportByIata } from "../../data/airports";
@@ -12,6 +12,9 @@ export default function BookingCard({ offer, departureDate, adults }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [redirectInfo, setRedirectInfo] = useState(null);
   const setHoveredFlightPath = useStore((s) => s.setHoveredFlightPath);
+  const savedFlights = useStore((s) => s.savedFlights);
+  const toggleSavedFlight = useStore((s) => s.toggleSavedFlight);
+  const isSaved = savedFlights.some((f) => f.flight.id === offer.id);
 
   if (!offer || !offer.itineraries || offer.itineraries.length === 0) return null;
 

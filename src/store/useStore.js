@@ -59,6 +59,18 @@ export const useStore = create(
         }
       ],
 
+      // Saved Flights (Watchlist)
+      savedFlights: [],
+      toggleSavedFlight: (flight, searchContext) => set((state) => {
+        const exists = state.savedFlights.some((f) => f.flight.id === flight.id);
+        if (exists) {
+          return { savedFlights: state.savedFlights.filter((f) => f.flight.id !== flight.id) };
+        } else {
+          return { savedFlights: [{ flight, searchContext, savedAt: Date.now() }, ...state.savedFlights].slice(0, 20) };
+        }
+      }),
+      clearSavedFlights: () => set({ savedFlights: [] }),
+
       // Saved Trips & Boarding Passes
       trips: [
         {
@@ -161,6 +173,7 @@ export const useStore = create(
         theme: state.theme,
         isLiteMode: state.isLiteMode,
         recentSearches: state.recentSearches,
+        savedFlights: state.savedFlights,
         soundEnabled: state.soundEnabled,
         stamps: state.stamps,
         trips: state.trips,

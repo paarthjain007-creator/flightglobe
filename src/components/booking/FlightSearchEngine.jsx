@@ -3,7 +3,7 @@ import { Search, Plane, Calendar, Loader2, ArrowRightLeft, Filter, TrendingDown,
 import AirportSearch from "../Search/AirportSearch";
 import BookingCard from "./BookingCard";
 import { searchAmadeusFlightOffers, CURRENCY_MAP, fetch7DayFareMatrixAPI } from "../../services/api/amadeusService";
-import { AIRPORTS } from "../../data/airports";
+import { AIRPORTS, getAirportByIata } from "../../data/airports";
 import GlassCard from "../ui/GlassCard";
 import DatePicker from "../ui/DatePicker";
 import { FlightResultsSkeleton } from "../ui/FlightSkeletonLoader";
@@ -264,6 +264,106 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Recent Searches & Watchlist Panels */}
+        <div className="flex flex-col gap-4 animate-fade-in mb-4">
+          
+          {/* Watchlist Panel */}
+          {savedFlights && savedFlights.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-2 px-1">
+                <h4 className="text-[10px] font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Heart size={12} className="text-rose-400" /> Saved Flights (Price Watch)
+                </h4>
+                <button type="button" onClick={clearSavedFlights} className="text-[10px] text-slate-500 hover:text-slate-300 font-medium cursor-pointer">Clear</button>
+              </div>
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1">
+                {savedFlights.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex-shrink-0 flex items-center bg-rose-500/10 border border-rose-500/20 rounded-xl hover:bg-rose-500/20 hover:border-rose-400/30 transition-all cursor-pointer group"
+                    onClick={() => {
+                      setOrigin(getAirportByIata(item.searchContext.origin));
+                      setDestination(getAirportByIata(item.searchContext.destination));
+                      setDepartureDate(item.searchContext.date);
+                      setAdults(item.searchContext.adults || 1);
+                      setTravelClass(item.searchContext.travelClass || "ECONOMY");
+                    }}
+                  >
+                    <div className="pl-3 pr-2 py-2 flex items-center gap-3">
+                      <div className="p-1.5 rounded-lg bg-rose-500/20 text-rose-400 group-hover:scale-110 transition-transform">
+                        <Heart size={13} fill="currentColor" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-100 flex items-center gap-1">
+                          {item.searchContext.origin} <ArrowRight size={10} className="text-rose-400/50" /> {item.searchContext.destination}
+                        </div>
+                        <div className="text-[10px] text-slate-300 font-medium">
+                          {new Date(item.searchContext.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • {item.flight.price.currencySymbol || '$'}{(item.flight.price.total).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); toggleSavedFlight(item.flight, item.searchContext); }}
+                      className="p-3 text-rose-500/60 hover:text-rose-400 opacity-50 group-hover:opacity-100 transition-opacity cursor-pointer border-l border-rose-500/20 h-full flex items-center"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent Searches Panel */}
+          {recentSearches && recentSearches.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-2 px-1">
+                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <History size={12} className="text-blue-400" /> Recent Searches
+                </h4>
+                <button type="button" onClick={clearRecentSearches} className="text-[10px] text-slate-500 hover:text-slate-300 font-medium cursor-pointer">Clear</button>
+              </div>
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1">
+                {recentSearches.map((search, idx) => (
+                  <div
+                    key={idx}
+                    className="flex-shrink-0 flex items-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group"
+                    onClick={() => {
+                      setOrigin(search.origin);
+                      setDestination(search.destination);
+                      setDepartureDate(search.date);
+                      setAdults(search.adults || 1);
+                      setTravelClass(search.travelClass || "ECONOMY");
+                    }}
+                  >
+                    <div className="pl-3 pr-2 py-2 flex items-center gap-2">
+                      <div className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
+                        <Clock size={13} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-200 flex items-center gap-1">
+                          {search.origin.iata} <ArrowRight size={10} className="text-slate-500" /> {search.destination.iata}
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                          {new Date(search.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • {search.adults} {search.adults > 1 ? 'Adults' : 'Adult'}
+                        </div>
+                      </div>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); removeRecentSearch(idx); }}
+                      className="p-3 text-slate-500 hover:text-red-400 opacity-50 group-hover:opacity-100 transition-opacity cursor-pointer border-l border-white/5 h-full flex items-center"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Search Inputs Form */}
