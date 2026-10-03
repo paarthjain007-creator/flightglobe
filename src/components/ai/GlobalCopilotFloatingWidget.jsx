@@ -248,7 +248,7 @@ export default function GlobalCopilotFloatingWidget() {
                   <span>AI Flight Commander</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-ping" />
                 </h3>
-                <p className="text-[10px] text-[#86868b] font-mono">
+                <p className="text-xs text-[#86868b] font-mono">
                   Context: <strong className="text-[#2997ff]">{pathname}</strong>
                 </p>
               </div>
@@ -264,7 +264,7 @@ export default function GlobalCopilotFloatingWidget() {
 
           {/* Contextual Proactive Chips Bar */}
           <div className="px-3 py-2 bg-black/40 border-b border-white/10 space-y-1.5">
-            <div className="text-[9px] font-bold text-[#86868b] uppercase tracking-wider flex items-center gap-1">
+            <div className="text-xs font-bold text-[#86868b] uppercase tracking-wider flex items-center gap-1">
               <Compass size={11} className="text-[#2997ff]" />
               <span>Proactive Route Suggestions:</span>
             </div>
@@ -273,7 +273,7 @@ export default function GlobalCopilotFloatingWidget() {
                 <button
                   key={idx}
                   onClick={() => handleActionClick(item)}
-                  className="px-2.5 py-1 rounded-xl text-[10px] font-semibold bg-white/5 border border-white/10 hover:border-[#2997ff] text-slate-200 hover:text-[#2997ff] transition-all whitespace-nowrap cursor-pointer flex-shrink-0 flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 hover:border-[#2997ff] text-slate-200 hover:text-[#2997ff] transition-all whitespace-nowrap cursor-pointer flex-shrink-0 flex items-center gap-1"
                 >
                   <span>{item.text}</span>
                 </button>
@@ -305,7 +305,7 @@ export default function GlobalCopilotFloatingWidget() {
                   <p className="leading-relaxed">{msg.text}</p>
 
                   {msg.insights && msg.insights.length > 0 && (
-                    <div className="space-y-1 pt-1.5 border-t border-white/10 text-[10px] text-slate-300 font-mono">
+                    <div className="space-y-1 pt-1.5 border-t border-white/10 text-xs text-slate-300 font-mono">
                       {msg.insights.map((ins, i) => (
                         <div key={i} className="flex items-center gap-1">
                           <Check size={10} className="text-[#30d158]" />
@@ -317,12 +317,12 @@ export default function GlobalCopilotFloatingWidget() {
 
                   {msg.waypoints && msg.waypoints.length >= 2 && (
                     <div className="pt-2 flex items-center justify-between">
-                      <span className="text-[10px] text-[#2997ff] font-mono">
+                      <span className="text-xs text-[#2997ff] font-mono">
                         Route: {msg.waypoints[0].iata} ✈️ {msg.waypoints[msg.waypoints.length - 1].iata}
                       </span>
                       <button
                         onClick={() => navigate("/search")}
-                        className="px-2.5 py-1 rounded-xl text-[10px] font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] flex items-center gap-1 cursor-pointer transition-colors"
+                        className="px-2.5 py-1 rounded-xl text-xs font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] flex items-center gap-1 cursor-pointer transition-colors"
                       >
                         <span>Book Now</span>
                         <ArrowRight size={10} />
@@ -331,13 +331,13 @@ export default function GlobalCopilotFloatingWidget() {
                   )}
                 </div>
 
-                <span className="text-[9px] text-[#86868b] font-mono mt-1 px-1">{msg.timestamp}</span>
+                <span className="text-xs text-[#86868b] font-mono mt-1 px-1">{msg.timestamp}</span>
               </div>
             ))}
 
             {/* Terminal Decryption Processing Animation */}
             {isProcessing && (
-              <div className="flex items-center gap-2 p-3 rounded-2xl bg-blue-500/10 border border-blue-400/30 text-blue-300 font-mono text-[10px] animate-pulse">
+              <div className="flex items-center gap-2 p-3 rounded-2xl bg-blue-500/10 border border-blue-400/30 text-blue-300 font-mono text-xs animate-pulse">
                 <Terminal size={12} className="animate-spin" />
                 <span>[{decryptionText}]</span>
               </div>
@@ -386,7 +386,7 @@ export default function GlobalCopilotFloatingWidget() {
               <span>AI Copilot</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-ping" />
             </div>
-            <div className="text-[10px] text-[#86868b] font-mono">
+            <div className="text-xs text-[#86868b] font-mono">
               Live Assistant
             </div>
           </div>

@@ -294,7 +294,7 @@ export default function CommandPalette({ isOpen, onClose }) {
   return (
     <div
       className="fixed inset-0 z-[300] flex items-start justify-center pt-10 sm:pt-24 px-3 sm:px-4"
-      style={{ background: "rgba(4, 6, 12, 0.82)", backdropFilter: "blur(24px)" }}
+      style={{ background: "rgba(4, 6, 12, 0.82)", backdropFilter: "blur(12px)" }}
       onClick={onClose}
     >
       <motion.div
@@ -305,8 +305,8 @@ export default function CommandPalette({ isOpen, onClose }) {
         className="w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto"
         style={{
           background: "rgba(22, 22, 24, 0.98)",
-          backdropFilter: "blur(32px)",
-          WebkitBackdropFilter: "blur(32px)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
           border: "1px solid rgba(255, 255, 255, 0.12)",
           boxShadow: "0 24px 70px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.12)",
         }}
@@ -336,7 +336,7 @@ export default function CommandPalette({ isOpen, onClose }) {
               <X size={14} />
             </button>
           )}
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] mono text-[#86868b] bg-white/5 border border-white/10">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs mono text-[#86868b] bg-white/5 border border-white/10">
             <span>ESC</span>
           </div>
         </div>
@@ -390,13 +390,13 @@ export default function CommandPalette({ isOpen, onClose }) {
                         </span>
                       )}
                     </div>
-                    <div className="mono text-[9px] text-[#86868b] mt-0.5">
+                    <div className="mono text-xs text-[#86868b] mt-0.5">
                       {item.category}
                     </div>
                   </div>
 
                   {isSelected && (
-                    <div className="flex items-center gap-1 text-[10px] mono text-blue-400 flex-shrink-0">
+                    <div className="flex items-center gap-1 text-xs mono text-blue-400 flex-shrink-0">
                       <span>SELECT</span>
                       <CornerDownLeft size={10} />
                     </div>
@@ -408,7 +408,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         </div>
 
         {/* Footer info */}
-        <div className="px-5 py-2.5 border-t border-white/10 flex items-center justify-between text-[10px] mono text-slate-500 bg-white/[0.02]">
+        <div className="px-5 py-2.5 border-t border-white/10 flex items-center justify-between text-xs mono text-slate-400 bg-white/[0.02]">
           <div className="flex items-center gap-3">
             <span>↑↓ Navigate</span>
             <span>↵ Execute</span>

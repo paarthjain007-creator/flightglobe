@@ -258,7 +258,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                       : "text-slate-200 hover:text-white"
                   }`}
                 >
-                  <span className="text-[11px]">{conf.flag}</span>
+                  <span className="text-[13px]">{conf.flag}</span>
                   <span>{code}</span>
                 </button>
               ))}
@@ -273,10 +273,10 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
           {savedFlights && savedFlights.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-2 px-1">
-                <h4 className="text-[10px] font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Heart size={12} className="text-rose-400" /> Saved Flights (Price Watch)
                 </h4>
-                <button type="button" onClick={clearSavedFlights} className="text-[10px] text-slate-500 hover:text-slate-300 font-medium cursor-pointer">Clear</button>
+                <button type="button" onClick={clearSavedFlights} className="text-xs text-slate-400 hover:text-slate-300 font-medium cursor-pointer">Clear</button>
               </div>
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1">
                 {savedFlights.map((item, idx) => (
@@ -299,7 +299,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                         <div className="text-xs font-bold text-slate-100 flex items-center gap-1">
                           {item.searchContext.origin} <ArrowRight size={10} className="text-rose-400/50" /> {item.searchContext.destination}
                         </div>
-                        <div className="text-[10px] text-slate-300 font-medium">
+                        <div className="text-xs text-slate-300 font-medium">
                           {new Date(item.searchContext.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • {item.flight.price.currencySymbol || '$'}{(item.flight.price.total).toLocaleString()}
                         </div>
                       </div>
@@ -321,10 +321,10 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
           {recentSearches && recentSearches.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-2 px-1">
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <History size={12} className="text-blue-400" /> Recent Searches
                 </h4>
-                <button type="button" onClick={clearRecentSearches} className="text-[10px] text-slate-500 hover:text-slate-300 font-medium cursor-pointer">Clear</button>
+                <button type="button" onClick={clearRecentSearches} className="text-xs text-slate-400 hover:text-slate-300 font-medium cursor-pointer">Clear</button>
               </div>
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1">
                 {recentSearches.map((search, idx) => (
@@ -345,9 +345,9 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                       </div>
                       <div>
                         <div className="text-xs font-bold text-slate-200 flex items-center gap-1">
-                          {search.origin.iata} <ArrowRight size={10} className="text-slate-500" /> {search.destination.iata}
+                          {search.origin.iata} <ArrowRight size={10} className="text-slate-400" /> {search.destination.iata}
                         </div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-xs text-slate-400">
                           {new Date(search.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • {search.adults} {search.adults > 1 ? 'Adults' : 'Adult'}
                         </div>
                       </div>
@@ -355,7 +355,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                     <button 
                       type="button"
                       onClick={(e) => { e.stopPropagation(); removeRecentSearch(idx); }}
-                      className="p-3 text-slate-500 hover:text-red-400 opacity-50 group-hover:opacity-100 transition-opacity cursor-pointer border-l border-white/5 h-full flex items-center"
+                      className="p-3 text-slate-400 hover:text-red-400 opacity-50 group-hover:opacity-100 transition-opacity cursor-pointer border-l border-white/5 h-full flex items-center"
                     >
                       <X size={12} />
                     </button>
@@ -627,12 +627,12 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
                       : "bg-white/10 border-white/10 text-slate-100 hover:border-white/20"
                   }`}
                 >
-                  <div className="text-[11px] text-slate-200">{item.dayName} {item.dayNumber}</div>
+                  <div className="text-[13px] text-slate-200">{item.dayName} {item.dayNumber}</div>
                   <div className="text-xs font-bold mt-1 truncate">
                     {item.symbol}{item.price.toLocaleString()}
                   </div>
                   {item.isCheapest && (
-                    <div className="text-[9px] font-semibold text-emerald-400 mt-0.5">Lowest</div>
+                    <div className="text-xs font-semibold text-emerald-400 mt-0.5">Lowest</div>
                   )}
                 </button>
               ))}
@@ -649,7 +649,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Max Layover / Flight Duration */}
             <div className="space-y-2">
-              <label className="text-[11px] text-slate-200 font-medium">Max Total Duration</label>
+              <label className="text-[13px] text-slate-200 font-medium">Max Total Duration</label>
               <div className="flex items-center gap-2 flex-wrap">
                 {[
                   { label: "Any", val: "ALL" },
@@ -675,7 +675,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
 
             {/* Baggage Toggle */}
             <div className="space-y-2">
-              <label className="text-[11px] text-slate-200 font-medium">Baggage Allowance</label>
+              <label className="text-[13px] text-slate-200 font-medium">Baggage Allowance</label>
               <label className="flex items-center gap-2 text-xs text-slate-100 cursor-pointer hover:text-white transition-colors h-6">
                 <input
                   type="checkbox"
@@ -720,7 +720,7 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
             >
               <span>{airline.logo}</span>
               <span>{airline.name}</span>
-              <span className="text-[10px] text-slate-300">({airline.count})</span>
+              <span className="text-xs text-slate-300">({airline.count})</span>
             </button>
           ))}
         </div>

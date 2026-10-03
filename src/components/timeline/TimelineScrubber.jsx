@@ -66,7 +66,7 @@ export function TimelineScrubber({
     <div
       id="4d-timeline-scrubber"
       className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-3xl glass rounded-3xl p-4 border border-white/15 shadow-2xl animate-slide-up"
-      style={{ background: "rgba(10, 15, 30, 0.88)", backdropFilter: "blur(20px)" }}
+      style={{ background: "rgba(10, 15, 30, 0.88)", backdropFilter: "blur(12px)" }}
     >
       <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
         <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export function TimelineScrubber({
           <div>
             <div className="text-xs font-bold text-white flex items-center gap-2">
               <span>{formattedDate} · {formattedTime}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 font-mono">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 font-mono">
                 4D Time-Travel
               </span>
             </div>
@@ -136,7 +136,7 @@ export function TimelineScrubber({
 
       {/* Controls Bar */}
       <div className="flex items-center justify-between pt-1">
-        <div className="text-[11px] text-slate-400 font-mono">
+        <div className="text-[13px] text-slate-400 font-mono">
           Now
         </div>
 
@@ -160,7 +160,7 @@ export function TimelineScrubber({
           </button>
         </div>
 
-        <div className="text-[11px] text-slate-400 font-mono">
+        <div className="text-[13px] text-slate-400 font-mono">
           +7 Days
         </div>
       </div>

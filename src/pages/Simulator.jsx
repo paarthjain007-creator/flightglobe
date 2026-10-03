@@ -112,7 +112,7 @@ export default function Simulator() {
           
           {/* SIMULATOR HEADER */}
           <div className="absolute top-24 left-8 z-[50] pointer-events-none">
-            <div className="text-[10px] font-bold tracking-widest text-blue-400 mb-1">AEROSPACE ENGINE V3</div>
+            <div className="text-xs font-bold tracking-widest text-blue-400 mb-1">AEROSPACE ENGINE V3</div>
             <h1 className="text-3xl font-black text-white tracking-tighter">Flight Simulator</h1>
             <p className="text-xs text-slate-400 max-w-xs mt-2">Experience 3D WebGL rendering, volumetric clouds, and real-time multiplayer dispatch protocols.</p>
           </div>

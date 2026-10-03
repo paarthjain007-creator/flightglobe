@@ -337,7 +337,7 @@ function SpatialGeoLabels({ visible }) {
         <group key={item.name} position={latLonToVec3(item.lat, item.lon, 1.025)}>
           <Html distanceFactor={4} center className="pointer-events-none select-none">
             <div
-              className="text-[9px] font-extrabold tracking-widest mono px-2 py-0.5 rounded-full"
+              className="text-xs font-extrabold tracking-widest mono px-2 py-0.5 rounded-full"
               style={{
                 color: item.color,
                 background: "rgba(10, 15, 30, 0.75)",
@@ -410,7 +410,7 @@ export default function Globe3D({
             key={btn.id}
             type="button"
             onClick={() => setMode(btn.id)}
-            className={`px-2.5 py-1 rounded-xl text-[10px] font-bold mono transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-xl text-xs font-bold mono transition-all cursor-pointer ${
               mode === btn.id
                 ? "bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-400/40 shadow-sm"
                 : "text-slate-400 hover:text-white"
@@ -423,10 +423,10 @@ export default function Globe3D({
         <button
           type="button"
           onClick={() => setLabels(!labels)}
-          className={`px-2.5 py-1 rounded-xl text-[10px] font-bold mono transition-all cursor-pointer ${
+          className={`px-2.5 py-1 rounded-xl text-xs font-bold mono transition-all cursor-pointer ${
             labels
               ? "bg-indigo-500/20 text-indigo-300 border border-indigo-400/40"
-              : "text-slate-500 hover:text-slate-300"
+              : "text-slate-400 hover:text-slate-300"
           }`}
         >
           {labels ? "Labels ON" : "Labels OFF"}

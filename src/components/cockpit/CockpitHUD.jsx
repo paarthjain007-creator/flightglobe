@@ -40,7 +40,7 @@ export function CockpitHUD({
         {/* Left Telemetry Box */}
         <div
           className="glass px-4 py-2.5 rounded-2xl border border-white/12 text-xs font-mono space-y-1 shadow-2xl pointer-events-auto"
-          style={{ background: "rgba(22, 22, 24, 0.85)", backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)" }}
+          style={{ background: "rgba(22, 22, 24, 0.85)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
         >
           <div className="flex items-center gap-2 text-[#2997ff] font-semibold">
             <Gauge size={14} />
@@ -54,9 +54,9 @@ export function CockpitHUD({
         {/* Center Compass & Route Header */}
         <div
           className="glass px-6 py-2.5 rounded-2xl border border-white/12 text-center shadow-2xl pointer-events-auto"
-          style={{ background: "rgba(22, 22, 24, 0.88)", backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)" }}
+          style={{ background: "rgba(22, 22, 24, 0.88)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
         >
-          <div className="text-[10px] text-[#2997ff] font-semibold tracking-widest uppercase mb-0.5">
+          <div className="text-xs text-[#2997ff] font-semibold tracking-widest uppercase mb-0.5">
             COCKPIT FIRST-PERSON HUD
           </div>
           <div className="text-base font-bold text-[#f5f5f7] flex items-center justify-center gap-2">
@@ -74,7 +74,7 @@ export function CockpitHUD({
         <div className="flex items-center gap-2 pointer-events-auto">
           <div
             className="glass px-4 py-2.5 rounded-2xl border border-white/12 text-xs font-mono space-y-1 shadow-2xl"
-            style={{ background: "rgba(22, 22, 24, 0.85)", backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)" }}
+            style={{ background: "rgba(22, 22, 24, 0.85)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
           >
             <div className="flex items-center gap-2 text-[#2997ff] font-semibold">
               <Navigation size={14} />
@@ -112,7 +112,7 @@ export function CockpitHUD({
       </div>
 
       {/* Bottom Progress Bar */}
-      <div className="w-full max-w-xl mx-auto glass p-3.5 rounded-2xl border border-white/12 shadow-2xl space-y-2 pointer-events-auto" style={{ background: "rgba(22, 22, 24, 0.88)", backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)" }}>
+      <div className="w-full max-w-xl mx-auto glass p-3.5 rounded-2xl border border-white/12 shadow-2xl space-y-2 pointer-events-auto" style={{ background: "rgba(22, 22, 24, 0.88)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
         <div className="flex items-center justify-between text-xs font-mono font-semibold text-[#86868b]">
           <span>Enroute Flight Progress</span>
           <span className="text-[#f5f5f7]">{progressPct}%</span>

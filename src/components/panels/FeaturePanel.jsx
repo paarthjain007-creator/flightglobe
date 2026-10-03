@@ -97,7 +97,7 @@ export default function FeaturePanel({
     >
       {/* Feature Header */}
       <div className="glass px-3 py-2 rounded-xl flex items-center gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
           Features
         </span>
         <div className="flex-1 h-px" style={{ background: "rgba(255, 255, 255, 0.08)" }} />
@@ -124,7 +124,7 @@ export default function FeaturePanel({
               background: isActive ? feat.glowColor : "rgba(10, 14, 24, 0.72)",
               borderColor: isActive ? feat.borderColor : "rgba(255, 255, 255, 0.08)",
               boxShadow: isActive ? `0 0 20px ${feat.glowColor}` : "none",
-              backdropFilter: "blur(16px)",
+              backdropFilter: "blur(12px)",
             }}
           >
             {/* Icon */}
@@ -145,12 +145,12 @@ export default function FeaturePanel({
             {/* Labels */}
             <div className="flex-1 min-w-0">
               <div
-                className="text-[11px] font-bold leading-tight truncate"
+                className="text-[13px] font-bold leading-tight truncate"
                 style={{ color: isActive ? feat.color : "#F8FAFC" }}
               >
                 {feat.label}
               </div>
-              <div className="text-[9px] leading-tight truncate text-slate-400">
+              <div className="text-xs leading-tight truncate text-slate-400">
                 {feat.subtitle}
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function FeaturePanel({
 
       {/* Map Overlay Sub-section */}
       <div className="glass px-3 py-2 rounded-xl flex items-center gap-2 mt-1">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
           Overlays
         </span>
         <div className="flex-1 h-px" style={{ background: "rgba(255, 255, 255, 0.08)" }} />
@@ -199,7 +199,7 @@ export default function FeaturePanel({
               background: isActive ? ovl.glowColor : "rgba(10, 14, 24, 0.72)",
               borderColor: isActive ? ovl.borderColor : "rgba(255, 255, 255, 0.08)",
               boxShadow: isActive ? `0 0 16px ${ovl.glowColor}` : "none",
-              backdropFilter: "blur(16px)",
+              backdropFilter: "blur(12px)",
             }}
           >
             <div
@@ -213,12 +213,12 @@ export default function FeaturePanel({
             </div>
             <div className="flex-1 min-w-0">
               <div
-                className="text-[11px] font-bold leading-tight truncate"
+                className="text-[13px] font-bold leading-tight truncate"
                 style={{ color: isActive ? ovl.color : "#F8FAFC" }}
               >
                 {ovl.label}
               </div>
-              <div className="text-[9px] leading-tight truncate text-slate-400">
+              <div className="text-xs leading-tight truncate text-slate-400">
                 {ovl.subtitle}
               </div>
             </div>

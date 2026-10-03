@@ -297,7 +297,7 @@ export default function Interactive3DGlobeTracker({
       <div className="flex items-center justify-between flex-wrap gap-2 z-20 mb-2">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-blue-400 mono flex items-center gap-1.5">
+            <span className="text-[13px] font-bold uppercase tracking-widest text-blue-400 mono flex items-center gap-1.5">
               <Radio size={13} className="animate-pulse text-blue-400" />
               INTERACTIVE 3D FLIGHT TRACKER
             </span>
@@ -348,7 +348,7 @@ export default function Interactive3DGlobeTracker({
           <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-black/80 rounded-2xl border border-blue-500/20">
             <Radio size={22} className="text-blue-400 animate-pulse mb-2" />
             <div className="text-xs font-bold text-white">Spatial Telemetry Standby</div>
-            <p className="text-[10px] text-slate-400 max-w-xs mt-1">
+            <p className="text-xs text-slate-400 max-w-xs mt-1">
               3D WebGL context is initializing or resting. Coordinates and flight telemetry remain fully synchronized.
             </p>
           </div>
@@ -401,12 +401,12 @@ export default function Interactive3DGlobeTracker({
         <div className="absolute inset-0 pointer-events-none bg-radial from-blue-500/10 via-transparent to-transparent opacity-60" />
 
         {/* Live Coordinate Badges */}
-        <div className="absolute bottom-3 left-3 glass px-3 py-1.5 rounded-xl text-[10px] mono text-slate-300 flex items-center gap-2 border border-white/10 pointer-events-none">
+        <div className="absolute bottom-3 left-3 glass px-3 py-1.5 rounded-xl text-xs mono text-slate-300 flex items-center gap-2 border border-white/10 pointer-events-none">
           <Navigation size={11} className="text-blue-400" />
           <span>POS: {planePos ? `${planePos.lat.toFixed(2)}°N, ${planePos.lng.toFixed(2)}°W` : "INITIALIZING..."}</span>
         </div>
 
-        <div className="absolute bottom-3 right-3 glass px-3 py-1.5 rounded-xl text-[10px] mono text-[#30d158] font-semibold border border-white/10 pointer-events-none">
+        <div className="absolute bottom-3 right-3 glass px-3 py-1.5 rounded-xl text-xs mono text-[#30d158] font-semibold border border-white/10 pointer-events-none">
           CRUISING · FL380 · 492 KTS
         </div>
       </div>

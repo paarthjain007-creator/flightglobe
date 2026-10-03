@@ -103,7 +103,7 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
           background: "rgba(255, 255, 255, 0.06)",
           borderColor: "rgba(255, 255, 255, 0.12)",
           color: "#f5f5f7",
-          backdropFilter: "blur(20px)",
+          backdropFilter: "blur(12px)",
         }}
         title="Toggle Atmosphere Visual Theme"
       >
@@ -127,7 +127,7 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
           style={{
             background: "rgba(22, 22, 24, 0.96)",
             borderColor: "rgba(255, 255, 255, 0.12)",
-            backdropFilter: "blur(24px)",
+            backdropFilter: "blur(12px)",
             boxShadow: "0 20px 50px rgba(0, 0, 0, 0.7)",
           }}
         >
@@ -186,7 +186,7 @@ export default function ThemeSelector({ activeTheme, onThemeChange }) {
                       {t.label}
                       {isLocked && <Lock size={10} className="text-rose-400" />}
                     </div>
-                    <div className="text-[10px] leading-tight text-[#86868b]">
+                    <div className="text-xs leading-tight text-[#86868b]">
                       {isLocked ? `Unlock at ${t.requiredStamps} Passport Stamps` : t.description}
                     </div>
                   </div>

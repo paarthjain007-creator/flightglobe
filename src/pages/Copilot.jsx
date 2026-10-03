@@ -119,7 +119,7 @@ function Message({ msg, onSelectRoute }) {
         {/* Optional Action Stubs if route details were provided */}
         {msg.route && (
           <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between gap-3">
-            <span className="text-[11px] mono text-[#86868b] flex items-center gap-1.5">
+            <span className="text-[13px] mono text-[#86868b] flex items-center gap-1.5">
               <Plane size={12} className="text-[#2997ff]" />
               <span>{msg.route.origin} ➔ {msg.route.dest}</span>
             </span>
@@ -282,7 +282,7 @@ export default function Copilot() {
             <div>
               <h1 className="text-[16px] sm:text-[17px] font-semibold text-white flex items-center gap-2">
                 <span>AI Flight Copilot</span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#30d158]/10 border border-[#30d158]/20 text-[#30d158] text-[10px] font-medium">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#30d158]/10 border border-[#30d158]/20 text-[#30d158] text-xs font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-pulse" /> Live
                 </span>
               </h1>
@@ -326,7 +326,7 @@ export default function Copilot() {
           {/* Quick Suggestions */}
           {messages.length <= 1 && (
             <div className="mt-2 pt-2 animate-fade-in">
-              <p className="text-[11px] font-bold text-[#86868b] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+              <p className="text-[13px] font-bold text-[#86868b] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                 <Sparkles size={11} className="text-[#2997ff]" />
                 <span>Quick flight suggestions:</span>
               </p>
@@ -384,7 +384,7 @@ export default function Copilot() {
               )}
             </button>
           </form>
-          <p className="text-[11px] text-[#6e6e73] text-center">
+          <p className="text-[13px] text-[#6e6e73] text-center">
             Press Enter to send · Shift+Enter for new line
           </p>
         </div>

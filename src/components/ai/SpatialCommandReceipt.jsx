@@ -86,7 +86,7 @@ export default function SpatialCommandReceipt({ command, resultMessage, success 
         />
         <Icon size={12} style={{ color: colour }} />
         <span
-          className="text-[10px] font-bold tracking-widest uppercase font-mono"
+          className="text-xs font-bold tracking-widest uppercase font-mono"
           style={{ color: colour }}
         >
           {meta.label}
@@ -94,7 +94,7 @@ export default function SpatialCommandReceipt({ command, resultMessage, success 
 
         {/* Confidence badge */}
         <span
-          className="ml-auto text-[9px] px-1.5 py-0.5 rounded-md font-mono font-semibold"
+          className="ml-auto text-xs px-1.5 py-0.5 rounded-md font-mono font-semibold"
           style={{
             background: conf === "high" ? "rgba(52,211,153,0.15)" : "rgba(251,146,60,0.15)",
             color: conf === "high" ? "#34d399" : "#fb923c",
@@ -108,8 +108,8 @@ export default function SpatialCommandReceipt({ command, resultMessage, success 
       {rows.length > 0 && (
         <div className="px-3 py-2 space-y-1">
           {rows.map(({ key, display }) => (
-            <div key={key} className="flex items-start gap-2 text-[10px] font-mono">
-              <span className="text-slate-500 w-24 flex-shrink-0">{key}</span>
+            <div key={key} className="flex items-start gap-2 text-xs font-mono">
+              <span className="text-slate-400 w-24 flex-shrink-0">{key}</span>
               <span className="text-slate-200 break-all">{display}</span>
             </div>
           ))}
@@ -124,12 +124,12 @@ export default function SpatialCommandReceipt({ command, resultMessage, success 
       {/* Flight context + result */}
       <div className="px-3 py-2 space-y-1">
         {ctx.query && (
-          <div className="text-[9px] font-mono text-slate-500 truncate">
+          <div className="text-xs font-mono text-slate-400 truncate">
             <span className="text-slate-600">query: </span>"{ctx.query}"
           </div>
         )}
         {ctx.resolvedAt && (
-          <div className="text-[9px] font-mono text-slate-600">
+          <div className="text-xs font-mono text-slate-600">
             <span className="text-slate-600">at: </span>
             {new Date(ctx.resolvedAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
           </div>
@@ -138,7 +138,7 @@ export default function SpatialCommandReceipt({ command, resultMessage, success 
         {/* Execution result */}
         {resultMessage && (
           <div
-            className="flex items-center gap-1.5 mt-1 text-[10px]"
+            className="flex items-center gap-1.5 mt-1 text-xs"
             style={{ color: success ? "#4ade80" : "#f87171" }}
           >
             {success

@@ -71,8 +71,8 @@ export default function NavBar({ onOpenCommandPalette }) {
         className="flex items-center justify-between h-14 px-3 sm:px-5 rounded-2xl glass-prism pointer-events-auto"
         style={{
           background: "rgba(18, 18, 20, 0.82)",
-          backdropFilter: "blur(28px) saturate(180%)",
-          WebkitBackdropFilter: "blur(28px) saturate(180%)",
+          backdropFilter: "blur(12px) saturate(180%)",
+          WebkitBackdropFilter: "blur(12px) saturate(180%)",
           border: "1px solid rgba(255, 255, 255, 0.10)",
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
         }}
@@ -101,7 +101,7 @@ export default function NavBar({ onOpenCommandPalette }) {
             <span className="text-sm sm:text-base font-bold tracking-tight text-[#f5f5f7]">
               Flight<span className="text-[#2997ff]">Globe</span>
             </span>
-            <span className="text-[9px] font-medium text-[#86868b] tracking-wide hidden sm:inline">
+            <span className="text-xs font-medium text-[#86868b] tracking-wide hidden sm:inline">
               Live GDS Network
             </span>
           </div>
@@ -145,7 +145,7 @@ export default function NavBar({ onOpenCommandPalette }) {
                     color={isActive ? "#2997ff" : "#86868b"}
                   />
                   <span
-                    className="text-[11px] lg:text-[13px] relative z-10 whitespace-nowrap"
+                    className="text-[13px] lg:text-[13px] relative z-10 whitespace-nowrap"
                     style={{
                       color: isActive ? "#ffffff" : "#86868b",
                     }}
@@ -154,7 +154,7 @@ export default function NavBar({ onOpenCommandPalette }) {
                   </span>
                   {badge && (
                     <span
-                      className="relative z-10 text-[8px] lg:text-[9px] font-bold px-1 lg:px-1.5 py-0.5 rounded-full shadow-sm"
+                      className="relative z-10 text-[8px] lg:text-xs font-bold px-1 lg:px-1.5 py-0.5 rounded-full shadow-sm"
                       style={{
                         background: badge === "LIVE" ? "rgba(48, 209, 88, 0.12)" : badge === "AI" ? "rgba(191, 90, 242, 0.12)" : "rgba(41, 151, 255, 0.12)",
                         border: `1px solid ${badge === "LIVE" ? "rgba(48, 209, 88, 0.25)" : badge === "AI" ? "rgba(191, 90, 242, 0.25)" : "rgba(41, 151, 255, 0.25)"}`,
@@ -166,7 +166,7 @@ export default function NavBar({ onOpenCommandPalette }) {
                   )}
                   {path === "/passport" && trips.length > 0 && (
                     <span
-                      className="relative z-10 text-[8px] lg:text-[9px] font-bold px-1.5 rounded-full shadow-md bg-white/20 text-white"
+                      className="relative z-10 text-[8px] lg:text-xs font-bold px-1.5 rounded-full shadow-md bg-white/20 text-white"
                     >
                       {trips.length}
                     </span>
@@ -188,7 +188,7 @@ export default function NavBar({ onOpenCommandPalette }) {
           >
             <Search size={13} className="text-[#2997ff]" />
             <span className="text-xs text-[#86868b] font-medium hidden xl:inline">Search</span>
-            <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-[#86868b] font-mono border border-white/10">
+            <kbd className="text-xs px-1.5 py-0.5 rounded bg-white/10 text-[#86868b] font-mono border border-white/10">
               ⌘K
             </kbd>
           </button>
@@ -206,7 +206,7 @@ export default function NavBar({ onOpenCommandPalette }) {
             title="Switch active currency"
           >
             <span className="text-sm">🇺🇸</span>
-            <span className="text-[11px] font-semibold text-[#f5f5f7] tracking-wide">{currency}</span>
+            <span className="text-[13px] font-semibold text-[#f5f5f7] tracking-wide">{currency}</span>
             <ChevronDown size={11} className="text-[#86868b] ml-0.5" />
           </button>
 
@@ -267,8 +267,8 @@ export default function NavBar({ onOpenCommandPalette }) {
             className="md:hidden mt-2 p-3 rounded-2xl space-y-1 pointer-events-auto"
             style={{
               background: "rgba(18, 18, 20, 0.96)",
-              backdropFilter: "blur(32px)",
-              WebkitBackdropFilter: "blur(32px)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
               border: "1px solid rgba(255, 255, 255, 0.12)",
               boxShadow: "0 24px 60px rgba(0,0,0,0.8), inset 0 1px 1.5px rgba(255,255,255,0.1)",
             }}
@@ -292,7 +292,7 @@ export default function NavBar({ onOpenCommandPalette }) {
                 </div>
                 {badge && (
                   <span
-                    className="text-[9px] font-semibold px-2 py-0.5 rounded-full"
+                    className="text-xs font-semibold px-2 py-0.5 rounded-full"
                     style={{
                       background: badge === "LIVE" ? "rgba(48, 209, 88, 0.12)" : "rgba(191, 90, 242, 0.12)",
                       border: `1px solid ${badge === "LIVE" ? "rgba(48, 209, 88, 0.25)" : "rgba(191, 90, 242, 0.25)"}`,
@@ -304,7 +304,7 @@ export default function NavBar({ onOpenCommandPalette }) {
                 )}
                 {path === "/passport" && trips.length > 0 && (
                   <span
-                    className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#0071e3] text-white"
+                    className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#0071e3] text-white"
                   >
                     {trips.length}
                   </span>
@@ -326,7 +326,7 @@ export default function NavBar({ onOpenCommandPalette }) {
                 <Search size={16} className="text-cyan-400" />
                 <span className="text-sm font-medium">Search Flights & Commands</span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-cyan-300 border border-white/10">
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-white/10 text-cyan-300 border border-white/10">
                 ⌘K
               </span>
             </button>

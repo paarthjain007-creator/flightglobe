@@ -179,39 +179,39 @@ export default function BookingModal({ offer, onClose }) {
                   <Ticket size={18} className="text-blue-400" />
                   <span className="font-bold text-white text-sm">BOARDING PASS</span>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">
                   VERIFIED GDS
                 </span>
               </div>
 
               <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 sm:grid sm:grid-cols-3 sm:gap-3 pb-2 sm:pb-0">
                 <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
-                  <span className="text-[10px] text-slate-400 block uppercase">Passenger</span>
+                  <span className="text-xs text-slate-400 block uppercase">Passenger</span>
                   <span className="font-bold text-white text-sm">{firstName} {lastName}</span>
                 </div>
                 <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
-                  <span className="text-[10px] text-slate-400 block uppercase">Flight No</span>
+                  <span className="text-xs text-slate-400 block uppercase">Flight No</span>
                   <span className="font-bold text-blue-300 text-sm">{firstSeg?.number}</span>
                 </div>
                 <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
-                  <span className="text-[10px] text-slate-400 block uppercase">Seat Number</span>
+                  <span className="text-xs text-slate-400 block uppercase">Seat Number</span>
                   <span className="font-bold text-emerald-400 text-sm">{selectedSeat.split(" ")[0]}</span>
                 </div>
                 <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
-                  <span className="text-[10px] text-slate-400 block uppercase">Dep Terminal</span>
+                  <span className="text-xs text-slate-400 block uppercase">Dep Terminal</span>
                   <span className="font-bold text-white">{firstSeg?.departure.terminal || "T1"}</span>
                 </div>
                 <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
-                  <span className="text-[10px] text-slate-400 block uppercase">Cabin</span>
+                  <span className="text-xs text-slate-400 block uppercase">Cabin</span>
                   <span className="font-bold text-white">{offer.price.cabinClass}</span>
                 </div>
                 <div className="flex-shrink-0 w-28 sm:w-auto snap-center">
-                  <span className="text-[10px] text-slate-400 block uppercase">Total Rate</span>
+                  <span className="text-xs text-slate-400 block uppercase">Total Rate</span>
                   <span className="font-bold text-emerald-300">{symbol}{offer.price.total.toLocaleString()} {currencyCode}</span>
                 </div>
               </div>
 
-              <div className="border-t border-dashed border-white/20 pt-3 flex items-center justify-between text-[11px]">
+              <div className="border-t border-dashed border-white/20 pt-3 flex items-center justify-between text-[13px]">
                 <span>Carrier: <strong>{offer.validatingAirlineName}</strong></span>
                 <span>Baggage: <strong>{offer.baggageAllowance}</strong></span>
               </div>
@@ -248,17 +248,17 @@ export default function BookingModal({ offer, onClose }) {
                 <span className="text-emerald-400 font-mono text-sm">{symbol}{offer.price.total.toLocaleString()}</span>
               </div>
 
-              <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 sm:grid sm:grid-cols-3 sm:gap-2 font-mono text-[11px] text-slate-300 pt-1 pb-1">
+              <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 sm:grid sm:grid-cols-3 sm:gap-2 font-mono text-[13px] text-slate-300 pt-1 pb-1">
                 <div className="flex-shrink-0 w-24 sm:w-auto snap-center">
-                  <span className="text-slate-400 text-[10px] block">Base Fare</span>
+                  <span className="text-slate-400 text-xs block">Base Fare</span>
                   <span className="font-bold">{symbol}{offer.price.base.toLocaleString()}</span>
                 </div>
                 <div className="flex-shrink-0 w-24 sm:w-auto snap-center">
-                  <span className="text-slate-400 text-[10px] block">Govt Taxes</span>
+                  <span className="text-slate-400 text-xs block">Govt Taxes</span>
                   <span className="font-bold">{symbol}{offer.price.fees.toLocaleString()}</span>
                 </div>
                 <div className="flex-shrink-0 w-24 sm:w-auto snap-center">
-                  <span className="text-slate-400 text-[10px] block">Fuel Surcharge</span>
+                  <span className="text-slate-400 text-xs block">Fuel Surcharge</span>
                   <span className="font-bold">{symbol}{(offer.price.fuelSurcharge || 0).toLocaleString()}</span>
                 </div>
               </div>
@@ -268,7 +268,7 @@ export default function BookingModal({ offer, onClose }) {
             <div className="space-y-3">
               <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-300 mb-1 block">First Name</label>
+                  <label className="text-[13px] font-semibold text-slate-300 mb-1 block">First Name</label>
                   <input
                     type="text"
                     required
@@ -279,7 +279,7 @@ export default function BookingModal({ offer, onClose }) {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-300 mb-1 block">Last Name</label>
+                  <label className="text-[13px] font-semibold text-slate-300 mb-1 block">Last Name</label>
                   <input
                     type="text"
                     required
@@ -293,7 +293,7 @@ export default function BookingModal({ offer, onClose }) {
 
               <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-300 mb-1 block">Passenger Contact Email</label>
+                  <label className="text-[13px] font-semibold text-slate-300 mb-1 block">Passenger Contact Email</label>
                   <input
                     type="email"
                     required
@@ -305,7 +305,7 @@ export default function BookingModal({ offer, onClose }) {
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-300 mb-1 block">Seat Assignment</label>
+                  <label className="text-[13px] font-semibold text-slate-300 mb-1 block">Seat Assignment</label>
                   <select
                     value={selectedSeat}
                     onChange={(e) => setSelectedSeat(e.target.value)}
@@ -319,7 +319,7 @@ export default function BookingModal({ offer, onClose }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+            <div className="flex items-center justify-between text-[13px] text-slate-400 pt-1">
               <div className="flex items-center gap-1.5 text-emerald-400 font-mono">
                 <ShieldCheck size={14} />
                 <span>Verified GDS Live Pricing</span>

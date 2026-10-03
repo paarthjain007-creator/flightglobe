@@ -79,7 +79,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <span
-            className="text-[10px] font-extrabold px-3 py-1 rounded-full mono uppercase tracking-wider"
+            className="text-xs font-extrabold px-3 py-1 rounded-full mono uppercase tracking-wider"
             style={{
               background: `${flight.tagColor}22`,
               color: flight.tagColor,
@@ -103,14 +103,14 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
           <div className="text-3xl font-black mono tracking-tight text-[#F8FAFC] leading-none">
             {flight.dep}
           </div>
-          <div className="text-[11px] font-bold mono mt-1.5 text-fuchsia-400 tracking-wide">
+          <div className="text-[13px] font-bold mono mt-1.5 text-fuchsia-400 tracking-wide">
             {flight.from}
           </div>
         </div>
 
         {/* Flight Path Graphic */}
         <div className="flex-1 flex flex-col items-center gap-1">
-          <div className="text-[10px] font-semibold mono flex items-center gap-1.5 text-[#94A3B8]">
+          <div className="text-xs font-semibold mono flex items-center gap-1.5 text-[#94A3B8]">
             <Clock size={10} />
             {flight.dur}
           </div>
@@ -121,7 +121,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
             <div className="flex-1 h-px bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-400" />
             <div className="w-2 h-2 rounded-full bg-indigo-500/80 flex-shrink-0" />
           </div>
-          <div className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+          <div className="text-xs font-bold text-emerald-400 flex items-center gap-1">
             ✦ Non-Stop · {flight.distanceKm.toLocaleString()} km
           </div>
         </div>
@@ -131,7 +131,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
           <div className="text-3xl font-black mono tracking-tight text-[#F8FAFC] leading-none">
             {flight.arr}
           </div>
-          <div className="text-[11px] font-bold mono mt-1.5 text-fuchsia-300 tracking-wide">
+          <div className="text-[13px] font-bold mono mt-1.5 text-fuchsia-300 tracking-wide">
             {flight.to}
           </div>
         </div>
@@ -145,7 +145,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
             <div className="text-2xl font-black mono text-[#F8FAFC] leading-none">
               {formatPrice(flight.price, currency)}
             </div>
-            <div className="text-[10px] text-[#94A3B8] mono mt-0.5 text-right">
+            <div className="text-xs text-[#94A3B8] mono mt-0.5 text-right">
               incl. all taxes
             </div>
           </div>
@@ -164,7 +164,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-center gap-1.5 mt-4 pt-3 text-[11px] font-semibold text-slate-500 hover:text-fuchsia-300 transition-colors cursor-pointer border-t border-white/5"
+        className="w-full flex items-center justify-center gap-1.5 mt-4 pt-3 text-[13px] font-semibold text-slate-400 hover:text-fuchsia-300 transition-colors cursor-pointer border-t border-white/5"
       >
         <span>{expanded ? "Hide Details" : "Aircraft Specs & Amenities"}</span>
         <ChevronDown
@@ -191,7 +191,7 @@ function FlightCard({ flight, index, onSelect, currency = "INR" }) {
                 { icon: Coffee,  label: "Meal",      value: flight.meal  },
               ].map(({ icon: Icon, label, value }) => (
                 <div key={label}>
-                  <div className="text-[9px] uppercase tracking-widest mono text-slate-500 flex items-center gap-1 mb-1">
+                  <div className="text-xs uppercase tracking-widest mono text-slate-400 flex items-center gap-1 mb-1">
                     <Icon size={9} className="text-fuchsia-400" />
                     {label}
                   </div>
@@ -230,11 +230,11 @@ function FareMatrixBar({ basePrice, currency, onSelectDate }) {
   return (
     <div className="glass rounded-2xl border border-white/10 p-4 mb-1 shadow-lg">
       <div className="flex items-center justify-between mb-3">
-        <span className="flex items-center gap-2 text-[11px] font-bold mono text-fuchsia-300">
+        <span className="flex items-center gap-2 text-[13px] font-bold mono text-fuchsia-300">
           <TrendingDown size={13} />
           7-Day Lowest Fare Forecast
         </span>
-        <span className="text-[10px] text-emerald-400 font-semibold">
+        <span className="text-xs text-emerald-400 font-semibold">
           🟢 Midweek Lowest
         </span>
       </div>
@@ -251,9 +251,9 @@ function FareMatrixBar({ basePrice, currency, onSelectDate }) {
                 : "bg-white/4 hover:bg-white/8 text-slate-300 border border-white/6"
             }`}
           >
-            <div className="text-[9px] font-bold mb-0.5">{item.day}</div>
-            <div className="text-[8px] mono text-slate-500">{item.dateStr}</div>
-            <div className="text-[10px] font-black mono mt-1">{formatPrice(item.price, currency)}</div>
+            <div className="text-xs font-bold mb-0.5">{item.day}</div>
+            <div className="text-[8px] mono text-slate-400">{item.dateStr}</div>
+            <div className="text-xs font-black mono mt-1">{formatPrice(item.price, currency)}</div>
           </button>
         ))}
       </div>

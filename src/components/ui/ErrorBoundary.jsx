@@ -47,7 +47,7 @@ export class ErrorBoundary extends React.Component {
               "This component encountered an unexpected error. You can reboot it or refresh the page."}
           </p>
           {this.props.showError && this.state.error && (
-            <pre className="text-[10px] text-red-300 bg-red-900/20 rounded-xl p-3 mb-4 max-w-sm overflow-x-auto text-left font-mono">
+            <pre className="text-xs text-red-300 bg-red-900/20 rounded-xl p-3 mb-4 max-w-sm overflow-x-auto text-left font-mono">
               {this.state.error.message}
             </pre>
           )}

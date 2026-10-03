@@ -75,7 +75,7 @@ export default function EmergencySquawkBanner() {
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span
-                  className="mono text-[10px] font-black tracking-widest px-2 py-0.5 rounded"
+                  className="mono text-xs font-black tracking-widest px-2 py-0.5 rounded"
                   style={{ background: `${accentColor}33`, color: accentColor, border: `1px solid ${accentColor}66` }}
                 >
                   SQUAWK {emergencyAlert.squawk} {isMayday ? "MAYDAY" : "ALERT"}
@@ -84,7 +84,7 @@ export default function EmergencySquawkBanner() {
                   {emergencyAlert.callsign} ({emergencyAlert.type})
                 </span>
               </div>
-              <div className="mono text-[11px] text-slate-300 mt-0.5 flex items-center gap-2 flex-wrap">
+              <div className="mono text-[13px] text-slate-300 mt-0.5 flex items-center gap-2 flex-wrap">
                 <span style={{ color: accentColor }}>{emergencyAlert.reason}</span>
                 <span>· FL{Math.round(emergencyAlert.altitude / 100)}</span>
                 <span className="text-red-400 font-bold">{emergencyAlert.descentRate || "-2,800 FPM"}</span>

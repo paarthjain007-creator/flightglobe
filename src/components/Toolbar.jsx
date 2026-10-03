@@ -53,7 +53,7 @@ export default function Toolbar({ activeTheme, onThemeChange, onResetGlobe, onOp
           {stampCount > 0 && (
             <span
               className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{ background: "#0071e3", color: "#ffffff", fontSize: "9px" }}
+              style={{ background: "#0071e3", color: "#ffffff", fontSize: "12px" }}
             >
               {stampCount > 9 ? "9+" : stampCount}
             </span>

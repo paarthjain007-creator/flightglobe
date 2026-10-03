@@ -284,7 +284,7 @@ export default function RadarPage() {
             <button key={key} type="button"
               onClick={() => setTrafficDensity(key)}
               title={cfg.desc}
-              className="mono text-[9px] font-black px-2 py-1 rounded-lg cursor-pointer transition-all"
+              className="mono text-xs font-black px-2 py-1 rounded-lg cursor-pointer transition-all"
               style={{
                 background: trafficDensity === key ? `${cfg.color}22` : "transparent",
                 color: trafficDensity === key ? cfg.color : "#475569",
@@ -300,7 +300,7 @@ export default function RadarPage() {
         <button
           id="shuffle-planes-btn"
           onClick={handleManualShuffle}
-          className="glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold cursor-pointer hover:border-blue-400 transition-all text-blue-300 shadow-md"
+          className="glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[13px] sm:text-xs font-semibold cursor-pointer hover:border-blue-400 transition-all text-blue-300 shadow-md"
           title={`Reshuffle ${lod.max} global flights`}
         >
           <Shuffle size={12} />
@@ -312,7 +312,7 @@ export default function RadarPage() {
         <button
           id="radar-ground-filter-btn"
           onClick={() => setFilterOnGround((v) => !v)}
-          className="glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold cursor-pointer hover:opacity-90 transition-all shadow-md"
+          className="glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[13px] sm:text-xs font-semibold cursor-pointer hover:opacity-90 transition-all shadow-md"
           style={{
             color: filterOnGround ? "#30d158" : "#94A3B8",
             borderColor: filterOnGround ? "rgba(48,209,88,0.4)" : "rgba(255, 255, 255, 0.1)",
@@ -325,7 +325,7 @@ export default function RadarPage() {
         {/* Tactical Radar Scope Reticle Toggle */}
         <button
           onClick={() => setShowScope((s) => !s)}
-          className={`glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold cursor-pointer transition-all shadow-md ${
+          className={`glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[13px] sm:text-xs font-semibold cursor-pointer transition-all shadow-md ${
             showScope ? "border-blue-400 text-blue-300 shadow-[0_0_14px_rgba(41,151,255,0.35)]" : "text-slate-400 hover:text-white"
           }`}
           title="Toggle Tactical Air-Traffic Reticle Scope Overlay"
@@ -335,7 +335,7 @@ export default function RadarPage() {
         </button>
 
         {/* Plane Count Badge */}
-        <div className="glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-[10px] sm:text-xs font-mono shadow-md" style={{ color: "#94A3B8" }}>
+        <div className="glass px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl flex items-center gap-1.5 text-xs sm:text-xs font-mono shadow-md" style={{ color: "#94A3B8" }}>
           <Layers size={12} style={{ color: lod.color }} />
           <span style={{ color: lod.color }}>{displayPlanes.length}</span>
           <span>/ {lod.max} Active</span>

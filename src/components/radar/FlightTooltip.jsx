@@ -46,7 +46,7 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
         className="w-64 rounded-2xl border shadow-2xl overflow-hidden"
         style={{
           background: "rgba(5, 10, 24, 0.95)",
-          backdropFilter: "blur(28px)",
+          backdropFilter: "blur(12px)",
           borderColor: isOnGround ? "rgba(251,191,36,0.4)" : "rgba(96,165,250,0.4)",
           boxShadow: isOnGround
             ? "0 0 32px rgba(251,191,36,0.15)"
@@ -72,7 +72,7 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
               >
                 {plane.callsign}
               </div>
-              <div className="text-[10px] font-mono text-slate-400">
+              <div className="text-xs font-mono text-slate-400">
                 ICAO: {plane.icao24?.toUpperCase()}
               </div>
             </div>
@@ -80,7 +80,7 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
 
           <div className="flex items-center gap-1.5">
             <span
-              className="text-[9px] font-bold px-2 py-0.5 rounded-full"
+              className="text-xs font-bold px-2 py-0.5 rounded-full"
               style={{
                 background: isOnGround ? "rgba(251,191,36,0.2)" : "rgba(74,222,128,0.2)",
                 color: isOnGround ? "#fbbf24" : "#4ade80",
@@ -134,7 +134,7 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
 
         {/* Coord footer */}
         <div
-          className="px-3.5 py-1.5 font-mono text-[10px] border-t flex items-center justify-between text-slate-400"
+          className="px-3.5 py-1.5 font-mono text-xs border-t flex items-center justify-between text-slate-400"
           style={{ borderColor: "rgba(255, 255, 255, 0.08)" }}
         >
           <span>📍 Coords</span>
@@ -152,7 +152,7 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
                 onClose?.();
                 navigate(`/search?from=${nearestAirport.iata}`);
               }}
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 border border-blue-400/40 text-blue-300 hover:text-white text-[11px] font-semibold transition-all cursor-pointer shadow-sm"
+              className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 border border-blue-400/40 text-blue-300 hover:text-white text-[13px] font-semibold transition-all cursor-pointer shadow-sm"
               title={`Search flights originating from ${nearestAirport.city} (${nearestAirport.iata})`}
             >
               <Plane size={11} className="text-blue-400" />
@@ -168,12 +168,12 @@ export default function FlightTooltip({ plane, x, y, onClose }) {
 function DataRow({ icon, label, value, color }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <div className="flex items-center gap-1 text-[10px] text-slate-400">
+      <div className="flex items-center gap-1 text-xs text-slate-400">
         <span>{icon}</span>
         <span>{label}</span>
       </div>
       <span
-        className="text-[10px] font-bold font-mono truncate max-w-[120px] text-right"
+        className="text-xs font-bold font-mono truncate max-w-[120px] text-right"
         style={{ color: color || "#F8FAFC" }}
       >
         {value}

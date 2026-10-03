@@ -72,7 +72,7 @@ function AirportPicker({ label, value, onChange }) {
 
   return (
     <div ref={ref} className="relative flex-1 min-w-[130px]">
-      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
+      <div className="text-xs font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
         <MapPin size={10} className="text-[#2997ff]" />
         {label}
       </div>
@@ -95,7 +95,7 @@ function AirportPicker({ label, value, onChange }) {
           <div className="text-lg font-black mono leading-none text-[#2997ff]">
             {value?.code || value?.iata || "DEL"}
           </div>
-          <div className="text-[11px] truncate font-medium text-slate-200 mt-0.5">
+          <div className="text-[13px] truncate font-medium text-slate-200 mt-0.5">
             {value?.city || "New Delhi"}
           </div>
         </div>
@@ -113,7 +113,7 @@ function AirportPicker({ label, value, onChange }) {
             style={{
               background: "rgba(22, 22, 24, 0.96)",
               border: "1px solid rgba(255, 255, 255, 0.12)",
-              backdropFilter: "blur(24px)",
+              backdropFilter: "blur(12px)",
               minWidth: "260px",
             }}
           >
@@ -153,9 +153,9 @@ function AirportPicker({ label, value, onChange }) {
                   >
                     <div>
                       <div className="text-xs font-bold">{a.city}</div>
-                      <div className="text-[10px] text-[#86868b] truncate max-w-[170px]">{a.name}</div>
+                      <div className="text-xs text-[#86868b] truncate max-w-[170px]">{a.name}</div>
                     </div>
-                    <span className="mono font-bold text-[11px] px-2 py-0.5 rounded-md"
+                    <span className="mono font-bold text-[13px] px-2 py-0.5 rounded-md"
                       style={{ background: "rgba(255,255,255,0.08)", color: "#2997ff" }}>
                       {a.code}
                     </span>
@@ -244,7 +244,7 @@ export default function SearchBar({
                   sound.playClick();
                   setTripType(t.id);
                 }}
-                className={`px-3 py-1 rounded-lg text-[10px] font-bold mono transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-bold mono transition-all cursor-pointer ${
                   tripType === t.id
                     ? "bg-white/10 text-white border border-white/20 shadow-sm"
                     : "text-[#86868b] hover:text-white"
@@ -257,7 +257,7 @@ export default function SearchBar({
 
           {/* Currency Switcher */}
           {onCurrencyChange && (
-            <div className="flex items-center gap-1.5 text-[10px] mono text-[#86868b]">
+            <div className="flex items-center gap-1.5 text-xs mono text-[#86868b]">
               <DollarSign size={11} className="text-[#2997ff]" />
               <span>Currency:</span>
               <select
@@ -303,7 +303,7 @@ export default function SearchBar({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-end">
           {/* Departure Date */}
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
+            <div className="text-xs font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
               <Calendar size={10} className="text-[#2997ff]" />
               Departure Date
             </div>
@@ -320,7 +320,7 @@ export default function SearchBar({
           {/* Cabin Class & Pax */}
           <div className="flex gap-2">
             <div className="flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
+              <div className="text-xs font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
                 <Sparkles size={10} className="text-[#2997ff]" />
                 Cabin
               </div>
@@ -337,7 +337,7 @@ export default function SearchBar({
             </div>
 
             <div className="w-20">
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
+              <div className="text-xs font-bold uppercase tracking-widest mb-1 mono flex items-center gap-1 text-[#86868b]">
                 <Users size={10} className="text-[#2997ff]" />
                 Pax
               </div>
@@ -396,7 +396,7 @@ export default function SearchBar({
 
         {/* Same-airport validation */}
         {origin.code === dest.code && (
-          <div className="text-[11px] text-rose-400 mono flex items-center gap-1">
+          <div className="text-[13px] text-rose-400 mono flex items-center gap-1">
             ⚠️ Please choose distinct departure and arrival airports.
           </div>
         )}

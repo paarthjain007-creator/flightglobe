@@ -44,7 +44,7 @@ export default function TelemetryTicker() {
             sound.playClick();
             setCollapsed(!collapsed);
           }}
-          className="flex items-center gap-2 px-3 py-2 text-[10px] mono font-bold text-slate-300 hover:text-white cursor-pointer transition-colors"
+          className="flex items-center gap-2 px-3 py-2 text-xs mono font-bold text-slate-300 hover:text-white cursor-pointer transition-colors"
           title={collapsed ? "Expand Live Flight Telemetry" : "Collapse Telemetry"}
         >
           <span className="w-2 h-2 rounded-full bg-[#30d158] animate-pulse shadow-[0_0_8px_rgba(48,209,88,0.5)]" />
@@ -54,7 +54,7 @@ export default function TelemetryTicker() {
 
         {/* Expanded Telemetry Ticker Items */}
         {!collapsed && (
-          <div className="flex items-center gap-4 pr-4 pl-1 text-[10px] mono border-l border-white/10 animate-fade-in">
+          <div className="flex items-center gap-4 pr-4 pl-1 text-xs mono border-l border-white/10 animate-fade-in">
             <div className="flex items-center gap-1.5 text-slate-300">
               <Radio size={11} className="text-[#2997ff]" />
               <span className="text-[#86868b]">FLIGHTS:</span>

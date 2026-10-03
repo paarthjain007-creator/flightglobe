@@ -52,7 +52,7 @@ export default function Footer() {
                 <div className="text-lg font-extrabold text-white tracking-tight">
                   Flight<span className="text-[#2997ff]">Globe</span>
                 </div>
-                <div className="text-[10px] font-medium text-[#86868b] uppercase tracking-wider">
+                <div className="text-xs font-medium text-[#86868b] uppercase tracking-wider">
                   Global Aerospace Telemetry &amp; GDS Network
                 </div>
               </div>
@@ -70,7 +70,7 @@ export default function Footer() {
                 <Radio size={12} className="text-emerald-400" />
                 <span>All Flight Systems Operational</span>
               </div>
-              <div className="text-[11px] text-slate-400 mt-0.5">
+              <div className="text-[13px] text-slate-400 mt-0.5">
                 OpenSky ADS-B · 60 FPS WebGL Engine · Live Fares
               </div>
             </div>
@@ -95,7 +95,7 @@ export default function Footer() {
                     <Icon size={14} className="text-[#86868b]" />
                     <span>{label}</span>
                     {badge && (
-                      <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
+                      <span className={`text-xs font-bold px-1.5 py-0.2 rounded-full ${
                         badge === "LIVE"
                           ? "bg-emerald-500/15 text-[#30d158] border border-emerald-500/25"
                           : "bg-blue-500/15 text-[#2997ff] border border-blue-500/25"

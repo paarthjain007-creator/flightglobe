@@ -146,8 +146,8 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
         className="border-beam-card flex items-stretch rounded-2xl overflow-hidden shadow-2xl"
         style={{
           background: "rgba(13,17,27,0.85)",
-          backdropFilter: "blur(32px) saturate(200%)",
-          WebkitBackdropFilter: "blur(32px) saturate(200%)",
+          backdropFilter: "blur(12px) saturate(200%)",
+          WebkitBackdropFilter: "blur(12px) saturate(200%)",
           border: "1px solid rgba(255,255,255,0.12)",
           boxShadow: "inset 0 1px 1px rgba(255,255,255,0.15), 0 24px 64px rgba(0,0,0,0.7)",
           maxWidth: "780px",
@@ -161,7 +161,7 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
           className="flex-1 min-w-0 flex flex-col items-start px-3.5 sm:px-5 py-2.5 sm:py-3 gap-0.5 hover:bg-white/5 transition-colors cursor-pointer border-r"
           style={{ borderColor: "rgba(255,255,255,0.1)" }}
         >
-          <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">From</span>
+          <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">From</span>
           <div className="flex items-center gap-1.5 min-w-0">
             <MapPin size={13} className="text-cyan-400 flex-shrink-0" />
             <span className="font-bold text-sm sm:text-base text-white tracking-tight">{origInput}</span>
@@ -199,7 +199,7 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
           className="flex-1 min-w-0 flex flex-col items-start px-3.5 sm:px-5 py-2.5 sm:py-3 gap-0.5 hover:bg-white/5 transition-colors cursor-pointer border-r"
           style={{ borderColor: "rgba(255,255,255,0.1)" }}
         >
-          <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">To</span>
+          <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">To</span>
           <div className="flex items-center gap-1.5 min-w-0">
             <MapPin size={13} className="text-emerald-400 flex-shrink-0" />
             <span className="font-bold text-sm sm:text-base text-white tracking-tight">{destInput}</span>
@@ -216,7 +216,7 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
           className="flex flex-col items-start px-4 sm:px-5 py-2.5 sm:py-3 gap-0.5 hover:bg-white/5 transition-colors cursor-pointer border-r hidden md:flex"
           style={{ borderColor: "rgba(255,255,255,0.1)", minWidth: "115px" }}
         >
-          <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Departure</span>
+          <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Departure</span>
           <div className="flex items-center gap-1.5">
             <Calendar size={13} className="text-cyan-400" />
             <span className="font-semibold text-xs sm:text-sm text-white">
@@ -232,7 +232,7 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
           className="flex flex-col items-start px-4 sm:px-5 py-2.5 sm:py-3 gap-0.5 hover:bg-white/5 transition-colors cursor-pointer border-r hidden lg:flex"
           style={{ borderColor: "rgba(255,255,255,0.1)", minWidth: "110px" }}
         >
-          <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Travelers</span>
+          <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Travelers</span>
           <div className="flex items-center gap-1.5">
             <Users size={13} className="text-amber-400" />
             <span className="font-semibold text-xs sm:text-sm text-white">
@@ -265,8 +265,8 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
             className="w-full max-w-[780px] rounded-3xl p-3.5 sm:p-5 shadow-2xl z-40 relative space-y-3 sm:space-y-4"
             style={{
               background: "rgba(10, 14, 24, 0.96)",
-              backdropFilter: "blur(32px) saturate(190%)",
-              WebkitBackdropFilter: "blur(32px) saturate(190%)",
+              backdropFilter: "blur(12px) saturate(190%)",
+              WebkitBackdropFilter: "blur(12px) saturate(190%)",
               border: "1px solid rgba(0, 242, 254, 0.35)",
               boxShadow: "0 28px 70px rgba(0,0,0,0.85), inset 0 1px 2px rgba(255,255,255,0.2)",
             }}
@@ -353,7 +353,7 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
 
                 {/* Quick Date Presets */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="mono text-[10px] text-[#94A3B8]">QUICK PICK:</span>
+                  <span className="mono text-xs text-[#94A3B8]">QUICK PICK:</span>
                   {[
                     { label: "Today", days: 0 },
                     { label: "Tomorrow", days: 1 },
@@ -420,7 +420,7 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
 
                 {/* Cabin selection pills */}
                 <div className="space-y-1.5">
-                  <label className="mono text-[10px] text-[#94A3B8]">SELECT CABIN CLASS</label>
+                  <label className="mono text-xs text-[#94A3B8]">SELECT CABIN CLASS</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {["Economy", "Premium", "Business", "First"].map((cls) => (
                       <button
@@ -443,7 +443,7 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
                 <div className="flex items-center justify-between pt-2 border-t border-white/10">
                   <div>
                     <div className="text-xs font-bold text-white">Adult Passengers</div>
-                    <div className="text-[10px] text-[#94A3B8]">Age 12+ years</div>
+                    <div className="text-xs text-[#94A3B8]">Age 12+ years</div>
                   </div>
 
                   <div className="flex items-center gap-3">
@@ -486,7 +486,7 @@ function SearchMatrix({ origin, destination, departureDate, passengers, travelCl
 
       {/* Popular Route Presets */}
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 max-w-[780px] w-full">
-        <span className="mono text-[9px] tracking-widest flex-shrink-0 text-[#94A3B8]">QUICK ROUTES:</span>
+        <span className="mono text-xs tracking-widest flex-shrink-0 text-[#94A3B8]">QUICK ROUTES:</span>
         {POPULAR.map((p) => (
           <button
             key={p.label}
@@ -509,7 +509,7 @@ function BoardingPassModal({ pass, onClose, onViewTrips }) {
   if (!pass) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(5,6,10,0.88)", backdropFilter: "blur(24px)" }}>
+      style={{ background: "rgba(5,6,10,0.88)", backdropFilter: "blur(12px)" }}>
       <motion.div
         initial={{ scale: 0.92, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -528,7 +528,7 @@ function BoardingPassModal({ pass, onClose, onViewTrips }) {
           {/* Header */}
           <button type="button" onClick={onClose}
             className="absolute top-5 right-5 p-2 rounded-xl cursor-pointer transition-colors hover:bg-white/10"
-            style={{ color: "#7A85A0" }}>
+            style={{ color: "#94A3B8" }}>
             <X size={16} />
           </button>
 
@@ -539,7 +539,7 @@ function BoardingPassModal({ pass, onClose, onViewTrips }) {
             </div>
             <div>
               <div className="font-bold text-lg" style={{ color: "#E8EAF0" }}>BOARDING PASS ISSUED</div>
-              <div className="mono text-[10px] tracking-widest" style={{ color: "#00FFA3" }}>
+              <div className="mono text-xs tracking-widest" style={{ color: "#00FFA3" }}>
                 REF: {pass.bookingRef} · CONFIRMED
               </div>
             </div>
@@ -558,7 +558,7 @@ function BoardingPassModal({ pass, onClose, onViewTrips }) {
                   {pass.flight?.airline || "FlightGlobe"}
                 </span>
               </div>
-              <span className="mono text-[11px] font-bold px-2 py-0.5 rounded"
+              <span className="mono text-[13px] font-bold px-2 py-0.5 rounded"
                 style={{ background: "rgba(0,242,254,0.10)", border: "1px solid rgba(0,242,254,0.25)", color: "#00F2FE" }}>
                 {pass.flight?.callsign || pass.flight?.code || "FL-101"}
               </span>
@@ -570,17 +570,17 @@ function BoardingPassModal({ pass, onClose, onViewTrips }) {
                 <div className="mono font-bold" style={{ fontSize: "32px", color: "#00F2FE" }}>
                   {pass.origin?.code || pass.origin?.iata}
                 </div>
-                <div className="text-xs" style={{ color: "#7A85A0" }}>{pass.origin?.city}</div>
+                <div className="text-xs" style={{ color: "#94A3B8" }}>{pass.origin?.city}</div>
               </div>
               <div className="flex flex-col items-center">
                 <ArrowRight size={20} color="#7928CA" />
-                <span className="mono text-[9px] mt-1" style={{ color: "#00FFA3" }}>NON-STOP</span>
+                <span className="mono text-xs mt-1" style={{ color: "#00FFA3" }}>NON-STOP</span>
               </div>
               <div className="text-right">
                 <div className="mono font-bold" style={{ fontSize: "32px", color: "#B800FF" }}>
                   {pass.destination?.code || pass.destination?.iata}
                 </div>
-                <div className="text-xs" style={{ color: "#7A85A0" }}>{pass.destination?.city}</div>
+                <div className="text-xs" style={{ color: "#94A3B8" }}>{pass.destination?.city}</div>
               </div>
             </div>
 
@@ -609,12 +609,12 @@ function BoardingPassModal({ pass, onClose, onViewTrips }) {
                   <QrCode size={32} color="#05060A" />
                 </div>
                 <div className="mono">
-                  <div className="text-[9px] tracking-widest" style={{ color: "#404660" }}>E-TICKET</div>
-                  <div className="text-[10px] font-bold" style={{ color: "#E8EAF0" }}>NFC ACTIVE</div>
+                  <div className="text-xs tracking-widest" style={{ color: "#404660" }}>E-TICKET</div>
+                  <div className="text-xs font-bold" style={{ color: "#E8EAF0" }}>NFC ACTIVE</div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="mono text-[9px]" style={{ color: "#404660" }}>TOTAL PAID</div>
+                <div className="mono text-xs" style={{ color: "#404660" }}>TOTAL PAID</div>
                 <div className="mono font-bold text-xl font-mono" style={{ color: "#00FFA3" }}>
                   {pass.currencySymbol || pass.flight?.currencySymbol || "$"}{typeof pass.totalPrice === "number" ? pass.totalPrice.toLocaleString() : pass.totalPrice}
                 </div>
@@ -627,10 +627,10 @@ function BoardingPassModal({ pass, onClose, onViewTrips }) {
             <button type="button" onClick={onViewTrips}
               className="btn-aurora py-3 rounded-2xl flex items-center justify-center gap-2 cursor-pointer">
               <Ticket size={15} />
-              <span className="mono font-bold text-[11px] tracking-wider">VIEW MY PASSES</span>
+              <span className="mono font-bold text-[13px] tracking-wider">VIEW MY PASSES</span>
             </button>
             <button type="button" onClick={onClose}
-              className="btn-ghost py-3 rounded-2xl cursor-pointer mono font-bold text-[11px] tracking-wider">
+              className="btn-ghost py-3 rounded-2xl cursor-pointer mono font-bold text-[13px] tracking-wider">
               CLOSE
             </button>
           </div>
@@ -816,7 +816,7 @@ export default function Explore() {
               <button
                 type="button"
                 onClick={() => { sound.playClick(); setFlightsPanelOpen(false); }}
-                className="px-2.5 py-1 rounded-xl glass text-[10px] mono font-bold text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1 cursor-pointer"
+                className="px-2.5 py-1 rounded-xl glass text-xs mono font-bold text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1 cursor-pointer"
                 title="Minimize Flight List to inspect 3D Globe"
               >
                 <span>HIDE FLIGHTS</span>
@@ -955,24 +955,24 @@ export default function Explore() {
         className="absolute bottom-6 right-6 sm:right-[180px] z-20 hidden sm:flex items-center gap-3 px-4 py-2 rounded-2xl pointer-events-auto"
         style={{
           background: "rgba(13,17,27,0.85)",
-          backdropFilter: "blur(28px)",
-          WebkitBackdropFilter: "blur(28px)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
           border: "1px solid rgba(255,255,255,0.08)",
           boxShadow: "inset 0 1px 1px rgba(255,255,255,0.10)",
         }}
       >
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full beacon" style={{ background: "#00FFA3", boxShadow: "0 0 6px #00FFA3" }} />
-          <span className="mono text-[10px] font-bold" style={{ color: "#00F2FE" }}>
+          <span className="mono text-xs font-bold" style={{ color: "#00F2FE" }}>
             LIVE: {selectedFlight?.callsign || selectedFlight?.code || "RADAR SYNCED"}
           </span>
         </div>
         <div className="w-px h-4" style={{ background: "rgba(255,255,255,0.1)" }} />
-        <span className="mono text-[10px]" style={{ color: "#7A85A0" }}>FL380</span>
+        <span className="mono text-xs" style={{ color: "#94A3B8" }}>FL380</span>
         <div className="w-px h-4" style={{ background: "rgba(255,255,255,0.1)" }} />
-        <span className="mono text-[10px]" style={{ color: "#7A85A0" }}>492 KTS</span>
+        <span className="mono text-xs" style={{ color: "#94A3B8" }}>492 KTS</span>
         <div className="w-px h-4 hidden sm:block" style={{ background: "rgba(255,255,255,0.1)" }} />
-        <span className="mono text-[10px] hidden sm:block" style={{ color: "#00FFA3" }}>OPTIMAL CORRIDOR</span>
+        <span className="mono text-xs hidden sm:block" style={{ color: "#00FFA3" }}>OPTIMAL CORRIDOR</span>
       </div>
 
       {/* ── 5. KINETIC SEAT SELECTION MODAL (fullscreen overlay) ────────── */}
@@ -980,7 +980,7 @@ export default function Explore() {
         {seatModalOpen && (
           <div
             className="fixed inset-0 z-40 flex items-stretch justify-end pointer-events-auto"
-            style={{ background: "rgba(5,6,10,0.82)", backdropFilter: "blur(16px)" }}
+            style={{ background: "rgba(5,6,10,0.82)", backdropFilter: "blur(12px)" }}
           >
             {/* Click outside to close */}
             <div className="flex-1" onClick={() => setSeatModalOpen(false)} />
@@ -995,7 +995,7 @@ export default function Explore() {
                 width: "min(500px, 100vw)",
                 height: "100vh",
                 background: "rgba(13,17,27,0.97)",
-                backdropFilter: "blur(32px)",
+                backdropFilter: "blur(12px)",
                 borderLeft: "1px solid rgba(255,255,255,0.08)",
                 boxShadow: "-24px 0 80px rgba(0,0,0,0.6), inset 1px 0 1px rgba(255,255,255,0.10)",
               }}
@@ -1008,7 +1008,7 @@ export default function Explore() {
               <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                 <div>
-                  <div className="mono text-[10px] tracking-widest text-cyan-400">CABIN ASSIGNMENT</div>
+                  <div className="mono text-xs tracking-widest text-cyan-400">CABIN ASSIGNMENT</div>
                   <div className="font-bold text-base" style={{ color: "#E8EAF0" }}>
                     {selectedFlight?.airline} · {selectedFlight?.callsign}
                   </div>
@@ -1020,14 +1020,14 @@ export default function Explore() {
                       const toCode = destination?.iata || destination?.code;
                       navigate(`/booking?from=${fromCode}&to=${toCode}`);
                     }}
-                    className="text-[10px] mono text-cyan-400 hover:text-cyan-300 hover:underline flex items-center gap-1 mt-0.5 font-bold cursor-pointer"
+                    className="text-xs mono text-cyan-400 hover:text-cyan-300 hover:underline flex items-center gap-1 mt-0.5 font-bold cursor-pointer"
                   >
                     <span>Prefer live multi-carrier fares? Search GDS Engine ↗</span>
                   </button>
                 </div>
                 <button type="button" onClick={() => setSeatModalOpen(false)}
                   className="p-2 rounded-xl cursor-pointer hover:bg-white/10 transition-colors"
-                  style={{ color: "#7A85A0" }}>
+                  style={{ color: "#94A3B8" }}>
                   <X size={18} />
                 </button>
               </div>

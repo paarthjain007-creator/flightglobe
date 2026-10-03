@@ -23,7 +23,7 @@ export default function AnomalyWidget({ origin, destination }) {
 
         {/* Severity Badge */}
         <span
-          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+          className={`px-2 py-0.5 rounded-full text-xs font-bold ${
             isHigh
               ? "bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse"
               : anomalies.length > 0
@@ -57,15 +57,15 @@ export default function AnomalyWidget({ origin, destination }) {
                   {anom.severity === "high" ? <AlertOctagon size={13} className="text-red-400" /> : <Wind size={13} className="text-amber-400" />}
                   <span>{anom.title}</span>
                 </div>
-                <span className="text-[11px] font-bold text-red-400">
+                <span className="text-[13px] font-bold text-red-400">
                   {anom.probability}% Prob
                 </span>
               </div>
 
-              <div className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+              <div className="text-[13px]" style={{ color: "var(--text-muted)" }}>
                 📍 Location: {anom.location}
               </div>
-              <p className="text-[11px] leading-tight" style={{ color: "var(--text-primary)" }}>
+              <p className="text-[13px] leading-tight" style={{ color: "var(--text-primary)" }}>
                 {anom.description}
               </p>
             </div>

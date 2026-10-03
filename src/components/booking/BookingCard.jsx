@@ -99,7 +99,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-base font-bold text-white tracking-tight">{airlineName}</span>
                 {offer.price?.isLowestFare && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-[#30d158] border border-emerald-500/25">
+                  <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-[#30d158] border border-emerald-500/25">
                     Lowest fare
                   </span>
                 )}
@@ -134,7 +134,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
                 <Plane size={13} className="text-[#86868b] rotate-90 flex-shrink-0" />
                 <div className="h-[2px] flex-1 bg-white/20 rounded"></div>
               </div>
-              <span className={`text-[11px] font-semibold mt-1 ${isDirect ? "text-[#30d158]" : "text-[#ff9f0a]"}`}>
+              <span className={`text-[13px] font-semibold mt-1 ${isDirect ? "text-[#30d158]" : "text-[#ff9f0a]"}`}>
                 {isDirect ? "Nonstop" : `1 stop (${segments[0]?.arrival?.iataCode})`}
               </span>
             </div>
@@ -156,7 +156,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
               <div className="text-2xl sm:text-3xl font-black text-white tracking-tighter">
                 {formattedTotal}
               </div>
-              <div className="text-[10px] text-[#86868b]">
+              <div className="text-xs text-[#86868b]">
                 {adults > 1 ? `total · ${symbol}${Number(offer.price?.perAdult || Math.round((offer.price?.total || 0) / adults)).toLocaleString()} / traveler` : "total per traveler"}
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function BookingCard({ offer, departureDate, adults }) {
               <button
                 type="button"
                 onClick={handleBookRedirect}
-                className="text-[11px] text-[#86868b] hover:text-[#2997ff] transition-colors flex items-center gap-1 cursor-pointer"
+                className="text-[13px] text-[#86868b] hover:text-[#2997ff] transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <span>or book on {(airlineName || "Airline").split(" ")[0]}</span>
                 <ExternalLink size={10} />
@@ -221,38 +221,38 @@ export default function BookingCard({ offer, departureDate, adults }) {
                   <div key={seg.id || idx} className="p-3 rounded-lg bg-white/[0.03] border border-white/5 space-y-2">
                     <div className="flex items-center justify-between text-xs font-medium text-white flex-wrap gap-2">
                       <span className="flex items-center gap-2">
-                        <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-slate-100">Leg {idx + 1}</span>
+                        <span className="px-1.5 py-0.5 rounded bg-white/10 text-xs text-slate-100">Leg {idx + 1}</span>
                         <span>{segDepAirport?.city || seg.departure?.iataCode} ({seg.departure?.iataCode}) → {segArrAirport?.city || seg.arrival?.iataCode} ({seg.arrival?.iataCode})</span>
                       </span>
-                      <span className="text-slate-200 text-[11px]">
+                      <span className="text-slate-200 text-[13px]">
                         {seg.number} · {seg.aircraft || "Modern Jet"}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-200 pt-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[13px] text-slate-200 pt-1">
                       <div>
-                        <span className="text-slate-300 block text-[10px]">Depart</span>
+                        <span className="text-slate-300 block text-xs">Depart</span>
                         <span className="text-slate-200 font-medium">{formatTime(segDep)} · {seg.departure?.terminal ? `Term ${seg.departure.terminal}` : "T1"}</span>
                       </div>
                       <div>
-                        <span className="text-slate-300 block text-[10px]">Arrive</span>
+                        <span className="text-slate-300 block text-xs">Arrive</span>
                         <span className="text-slate-200 font-medium">{formatTime(segArr)} · {seg.arrival?.terminal ? `Term ${seg.arrival.terminal}` : "T2"}</span>
                       </div>
                       <div>
-                        <span className="text-slate-300 block text-[10px]">Duration</span>
+                        <span className="text-slate-300 block text-xs">Duration</span>
                         <span className="text-slate-200 font-medium">
                           {Math.floor((seg.durationMinutes || Math.round((new Date(seg.arrival?.at).getTime() - new Date(seg.departure?.at).getTime()) / 60000) || 120) / 60)}h {(seg.durationMinutes || Math.round((new Date(seg.arrival?.at).getTime() - new Date(seg.departure?.at).getTime()) / 60000) || 120) % 60}m
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-300 block text-[10px]">Carrier</span>
+                        <span className="text-slate-300 block text-xs">Carrier</span>
                         <span className="text-slate-200 font-medium">{seg.airlineName || airlineName}</span>
                       </div>
                     </div>
 
                     {/* Layover banner */}
                     {idx < segments.length - 1 && (
-                      <div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] flex items-center gap-2">
+                      <div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[13px] flex items-center gap-2">
                         <Clock size={12} className="flex-shrink-0" />
                         <span>Layover in {seg.arrival?.iataCode} ({segArrAirport?.city || "Transit"}) · Plane change</span>
                       </div>
@@ -265,21 +265,21 @@ export default function BookingCard({ offer, departureDate, adults }) {
             {/* Price & Baggage Breakdown */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 border-t border-white/5">
               <div className="p-2.5 rounded-lg bg-white/[0.02]">
-                <div className="text-slate-200 text-[10px]">Base Fare</div>
+                <div className="text-slate-200 text-xs">Base Fare</div>
                 <div className="text-white font-semibold mt-0.5">{formattedBase}</div>
               </div>
               <div className="p-2.5 rounded-lg bg-white/[0.02]">
-                <div className="text-slate-200 text-[10px]">Taxes & Fees</div>
+                <div className="text-slate-200 text-xs">Taxes & Fees</div>
                 <div className="text-white font-semibold mt-0.5">{formattedFees}</div>
               </div>
               <div className="p-2.5 rounded-lg bg-white/[0.02]">
-                <div className="text-slate-200 text-[10px]">Baggage Allowance</div>
+                <div className="text-slate-200 text-xs">Baggage Allowance</div>
                 <div className="text-emerald-400 font-semibold mt-0.5">{offer.baggageAllowance || "1x 23kg included"}</div>
               </div>
             </div>
 
             {/* Included amenities */}
-            <div className="flex items-center gap-4 text-[11px] text-slate-200 pt-1">
+            <div className="flex items-center gap-4 text-[13px] text-slate-200 pt-1">
               <span className="flex items-center gap-1 text-emerald-400"><Check size={12} /> Standard Seat</span>
               <span className="flex items-center gap-1 text-blue-300"><Check size={12} /> Wi-Fi Onboard</span>
               <span className="flex items-center gap-1 text-slate-100"><Check size={12} /> E-Boarding Pass</span>

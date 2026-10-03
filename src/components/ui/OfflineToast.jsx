@@ -14,7 +14,7 @@ export default function OfflineToast() {
       style={{
         background: "rgba(30, 10, 10, 0.85)",
         border: "1px solid rgba(248, 113, 113, 0.35)",
-        backdropFilter: "blur(16px)",
+        backdropFilter: "blur(12px)",
       }}
     >
       <div
@@ -28,7 +28,7 @@ export default function OfflineToast() {
           <AlertTriangle size={12} />
           <span>Offline Mode Active</span>
         </div>
-        <p className="text-xs" style={{ color: "var(--text-muted)", fontSize: "11px" }}>
+        <p className="text-xs" style={{ color: "var(--text-muted)", fontSize: "13px" }}>
           Live flight tracking & AI search are running on cached offline models.
         </p>
       </div>

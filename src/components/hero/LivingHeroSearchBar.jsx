@@ -86,7 +86,7 @@ export default function LivingHeroSearchBar({
             <ArrowRight size={16} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
             <span className="text-indigo-300 drop-shadow-[0_0_8px_rgba(165,180,252,0.8)]">{destCode}</span>
           </div>
-          <span className="text-slate-500 font-sans">|</span>
+          <span className="text-slate-400 font-sans">|</span>
           <span className="text-xs sm:text-sm font-sans font-medium text-slate-300">
             {draftDate ? new Date(draftDate).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "Tomorrow"}
           </span>
@@ -133,7 +133,7 @@ export default function LivingHeroSearchBar({
               <div className="grid grid-cols-1 sm:grid-cols-11 gap-3 items-center">
                 {/* Origin Picker */}
                 <div className="sm:col-span-5 relative">
-                  <label className="text-[10px] mono uppercase font-bold text-fuchsia-400 mb-1 flex items-center gap-1">
+                  <label className="text-xs mono uppercase font-bold text-fuchsia-400 mb-1 flex items-center gap-1">
                     <MapPin size={11} /> Origin City / Airport
                   </label>
                   <button
@@ -170,7 +170,7 @@ export default function LivingHeroSearchBar({
                             className="w-full px-3 py-2 rounded-xl hover:bg-fuchsia-500/20 text-left text-xs flex items-center justify-between text-slate-200 hover:text-fuchsia-300"
                           >
                             <span className="font-bold">{ap.city} ({ap.iata})</span>
-                            <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{ap.name}</span>
+                            <span className="text-xs text-slate-400 truncate max-w-[120px]">{ap.name}</span>
                           </button>
                         ))}
                       </div>
@@ -192,7 +192,7 @@ export default function LivingHeroSearchBar({
 
                 {/* Destination Picker */}
                 <div className="sm:col-span-5 relative">
-                  <label className="text-[10px] mono uppercase font-bold text-indigo-400 mb-1 flex items-center gap-1">
+                  <label className="text-xs mono uppercase font-bold text-indigo-400 mb-1 flex items-center gap-1">
                     <MapPin size={11} /> Destination City / Airport
                   </label>
                   <button
@@ -229,7 +229,7 @@ export default function LivingHeroSearchBar({
                             className="w-full px-3 py-2 rounded-xl hover:bg-indigo-500/20 text-left text-xs flex items-center justify-between text-slate-200 hover:text-indigo-300"
                           >
                             <span className="font-bold">{ap.city} ({ap.iata})</span>
-                            <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{ap.name}</span>
+                            <span className="text-xs text-slate-400 truncate max-w-[120px]">{ap.name}</span>
                           </button>
                         ))}
                       </div>
@@ -242,7 +242,7 @@ export default function LivingHeroSearchBar({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                 {/* Date */}
                 <div>
-                  <label className="text-[10px] mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
+                  <label className="text-xs mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
                     <Calendar size={10} className="text-fuchsia-400" /> Date
                   </label>
                   <input
@@ -255,7 +255,7 @@ export default function LivingHeroSearchBar({
 
                 {/* Class */}
                 <div>
-                  <label className="text-[10px] mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
+                  <label className="text-xs mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
                     <SlidersHorizontal size={10} className="text-fuchsia-400" /> Cabin Class
                   </label>
                   <select
@@ -272,7 +272,7 @@ export default function LivingHeroSearchBar({
 
                 {/* Passengers */}
                 <div>
-                  <label className="text-[10px] mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
+                  <label className="text-xs mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
                     <Users size={10} className="text-fuchsia-400" /> Passengers
                   </label>
                   <div className="flex items-center rounded-xl glass border border-white/12 px-2 py-1.5 justify-between">
@@ -296,7 +296,7 @@ export default function LivingHeroSearchBar({
 
                 {/* Currency */}
                 <div>
-                  <label className="text-[10px] mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
+                  <label className="text-xs mono text-slate-400 uppercase font-bold mb-1 flex items-center gap-1">
                     <DollarSign size={10} className="text-fuchsia-400" /> Currency
                   </label>
                   <select

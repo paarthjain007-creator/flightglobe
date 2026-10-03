@@ -27,7 +27,7 @@ export function MultiplayerCursors({ peers, reactions, onSendReaction }) {
                   background: "rgba(10, 15, 30, 0.85)",
                   border: `1px solid ${peer.color}`,
                   color: "#F8FAFC",
-                  fontSize: "10px",
+                  fontSize: "12px",
                   backdropFilter: "blur(8px)",
                 }}
               >

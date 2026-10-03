@@ -118,7 +118,7 @@ function HolographicStamp({ stamp, index, onRemove, onViewGlobe }) {
           <div className="mono text-[8px] font-bold tracking-[0.18em]" style={{ color: pal.text }}>
             ★ {pal.label} ★
           </div>
-          <div className="mono text-[8px] tracking-widest mt-0.5" style={{ color: "#7A85A0" }}>
+          <div className="mono text-[8px] tracking-widest mt-0.5" style={{ color: "#94A3B8" }}>
             CLEARANCE REF: {stamp.id?.toString().slice(-4) || "7041"}
           </div>
         </div>
@@ -139,7 +139,7 @@ function HolographicStamp({ stamp, index, onRemove, onViewGlobe }) {
             {cityName}
           </div>
           {countryName && (
-            <div className="mono text-[9px] uppercase tracking-wider" style={{ color: "#7A85A0" }}>
+            <div className="mono text-xs uppercase tracking-wider" style={{ color: "#94A3B8" }}>
               {countryName}
             </div>
           )}
@@ -147,7 +147,7 @@ function HolographicStamp({ stamp, index, onRemove, onViewGlobe }) {
 
         {/* Route breadcrumb badge */}
         <div
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full mono text-[9px] font-bold"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full mono text-xs font-bold"
           style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${pal.border}44`, color: "#E8EAF0" }}
         >
           <span>{origIata}</span>
@@ -157,13 +157,13 @@ function HolographicStamp({ stamp, index, onRemove, onViewGlobe }) {
 
         {/* Footer date & distance */}
         <div className="w-full border-t pt-2 mt-2 flex items-center justify-between" style={{ borderColor: `${pal.border}33` }}>
-          <span className="mono text-[9px]" style={{ color: "#7A85A0" }}>
+          <span className="mono text-xs" style={{ color: "#94A3B8" }}>
             {stamp.date || "ACTIVE"}
           </span>
           <button
             type="button"
             onClick={() => onViewGlobe(stamp)}
-            className="mono text-[9px] font-bold flex items-center gap-0.5 cursor-pointer hover:underline"
+            className="mono text-xs font-bold flex items-center gap-0.5 cursor-pointer hover:underline"
             style={{ color: pal.text }}
           >
             <span>ROUTE</span>
@@ -215,7 +215,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
       className="holographic-sheen relative rounded-3xl overflow-hidden glass-card"
       style={{
         background: "rgba(13, 17, 27, 0.85)",
-        backdropFilter: "blur(28px) saturate(180%)",
+        backdropFilter: "blur(12px) saturate(180%)",
         border: "1px solid rgba(255,255,255,0.10)",
         boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.15), 0 20px 50px rgba(0,0,0,0.55)",
       }}
@@ -251,7 +251,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-[15px] text-white">{airline}</span>
                   <span
-                    className="mono text-[10px] font-bold px-2 py-0.5 rounded"
+                    className="mono text-xs font-bold px-2 py-0.5 rounded"
                     style={{
                       background: isBusiness ? "rgba(255,159,10,0.15)" : "rgba(41,151,255,0.12)",
                       border: `1px solid ${isBusiness ? "rgba(255,159,10,0.35)" : "rgba(41,151,255,0.3)"}`,
@@ -261,7 +261,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                     {flightCode}
                   </span>
                 </div>
-                <div className="mono text-[10px] text-[#86868b] mt-0.5">
+                <div className="mono text-xs text-[#86868b] mt-0.5">
                   DATE: {trip.date || "2026-09-04"} · GATEWAY FLIGHT-OS
                 </div>
               </div>
@@ -272,7 +272,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
               <button
                 type="button"
                 onClick={handleCopyPnr}
-                className="chip text-[10px] py-1 cursor-pointer"
+                className="chip text-xs py-1 cursor-pointer"
                 title="Copy PNR Booking Reference"
               >
                 <span className="text-[#86868b]">REF:</span>
@@ -280,7 +280,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                 {copied && <CheckCircle2 size={11} color="#30d158" />}
               </button>
               <div
-                className="flex items-center gap-1 px-2.5 py-1 rounded-full mono text-[9px] font-bold"
+                className="flex items-center gap-1 px-2.5 py-1 rounded-full mono text-xs font-bold"
                 style={{
                   background: "rgba(48,209,88,0.12)",
                   border: "1px solid rgba(48,209,88,0.3)",
@@ -301,14 +301,14 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                 {origCode}
               </div>
               <div className="font-semibold text-sm text-white mt-1">{origCity}</div>
-              <div className="mono text-[11px] text-[#86868b] mt-0.5">
+              <div className="mono text-[13px] text-[#86868b] mt-0.5">
                 DEP {flight.dep || "07:30"} · {trip.terminal || "T4"}
               </div>
             </div>
 
             {/* Middle Flight Path Arc */}
             <div className="flex flex-col items-center justify-center flex-1 max-w-[200px] px-2">
-              <span className="mono text-[10px] text-[#30d158] font-bold tracking-wider mb-1">
+              <span className="mono text-xs text-[#30d158] font-bold tracking-wider mb-1">
                 NON-STOP
               </span>
               <div className="relative w-full flex items-center justify-center">
@@ -320,7 +320,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                   <Plane size={11} color="#2997ff" className="rotate-45" />
                 </div>
               </div>
-              <span className="mono text-[9px] text-[#86868b] mt-1.5">
+              <span className="mono text-xs text-[#86868b] mt-1.5">
                 {flight.dur || "7h 15m"}
               </span>
             </div>
@@ -331,7 +331,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                 {destCode}
               </div>
               <div className="font-semibold text-sm text-white mt-1">{destCity}</div>
-              <div className="mono text-[11px] text-[#86868b] mt-0.5">
+              <div className="mono text-[13px] text-[#86868b] mt-0.5">
                 ARR {flight.arr || "19:45"} · {trip.terminal || "T5"}
               </div>
             </div>
@@ -347,7 +347,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
               <div className="mono text-base font-bold" style={{ color: isBusiness ? "#ff9f0a" : "#2997ff" }}>
                 {seat}
               </div>
-              <div className="mono text-[9px] text-[#86868b]">{cabinClass}</div>
+              <div className="mono text-xs text-[#86868b]">{cabinClass}</div>
             </div>
 
             <div>
@@ -355,7 +355,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
               <div className="mono text-base font-bold text-white">
                 {trip.gate || "B14"}
               </div>
-              <div className="mono text-[9px] text-[#30d158]">GROUP {trip.group || "A"}</div>
+              <div className="mono text-xs text-[#30d158]">GROUP {trip.group || "A"}</div>
             </div>
 
             <div>
@@ -363,7 +363,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
               <div className="mono text-base font-bold text-white">
                 {trip.terminal || "T4"}
               </div>
-              <div className="mono text-[9px] text-[#86868b]">FAST-TRACK</div>
+              <div className="mono text-xs text-[#86868b]">FAST-TRACK</div>
             </div>
 
             <div>
@@ -371,7 +371,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
               <div className="mono text-base font-bold font-mono text-[#30d158]">
                 {currencySymbol}{typeof price === "number" ? price.toLocaleString() : price}
               </div>
-              <div className="mono text-[9px] text-[#86868b]">TAXES INCL.</div>
+              <div className="mono text-xs text-[#86868b]">TAXES INCL.</div>
             </div>
           </div>
 
@@ -381,7 +381,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
               <button
                 type="button"
                 onClick={() => onViewGlobe({ origin, destination, flight })}
-                className="btn-ghost flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-bold cursor-pointer"
+                className="btn-ghost flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[13px] font-bold cursor-pointer"
               >
                 <Globe2 size={13} />
                 <span>VIEW 3D CORRIDOR</span>
@@ -390,7 +390,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
               <button
                 type="button"
                 onClick={handleCopyPnr}
-                className="btn-ghost flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-bold cursor-pointer"
+                className="btn-ghost flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[13px] font-bold cursor-pointer"
               >
                 <Share2 size={13} />
                 <span>SHARE ITINERARY</span>
@@ -400,7 +400,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
                 <button
                   type="button"
                   onClick={() => onBookSimilar(origCode, destCode)}
-                  className="btn-ghost flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-bold cursor-pointer hover:text-blue-300"
+                  className="btn-ghost flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[13px] font-bold cursor-pointer hover:text-blue-300"
                   title="Search & book another flight on this corridor"
                 >
                   <Plane size={13} className="text-blue-400" />
@@ -412,7 +412,7 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
             <button
               type="button"
               onClick={() => onCancel(trip.id)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer transition-all hover:bg-rose-500/20 text-[#FF3B69] border border-rose-500/20"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] font-bold cursor-pointer transition-all hover:bg-rose-500/20 text-[#FF3B69] border border-rose-500/20"
               title="Cancel flight reservation"
             >
               <Trash2 size={12} />
@@ -437,10 +437,10 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
           }}
         >
           <div className="w-full space-y-1">
-            <div className="mono text-[9px] font-bold tracking-widest text-[#2997ff]">
+            <div className="mono text-xs font-bold tracking-widest text-[#2997ff]">
               DIGITAL WALLET NFC
             </div>
-            <div className="mono text-[10px] text-[#86868b]">
+            <div className="mono text-xs text-[#86868b]">
               BIOMETRIC SMART PASS
             </div>
           </div>
@@ -451,12 +451,12 @@ function BoardingPassTicket({ trip, onCancel, onViewGlobe, onBookSimilar }) {
           </div>
 
           <div className="w-full space-y-3">
-            <div className="mono text-[9px] text-[#86868b] leading-relaxed">
+            <div className="mono text-xs text-[#86868b] leading-relaxed">
               SCAN AT TSA PRE-CHECK & BOARDING E-GATES
             </div>
 
             <div
-              className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl mono text-[9px] font-semibold text-[#30d158]"
+              className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl mono text-xs font-semibold text-[#30d158]"
               style={{ background: "rgba(48,209,88,0.08)", border: "1px solid rgba(48,209,88,0.2)" }}
             >
               <ShieldCheck size={12} />
@@ -556,7 +556,7 @@ export default function Passport() {
         style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
       >
         <div className="flex-1 max-w-md">
-          <div className="mono text-[9px] tracking-widest mb-1 text-[#64748B]">
+          <div className="mono text-xs tracking-widest mb-1 text-[#64748B]">
             DIGITAL CREDENTIALS // TRAVEL DOSSIER
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
@@ -575,10 +575,10 @@ export default function Passport() {
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-[13px] font-bold text-white flex items-center gap-1.5"><Award size={15} className="text-[#bf5af2]" /> Frequent Flyer Status</h3>
-            <p className="text-[11px] text-[#94A3B8] mt-1.5 max-w-sm leading-relaxed">You have collected <span className="font-bold text-white">{uniqueStamps.length}</span> digital stamps. Book flights to earn stamps and unlock exclusive UI themes (like <span className="text-[#c084fc]">Cyberpunk</span> and <span className="text-[#ff2a85]">Synthwave</span>).</p>
+            <p className="text-[13px] text-[#94A3B8] mt-1.5 max-w-sm leading-relaxed">You have collected <span className="font-bold text-white">{uniqueStamps.length}</span> digital stamps. Book flights to earn stamps and unlock exclusive UI themes (like <span className="text-[#c084fc]">Cyberpunk</span> and <span className="text-[#ff2a85]">Synthwave</span>).</p>
           </div>
           <div className="flex-1 max-w-sm w-full bg-black/40 p-3 rounded-2xl border border-white/5">
-            <div className="flex justify-between text-[10px] text-[#bf5af2] font-bold mb-2 uppercase tracking-wider">
+            <div className="flex justify-between text-xs text-[#bf5af2] font-bold mb-2 uppercase tracking-wider">
               <span>{uniqueStamps.length < 2 ? "Novice" : uniqueStamps.length < 8 ? "Explorer" : "Elite Tier"}</span>
               <span>{uniqueStamps.length < 2 ? "2 Stamps to Sunset Theme" : uniqueStamps.length < 4 ? "4 Stamps to Synthwave" : uniqueStamps.length < 8 ? "8 Stamps to Cyberpunk" : "All Themes Unlocked"}</span>
             </div>
@@ -617,7 +617,7 @@ export default function Passport() {
               <Ticket size={13} />
               <span>BOARDING PASSES</span>
               <span
-                className="mono w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center"
+                className="mono w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center"
                 style={{
                   background: activeTab === "passes" ? "#0071e3" : "rgba(255,255,255,0.08)",
                   color: "#ffffff",
@@ -640,7 +640,7 @@ export default function Passport() {
             >
               <span>🌍 PASSPORT STAMPS</span>
               <span
-                className="mono w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center"
+                className="mono w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center"
                 style={{
                   background: activeTab === "stamps" ? "#bf5af2" : "rgba(255,255,255,0.08)",
                   color: "#fff",
@@ -663,7 +663,7 @@ export default function Passport() {
             >
               <span><Heart size={13} className="inline mr-1" /> WATCHLIST</span>
               <span
-                className="mono w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center"
+                className="mono w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center"
                 style={{
                   background: activeTab === "watchlist" ? "#f43f5e" : "rgba(255,255,255,0.08)",
                   color: "#fff",
@@ -697,7 +697,7 @@ export default function Passport() {
               style={{
                 background: "rgba(22, 22, 24, 0.65)",
                 border: "1px dashed rgba(255,255,255,0.12)",
-                backdropFilter: "blur(20px)",
+                backdropFilter: "blur(12px)",
               }}
             >
               <div
@@ -708,7 +708,7 @@ export default function Passport() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-bold text-white">No active electronic boarding passes</h3>
-                <p className="text-xs text-[#7A85A0] max-w-md mx-auto">
+                <p className="text-xs text-[#94A3B8] max-w-md mx-auto">
                   Book a flight through the GDS booking engine, explore routes on the 3D globe, or request an itinerary with Nimbus AI Copilot.
                 </p>
               </div>
@@ -792,7 +792,7 @@ export default function Passport() {
                         <Clock size={12} className="text-[#2997ff]" />
                         <span>{new Date(item.searchContext.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
                       </div>
-                      <span className="px-2.5 py-1 rounded-md bg-white/5 font-semibold text-[10px] uppercase tracking-wider">{item.searchContext.travelClass}</span>
+                      <span className="px-2.5 py-1 rounded-md bg-white/5 font-semibold text-xs uppercase tracking-wider">{item.searchContext.travelClass}</span>
                     </div>
 
                     <button 
@@ -817,13 +817,13 @@ export default function Passport() {
               style={{
                 background: "rgba(13, 17, 27, 0.65)",
                 border: "1px dashed rgba(255,255,255,0.12)",
-                backdropFilter: "blur(20px)",
+                backdropFilter: "blur(12px)",
               }}
             >
               <div className="text-6xl">🌍</div>
               <div className="space-y-1">
                 <h3 className="text-xl font-bold text-white">Digital Passport Empty</h3>
-                <p className="text-xs text-[#7A85A0] max-w-md mx-auto">
+                <p className="text-xs text-[#94A3B8] max-w-md mx-auto">
                   Confirm any booking or select flight trajectories on Explore to earn holographic transit stamps across world hubs.
                 </p>
               </div>
@@ -867,7 +867,7 @@ export default function Passport() {
                     {uniqueDests.map((iata) => (
                       <span
                         key={iata}
-                        className="mono text-[10px] font-semibold px-2.5 py-0.5 rounded-lg"
+                        className="mono text-xs font-semibold px-2.5 py-0.5 rounded-lg"
                         style={{
                           background: "rgba(41,151,255,0.10)",
                           border: "1px solid rgba(41,151,255,0.25)",
@@ -881,13 +881,13 @@ export default function Passport() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="mono text-[10px] text-[#7A85A0] hidden md:block">
+                  <span className="mono text-xs text-[#94A3B8] hidden md:block">
                     HOVER STAMP TO INSPECT
                   </span>
                   <button
                     type="button"
                     onClick={() => { sound.playClick(); clearStamps(); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold cursor-pointer transition-all hover:bg-rose-500/20 text-[#FF3B69] border border-rose-500/20"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-all hover:bg-rose-500/20 text-[#FF3B69] border border-rose-500/20"
                   >
                     <Trash2 size={11} />
                     <span>RESET STAMPS</span>

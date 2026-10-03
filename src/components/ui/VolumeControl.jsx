@@ -48,7 +48,7 @@ export default function VolumeControl() {
       }, React.createElement(Icon, { size: 14 })),
       open && React.createElement("div", {
         className: "absolute right-0 top-full mt-2 z-[200] rounded-xl shadow-2xl overflow-hidden",
-        style: { background: "rgba(8,12,22,0.96)", border: "1px solid rgba(255,255,255,0.10)", backdropFilter: "blur(20px)", minWidth: "96px" },
+        style: { background: "rgba(8,12,22,0.96)", border: "1px solid rgba(255,255,255,0.10)", backdropFilter: "blur(12px)", minWidth: "96px" },
       }, LEVELS.map((lvl) => {
         const LvlIcon = lvl.Icon;
         const isActive = Math.abs(lvl.value - soundVolume) < 0.05;
@@ -59,7 +59,7 @@ export default function VolumeControl() {
           style: { background: isActive ? "rgba(41,151,255,0.12)" : "transparent", color: isActive ? "#2997ff" : "#86868b" },
         },
           React.createElement(LvlIcon, { size: 12 }),
-          React.createElement("span", { className: "mono text-[10px] font-bold" }, lvl.label),
+          React.createElement("span", { className: "mono text-xs font-bold" }, lvl.label),
           isActive && React.createElement("span", { className: "w-1.5 h-1.5 rounded-full ml-auto", style: { background: "#2997ff" } })
         );
       }))

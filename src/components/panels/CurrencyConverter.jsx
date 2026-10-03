@@ -80,7 +80,7 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
 
       {/* Preset Buttons */}
       <div className="flex items-center gap-1.5 mb-3">
-        <span className="text-[11px] text-[#86868b] mr-1">Presets:</span>
+        <span className="text-[13px] text-[#86868b] mr-1">Presets:</span>
         {PRESET_AMOUNTS.map((preset) => (
           <button
             key={preset}
@@ -185,7 +185,7 @@ export default function CurrencyConverter({ baseCostUSD, destCurrency }) {
                 {formatCurrencyVal(numericAmount, fromCurrency)} {fromCurrency} =
               </div>
               {isFallback && (
-                <div className="text-[10px] text-amber-400/80 flex items-center gap-1 mt-0.5">
+                <div className="text-xs text-amber-400/80 flex items-center gap-1 mt-0.5">
                   <Sparkles size={9} />
                   <span>Telemetry Exchange Engine</span>
                 </div>

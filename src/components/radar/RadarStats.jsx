@@ -28,7 +28,7 @@ export default function RadarStats({ stats }) {
       className="absolute bottom-28 sm:bottom-4 left-3 sm:left-4 z-[201] pointer-events-auto rounded-2xl p-3 flex flex-col gap-2 min-w-[200px] max-w-[calc(100vw-24px)] border border-white/10 shadow-2xl transition-all"
       style={{
         background: "rgba(22, 22, 24, 0.88)",
-        backdropFilter: "blur(24px)",
+        backdropFilter: "blur(12px)",
       }}
     >
       {/* Drawer Header Toggle */}
@@ -56,7 +56,7 @@ export default function RadarStats({ stats }) {
           />
           <StatRow icon={<Clock size={11} />} label="Last Sync" value={lastUpdateStr} />
 
-          <div className="text-[9px] font-mono text-[#94A3B8] text-center pt-1 border-t border-white/5">
+          <div className="text-xs font-mono text-[#94A3B8] text-center pt-1 border-t border-white/5">
             15s Cadence · Real-World Flight Telemetry
           </div>
         </div>
@@ -68,12 +68,12 @@ export default function RadarStats({ stats }) {
 function StatRow({ icon, label, value, color }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-1.5 text-[11px] text-[#94A3B8]">
+      <div className="flex items-center gap-1.5 text-[13px] text-[#94A3B8]">
         <span>{icon}</span>
         {label}
       </div>
       <span
-        className="text-[11px] font-bold font-mono"
+        className="text-[13px] font-bold font-mono"
         style={{ color: color || "#F8FAFC" }}
       >
         {value}

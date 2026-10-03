@@ -401,8 +401,8 @@ export default function FlightStreamMatrix({
       className="flex flex-col h-full overflow-hidden rounded-3xl"
       style={{
         background: "rgba(18, 18, 20, 0.82)",
-        backdropFilter: "blur(28px) saturate(180%)",
-        WebkitBackdropFilter: "blur(28px) saturate(180%)",
+        backdropFilter: "blur(12px) saturate(180%)",
+        WebkitBackdropFilter: "blur(12px) saturate(180%)",
         border: "1px solid rgba(255,255,255,0.10)",
         boxShadow: "0 24px 64px rgba(0,0,0,0.6)",
       }}
@@ -414,12 +414,12 @@ export default function FlightStreamMatrix({
           <span className="mono text-[22px] font-bold text-white">{origCode}</span>
           <ArrowRight size={16} className="text-[#86868b]" />
           <span className="mono text-[22px] font-bold text-[#2997ff]">{destCode}</span>
-          <span className="mono text-[11px] ml-auto text-[#86868b]">
+          <span className="mono text-[13px] ml-auto text-[#86868b]">
             {totalKm} · {avgDur} avg
           </span>
         </div>
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <p className="text-[11px] text-[#86868b]">
+          <p className="text-[13px] text-[#86868b]">
             {origCity} → {destCity} · {filtered.length} verified offers
           </p>
           <button
@@ -428,7 +428,7 @@ export default function FlightStreamMatrix({
               sound.playClick();
               navigate(`/booking?from=${origCode}&to=${destCode}`);
             }}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-semibold bg-white/[0.05] text-[#86868b] hover:text-white border border-white/10 hover:border-white/20 transition-all cursor-pointer shadow-sm"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-white/[0.05] text-[#86868b] hover:text-white border border-white/10 hover:border-white/20 transition-all cursor-pointer shadow-sm"
             title="Open live multi-carrier fares and 7-day matrix in GDS Booking Engine"
           >
             <Plane size={11} className="text-[#2997ff]" />
@@ -437,7 +437,7 @@ export default function FlightStreamMatrix({
         </div>
 
         {/* Dynamic Criteria Pill Bar */}
-        <div className="flex items-center gap-2 mt-2 px-2.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-[10px] flex-wrap">
+        <div className="flex items-center gap-2 mt-2 px-2.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs flex-wrap">
           <span className="text-[#2997ff] font-medium flex items-center gap-1">
             <Clock size={10} />
             {formattedDate}
@@ -513,24 +513,24 @@ export default function FlightStreamMatrix({
                   {/* Left: Airline identity */}
                   <div className="flex flex-col gap-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="mono text-[11px] font-bold tracking-wider text-white">
+                      <span className="mono text-[13px] font-bold tracking-wider text-white">
                         {flight.callsign}
                       </span>
                       <span className="text-[12px] font-semibold text-[#f5f5f7]">
                         {flight.airline}
                       </span>
                       {flight.isBest && (
-                        <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
                           BEST VALUE
                         </span>
                       )}
                       {flight.isCheapest && (
-                        <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                           LOWEST FARE
                         </span>
                       )}
                       {flight.isPremium && (
-                        <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
                           ✦ PREMIUM
                         </span>
                       )}
@@ -540,23 +540,23 @@ export default function FlightStreamMatrix({
                     <div className="flex items-end gap-3 mt-1.5">
                       <div>
                         <div className="mono text-[22px] font-bold leading-none text-white">{flight.dep}</div>
-                        <div className="mono text-[10px] font-bold mt-0.5 text-[#86868b]">{origCode}</div>
-                        <div className="text-[10px] mt-0.5 text-[#86868b]">{flight.depTerm}</div>
+                        <div className="mono text-xs font-bold mt-0.5 text-[#86868b]">{origCode}</div>
+                        <div className="text-xs mt-0.5 text-[#86868b]">{flight.depTerm}</div>
                       </div>
 
                       <div className="flex-1 pb-4">
                         <FlightSpline active={isSelected} />
                         <div className="flex items-center justify-center gap-1 mt-0.5">
                           <Clock size={9} className="text-[#86868b]" />
-                          <span className="mono text-[9px] text-[#86868b]">{flight.dur}</span>
-                          <span className="mono text-[9px] text-[#86868b]">· DIRECT</span>
+                          <span className="mono text-xs text-[#86868b]">{flight.dur}</span>
+                          <span className="mono text-xs text-[#86868b]">· DIRECT</span>
                         </div>
                       </div>
 
                       <div className="text-right">
                         <div className="mono text-[22px] font-bold leading-none text-white">{flight.arr}</div>
-                        <div className="mono text-[10px] font-bold mt-0.5 text-[#2997ff]">{destCode}</div>
-                        <div className="text-[10px] mt-0.5 text-[#86868b]">{flight.arrTerm}</div>
+                        <div className="mono text-xs font-bold mt-0.5 text-[#2997ff]">{destCode}</div>
+                        <div className="text-xs mt-0.5 text-[#86868b]">{flight.arrTerm}</div>
                       </div>
                     </div>
                   </div>
@@ -568,11 +568,11 @@ export default function FlightStreamMatrix({
                         {flight.currencySymbol || "$"}{flight.price.toLocaleString()}
                       </div>
                       {flight.passengers > 1 ? (
-                        <div className="mono text-[9px] text-[#2997ff] font-medium">
+                        <div className="mono text-xs text-[#2997ff] font-medium">
                           {flight.currencySymbol}{(flight.perPaxPrice || Math.round(flight.price / flight.passengers)).toLocaleString()} / pax
                         </div>
                       ) : (
-                        <div className="mono text-[9px] mt-0.5 text-[#86868b]">incl. taxes</div>
+                        <div className="mono text-xs mt-0.5 text-[#86868b]">incl. taxes</div>
                       )}
                       {flight.seatsRemaining && flight.seatsRemaining <= 4 && (
                         <div className="mono text-[8px] text-amber-400 font-semibold flex items-center justify-end gap-1 mt-0.5">
@@ -585,7 +585,7 @@ export default function FlightStreamMatrix({
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); sound.playSeatSelect(); onSelectFlight(flight); }}
-                      className="btn-aurora flex items-center gap-1 px-3 py-1.5 rounded-xl text-[10px] font-semibold"
+                      className="btn-aurora flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold"
                     >
                       <span>SELECT SEAT</span>
                       <ArrowRight size={11} />
@@ -595,7 +595,7 @@ export default function FlightStreamMatrix({
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : flight.id); }}
-                      className="btn-ghost flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-medium"
+                      className="btn-ghost flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium"
                     >
                       <span>DETAILS</span>
                       <ChevronDown size={10} style={{ transform: isExpanded ? "rotate(180deg)" : "none", transition: "0.2s" }} />
@@ -626,11 +626,11 @@ export default function FlightStreamMatrix({
                           <div key={label} className="flex flex-col items-center gap-1 p-2 rounded-xl" style={{ background: "rgba(255,255,255,0.025)" }}>
                             <Icon size={12} color={color} />
                             <span className="mono text-[8px] tracking-wider" style={{ color: "#404660" }}>{label}</span>
-                            <span className="mono text-[9px] font-bold text-center leading-tight" style={{ color: "#E8EAF0" }}>{val}</span>
+                            <span className="mono text-xs font-bold text-center leading-tight" style={{ color: "#E8EAF0" }}>{val}</span>
                           </div>
                         ))}
                       </div>
-                      <div className="mono text-[9px] mt-2 px-1" style={{ color: "#404660" }}>
+                      <div className="mono text-xs mt-2 px-1" style={{ color: "#404660" }}>
                         {flight.plane} · SEAT PITCH: {flight.seatPitch}
                       </div>
                     </motion.div>
@@ -655,7 +655,7 @@ export default function FlightStreamMatrix({
           ].map(({ icon: Icon, label, color }) => (
             <div key={label} className="flex items-center gap-1">
               {Icon && <Icon size={11} color={color} />}
-              <span className="mono text-[9px] font-semibold tracking-wider" style={{ color }}>{label}</span>
+              <span className="mono text-xs font-semibold tracking-wider" style={{ color }}>{label}</span>
             </div>
           ))}
         </div>
@@ -666,7 +666,7 @@ export default function FlightStreamMatrix({
             sound.playClick();
             navigate(`/booking?from=${origCode}&to=${destCode}`);
           }}
-          className="text-[10px] mono text-[#2997ff] hover:text-[#52a9ff] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
+          className="text-xs mono text-[#2997ff] hover:text-[#52a9ff] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
         >
           <span>Compare All Fares in GDS Engine ↗</span>
         </button>

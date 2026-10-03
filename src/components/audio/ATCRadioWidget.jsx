@@ -117,7 +117,7 @@ export default function ATCRadioWidget() {
 
             <div className="flex flex-col text-left">
               <div className="flex items-center gap-1.5">
-                <span className="mono text-[9px] font-bold tracking-widest text-blue-400">
+                <span className="mono text-xs font-bold tracking-widest text-blue-400">
                   ATC RADIO
                 </span>
                 <span
@@ -128,7 +128,7 @@ export default function ATCRadioWidget() {
                   }}
                 />
               </div>
-              <span className="mono text-[10px] font-bold text-slate-200">
+              <span className="mono text-xs font-bold text-slate-200">
                 {activeChannel.freq} MHz
               </span>
             </div>
@@ -163,10 +163,10 @@ export default function ATCRadioWidget() {
 
         {/* Expanded Console */}
         {expanded && (
-          <div className="p-3 border-t border-white/10 space-y-3 animate-fade-in text-[10px] mono">
+          <div className="p-3 border-t border-white/10 space-y-3 animate-fade-in text-xs mono">
             {/* Live Ticker display */}
             <div
-              className="p-2 rounded-xl bg-black/40 border border-white/10 text-slate-200 font-mono text-[10px] leading-relaxed flex items-start gap-2"
+              className="p-2 rounded-xl bg-black/40 border border-white/10 text-slate-200 font-mono text-xs leading-relaxed flex items-start gap-2"
             >
               <Activity size={12} className={`flex-shrink-0 mt-0.5 ${transmitting ? "text-[#30d158] animate-pulse" : "text-[#86868b]"}`} />
               <p className="line-clamp-2">{currentCallout}</p>
@@ -174,7 +174,7 @@ export default function ATCRadioWidget() {
 
             {/* Channels Grid */}
             <div className="space-y-1">
-              <span className="text-[#86868b] text-[9px] tracking-wider">VHF FREQUENCIES</span>
+              <span className="text-[#86868b] text-xs tracking-wider">VHF FREQUENCIES</span>
               <div className="grid grid-cols-2 gap-1.5">
                 {ATC_CHANNELS.map((ch) => {
                   const isCur = ch.freq === atcRadioFrequency;
@@ -196,7 +196,7 @@ export default function ATCRadioWidget() {
                       }}
                     >
                       <span className="font-bold">{ch.name}</span>
-                      <span className="text-[9px] opacity-75">{ch.freq}</span>
+                      <span className="text-xs opacity-75">{ch.freq}</span>
                     </button>
                   );
                 })}
@@ -215,7 +215,7 @@ export default function ATCRadioWidget() {
                 <span>TEST SQUELCH</span>
               </button>
 
-              <span className="text-[9px] text-slate-500">
+              <span className="text-xs text-slate-400">
                 VOL: {Math.round(soundVolume * 100)}%
               </span>
             </div>

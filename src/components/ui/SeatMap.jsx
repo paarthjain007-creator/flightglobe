@@ -121,7 +121,7 @@ export default function SeatMap({
         {/* Business Cabin Header */}
         <div className="flex items-center gap-3 my-2.5">
           <div className="flex-1 h-px bg-white/10" />
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-[#ff9f0a] mono">
+          <span className="text-xs font-semibold uppercase tracking-widest text-[#ff9f0a] mono">
             Business Class Flatbed (Rows 1–2)
           </span>
           <div className="flex-1 h-px bg-white/10" />
@@ -137,7 +137,7 @@ export default function SeatMap({
                 {isDivider && (
                   <div className="w-full flex items-center gap-3 my-1.5">
                     <div className="flex-1 h-px bg-white/10" />
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b] mono">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-[#86868b] mono">
                       Economy Class (Rows 3–6)
                     </span>
                     <div className="flex-1 h-px bg-white/10" />
@@ -145,7 +145,7 @@ export default function SeatMap({
                 )}
 
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-[10px] mono font-bold text-slate-500 w-3 text-right">
+                  <span className="text-xs mono font-bold text-slate-400 w-3 text-right">
                     {r + 1}
                   </span>
 
@@ -167,7 +167,7 @@ export default function SeatMap({
                   </div>
 
                   {/* Aisle */}
-                  <div className="w-3 sm:w-5 text-center text-[9px] mono text-slate-600">|</div>
+                  <div className="w-3 sm:w-5 text-center text-xs mono text-slate-600">|</div>
 
                   {/* Right Block (D E F) */}
                   <div className="flex gap-1 sm:gap-1.5">
@@ -192,7 +192,7 @@ export default function SeatMap({
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center gap-3 mt-3 text-[10px] mono text-[#86868b] flex-wrap">
+        <div className="flex items-center justify-center gap-3 mt-3 text-xs mono text-[#86868b] flex-wrap">
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded-lg bg-white/5 border border-white/15" /> Available
           </div>

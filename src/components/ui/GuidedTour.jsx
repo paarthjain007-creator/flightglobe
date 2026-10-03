@@ -88,7 +88,7 @@ export default function GuidedTour({ onDone }) {
               }`}
             />
           ))}
-          <span className="ml-auto text-[10px] text-slate-500 font-mono">
+          <span className="ml-auto text-xs text-slate-400 font-mono">
             {step + 1} / {STEPS.length}
           </span>
         </div>
@@ -102,14 +102,14 @@ export default function GuidedTour({ onDone }) {
         <div className="space-y-2">
           <h2 className="text-lg font-bold text-white">{title}</h2>
           <p className="text-sm text-slate-300 leading-relaxed">{desc}</p>
-          <p className="text-xs text-slate-500 italic">{hint}</p>
+          <p className="text-xs text-slate-400 italic">{hint}</p>
         </div>
 
         {/* Navigation */}
         <div className="flex items-center justify-between pt-2 border-t border-white/10">
           <button
             onClick={dismiss}
-            className="text-xs text-slate-500 hover:text-slate-300 cursor-pointer transition-colors"
+            className="text-xs text-slate-400 hover:text-slate-300 cursor-pointer transition-colors"
           >
             Skip Tour
           </button>

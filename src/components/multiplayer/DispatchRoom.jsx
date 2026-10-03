@@ -60,7 +60,7 @@ export default function DispatchRoom({ onClose }) {
 
   return React.createElement("div", {
     className: "fixed inset-0 z-[120] flex items-center justify-center p-4",
-    style: { background: "rgba(0,0,0,0.75)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }
+    style: { background: "rgba(0,0,0,0.75)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }
   },
     React.createElement(motion.div, {
       initial: { scale: 0.94, opacity: 0, y: 16 },
@@ -113,7 +113,7 @@ export default function DispatchRoom({ onClose }) {
                 )
               ),
               React.createElement("div", { className: "space-y-1.5" },
-                React.createElement("div", { className: "mono text-[9px] tracking-widest text-[#86868b]" }, "ACTIVE PLANNERS"),
+                React.createElement("div", { className: "mono text-xs tracking-widest text-[#86868b]" }, "ACTIVE PLANNERS"),
                 React.createElement("div", {
                   className: "flex items-center gap-2.5 px-3 py-2 rounded-xl",
                   style: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }
@@ -121,7 +121,7 @@ export default function DispatchRoom({ onClose }) {
                   React.createElement("span", { className: "text-base" }, "pilot"),
                   React.createElement("div", { className: "flex-1" },
                     React.createElement("div", { className: "text-xs font-semibold text-[#f5f5f7]" }, "You (Commander)"),
-                    React.createElement("div", { className: "mono text-[9px] text-[#2997ff]" },
+                    React.createElement("div", { className: "mono text-xs text-[#2997ff]" },
                       (searchOrigin?.iata || "---") + " to " + (searchDest?.iata || "---")
                     )
                   ),
@@ -135,8 +135,8 @@ export default function DispatchRoom({ onClose }) {
                   },
                     React.createElement("span", { className: "text-sm" }, p.avatar),
                     React.createElement("div", { className: "flex-1" },
-                      React.createElement("div", { className: "text-[11px] font-semibold text-[#f5f5f7]" }, p.name),
-                      React.createElement("div", { className: "mono text-[9px] text-[#86868b]" }, p.city)
+                      React.createElement("div", { className: "text-[13px] font-semibold text-[#f5f5f7]" }, p.name),
+                      React.createElement("div", { className: "mono text-xs text-[#86868b]" }, p.city)
                     ),
                     React.createElement(Wifi, { size: 9, style: { color: "#30d158", opacity: 0.7 } })
                   )
@@ -144,7 +144,7 @@ export default function DispatchRoom({ onClose }) {
               ),
               React.createElement("button", {
                 type: "button", onClick: handleLeave,
-                className: "w-full py-2.5 rounded-xl mono text-[10px] font-semibold cursor-pointer transition-colors",
+                className: "w-full py-2.5 rounded-xl mono text-xs font-semibold cursor-pointer transition-colors",
                 style: { background: "rgba(255,69,58,0.10)", border: "1px solid rgba(255,69,58,0.25)", color: "#ff453a" }
               }, "LEAVE ROOM")
             )
