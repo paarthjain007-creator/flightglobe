@@ -11,6 +11,7 @@ import { useStore } from "./store/useStore";
 import { sound } from "./utils/soundFx";
 // Pages
 const Explore   = lazy(() => import("./pages/Explore"));
+const Simulator = lazy(() => import("./pages/Simulator"));
 const Home      = lazy(() => import("./pages/Home"));
 const RadarPage = lazy(() => import("./pages/RadarPage"));
 import Copilot from "./pages/Copilot";
