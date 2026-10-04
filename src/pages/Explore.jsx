@@ -12,6 +12,10 @@ const Interactive3DGlobeTracker = React.lazy(() => import("../components/tracker
 
 import FlightStreamMatrix from "../components/itinerary/StaggeredDepartureCards";
 const KineticSeatCanvas = React.lazy(() => import("../components/canvas/KineticSeatCanvas"));
+const CockpitHUD = React.lazy(() => import("../components/cockpit/CockpitHUD"));
+const FlightDeckFAB = React.lazy(() => import("../components/ui/FlightDeckFAB"));
+const DispatchRoom = React.lazy(() => import("../components/multiplayer/DispatchRoom"));
+
 import { useStore } from "../store/useStore";
 import { sound } from "../utils/soundFx";
 import { AIRPORTS, getAirportByIata } from "../data/airports";
@@ -650,6 +654,7 @@ export default function Explore() {
   const addTrip    = useStore((s) => s.addTrip);
   const addStamp   = useStore((s) => s.addStamp);
   const currency   = useStore((s) => s.currency || "USD");
+  const isLiteMode = useStore((s) => s.isLiteMode || false);
 
   const [origin, setOrigin] = useState({
     code:"JFK",iata:"JFK",name:"John F. Kennedy Intl Airport",city:"New York",country:"US",
@@ -674,6 +679,7 @@ export default function Explore() {
   const activeOverlayLayer                      = useStore((s) => s.activeOverlayLayer);
   const setActiveOverlayLayer                   = useStore((s) => s.setActiveOverlayLayer);
   const [isCockpitView, setIsCockpitView]       = useState(false);
+    const [isDispatchMode, setIsDispatchMode]     = useState(false);
   const [showWindVectors, setShowWindVectors]   = useState(false);
   const [isARModalOpen, setIsARModalOpen]       = useState(false);
   const [isARActive, setIsARActive]             = useState(false);
@@ -1053,7 +1059,7 @@ export default function Explore() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => handleConfirmBooking("12A")}
+                        onClick={() => handleConfirmBooking({ flight: selectedFlight || { code: "FL-101", origin, destination, price: 120 }, seat: "Auto-Assigned", totalPrice: selectedFlight?.price || 120 })}
                         className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]"
                       >
                         Confirm Itinerary
@@ -1098,7 +1104,7 @@ export default function Explore() {
 
       {/* ── 9. COLLABORATIVE DISPATCH ROOM MODAL ──────────────────────── */}
       {showDispatchRoom && (
-        <DispatchRoom onClose={() => setShowDispatchRoom(false)} />
+        <React.Suspense fallback={null}><DispatchRoom onClose={() => setShowDispatchRoom(false)} /></React.Suspense>
       )}
     </div>
   );
