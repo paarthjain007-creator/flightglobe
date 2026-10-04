@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { Search, Plane, Calendar, Loader2, ArrowRightLeft, Filter, TrendingDown, Zap, Clock, ArrowUpRight, ChevronDown, ChevronUp, SlidersHorizontal, History, X, ArrowRight } from "lucide-react";
+import { Search, Plane, Calendar, Loader2, ArrowRightLeft, Filter, TrendingDown, Zap, Clock, ArrowUpRight, ChevronDown, ChevronUp, SlidersHorizontal, History, X, ArrowRight, Heart } from "lucide-react";
 import AirportSearch from "../Search/AirportSearch";
 import BookingCard from "./BookingCard";
 import { searchAmadeusFlightOffers, CURRENCY_MAP, fetch7DayFareMatrixAPI } from "../../services/api/amadeusService";
@@ -36,6 +36,9 @@ export default function FlightSearchEngine({ initialOrigin, initialDestination }
   const setCurrency = setStoreCurrency;
   const recentSearches = useStore((s) => s.recentSearches);
   const addRecentSearch = useStore((s) => s.addRecentSearch);
+  const savedFlights = useStore((s) => s.savedFlights || []);
+  const clearSavedFlights = useStore((s) => s.clearSavedFlights);
+  const toggleSavedFlight = useStore((s) => s.toggleSavedFlight);
   const removeRecentSearch = useStore((s) => s.removeRecentSearch);
   const clearRecentSearches = useStore((s) => s.clearRecentSearches);
 
