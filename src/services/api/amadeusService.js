@@ -226,7 +226,7 @@ export async function searchAmadeusFlightOffers(params) {
             };
             
             const totalRaw = parseFloat(offer.price?.total) || 0;
-            const convertedTotal = Math.round(totalRaw * currConf.rate);
+              const convertedTotal = Math.round(totalRaw);
             const convertedBase = Math.round(convertedTotal * 0.78);
             const convertedTaxes = Math.round(convertedTotal * 0.14);
             const convertedFuel = convertedTotal - convertedBase - convertedTaxes;
@@ -324,7 +324,7 @@ function normalizeAmadeusResponse(data, targetCurrency = "USD") {
     }));
 
     const rawTotalUSD = parseFloat(offer.price?.grandTotal || offer.price?.total || "0");
-    const convertedTotal = Math.round(rawTotalUSD * currConf.rate);
+      const convertedTotal = Math.round(rawTotalUSD);
     const convertedBase = Math.round(convertedTotal * 0.78);
     const convertedTaxes = Math.round(convertedTotal * 0.14);
     const convertedFuel = convertedTotal - convertedBase - convertedTaxes;
@@ -387,7 +387,7 @@ async function generateFallbackFlightOffers({ originIata, destinationIata, depar
   dest = dest || { iata: dCode, lat: 19.0896, lng: 72.8656, city: dCode, country: "Global Airport" };
 
   const distKm = haversineDistance(origin.lat, origin.lng, dest.lat, dest.lng);
-  const baseUsdPrice = Math.round(Math.max(140, distKm * 0.092 + 75));
+  const baseUsdPrice = Math.round(Math.max(50, distKm * 0.06 + 35)); // Lowered realistic baseline
 
   const currConf = CURRENCY_MAP[currency] || CURRENCY_MAP.USD;
 
