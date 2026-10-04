@@ -482,6 +482,8 @@ export default function Passport() {
   const removeTrip  = useStore((s) => s.removeTrip);
   const setStoreWps = useStore((s) => s.setWaypoints);
     const savedFlights = useStore((s) => s.savedFlights);
+  const removeStamp = useStore((s) => s.removeStamp);
+  const clearStamps = useStore((s) => s.clearStamps);
     const toggleSavedFlight = useStore((s) => s.toggleSavedFlight);
 
   const [activeTab, setActiveTab] = useState("passes"); // "passes" | "stamps"
@@ -775,7 +777,7 @@ export default function Passport() {
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <div className="text-xs font-bold text-[#86868b] tracking-widest uppercase flex items-center gap-1.5">
-                          {item.searchContext.origin} <ArrowRight size={10} /> {item.searchContext.destination}
+                          {item.searchContext?.origin || "Unknown"} <ArrowRight size={10} /> {item.searchContext?.destination || "Unknown"}
                         </div>
                         <div className="text-2xl font-black text-white mt-1 tracking-tighter">{item.flight.price?.currencySymbol || "$"}{(item.flight.price?.total || 0).toLocaleString()}</div>
                       </div>
