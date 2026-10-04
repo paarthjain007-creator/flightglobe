@@ -49,6 +49,8 @@ export default function NavBar({ onOpenCommandPalette }) {
   const setCurrency     = useStore((s) => s.setCurrency);
   const soundEnabled    = useStore((s) => s.soundEnabled ?? true);
   const setSoundEnabled = useStore((s) => s.setSoundEnabled);
+    const isLiteMode      = useStore((s) => s.isLiteMode || false);
+    const setIsLiteMode   = useStore((s) => s.setIsLiteMode);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
