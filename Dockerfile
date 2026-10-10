@@ -9,20 +9,20 @@ RUN apt-get update -y && \
 # Set the working directory
 WORKDIR /app
 
-# Copy package files and install Node dependencies
-COPY package.json ./
-RUN npm install --production
+# Copy ALL files first so Prisma can find its schema during installation
+COPY . .
+
+# Install Node dependencies
+# Note: --legacy-peer-deps prevents strict version conflicts, and we avoid --production 
+# so Prisma CLI can generate the database client.
+RUN npm install --legacy-peer-deps
 
 # Create a virtual environment and install Python requirements
 ENV VIRTUAL_ENV=/app/venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
 
 # Expose the Render assigned port
 EXPOSE $PORT
