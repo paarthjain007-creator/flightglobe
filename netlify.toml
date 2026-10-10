@@ -5,74 +5,15 @@
 [build.environment]
   NODE_VERSION = "20"
 
-[functions]
-  directory = "netlify/functions"
-
-# 1. API Serverless Function Redirects
+# 1. Proxy all API traffic directly to the Render Backend
 [[redirects]]
-  from = "/api/search/*"
-  to = "/.netlify/functions/search"
+  from = "/api/*"
+  to = "https://flightglobe-ks7f.onrender.com/api/:splat"
   status = 200
-
-[[redirects]]
-  from = "/api/search"
-  to = "/.netlify/functions/search"
-  status = 200
-
-[[redirects]]
-  from = "/api/traffic"
-  to = "/.netlify/functions/traffic"
-  status = 200
-
-[[redirects]]
-  from = "/api/rates"
-  to = "/.netlify/functions/rates"
-  status = 200
-
-[[redirects]]
-  from = "/api/fares/matrix"
-  to = "/.netlify/functions/fares"
-  status = 200
-
-[[redirects]]
-  from = "/api/airports/search"
-  to = "/.netlify/functions/airports"
-  status = 200
-
-[[redirects]]
-  from = "/api/bookings/*"
-  to = "/.netlify/functions/bookings/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/api/bookings"
-  to = "/.netlify/functions/bookings"
-  status = 200
-
-
-
-[[redirects]]
-  from = "/api/user/*"
-  to = "/.netlify/functions/user/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/api/user"
-  to = "/.netlify/functions/user"
-  status = 200
-
-[[redirects]]
-  from = "/api/health"
-  to = "/.netlify/functions/health"
-  status = 200
+  force = true
 
 # 2. SPA fallback routing for React Router (Explore, Radar, Booking, Copilot, Dashboard, Passport)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-
-[[edge_functions]]
-  path = "/api/agent/chat"
-  function = "agent"
