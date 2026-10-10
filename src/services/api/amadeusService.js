@@ -324,7 +324,15 @@ function normalizeAmadeusResponse(data, targetCurrency = "USD") {
     }));
 
     const rawTotalUSD = parseFloat(offer.price?.grandTotal || offer.price?.total || "0");
-      const convertedTotal = Math.round(rawTotalUSD);
+    let convertedTotal = Math.round(rawTotalUSD);
+    const apiCurrency = offer.price?.currency || "USD";
+    if (apiCurrency !== targetCurrency) {
+      if (apiCurrency === "EUR") {
+        convertedTotal = Math.round(rawTotalUSD * 1.08 * currConf.rate);
+      } else {
+        convertedTotal = Math.round(rawTotalUSD * currConf.rate);
+      }
+    }
     const convertedBase = Math.round(convertedTotal * 0.78);
     const convertedTaxes = Math.round(convertedTotal * 0.14);
     const convertedFuel = convertedTotal - convertedBase - convertedTaxes;
