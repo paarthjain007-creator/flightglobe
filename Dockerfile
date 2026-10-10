@@ -1,20 +1,25 @@
-# Start with a Node image
-FROM node:20-bullseye
+# Start with the official Node 20 image (Debian Bookworm)
+FROM node:20
 
-# Install Python and pip
-RUN apt-get update && apt-get install -y python3 python3-pip
+# Update package lists and install Python
+RUN apt-get update -y && \
+    apt-get install -y python3 python3-pip python3-venv && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
 WORKDIR /app
 
 # Copy package files and install Node dependencies
 COPY package.json ./
-# Notice: not explicitly copying package-lock.json here just in case it doesn't exist, though it usually does.
 RUN npm install --production
 
-# Copy Python requirements and install them
+# Create a virtual environment and install Python requirements
+ENV VIRTUAL_ENV=/app/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 COPY requirements.txt ./
-RUN pip3 install -r requirements.txt --break-system-packages
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
 COPY . .
