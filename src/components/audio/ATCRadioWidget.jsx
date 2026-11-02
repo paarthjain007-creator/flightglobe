@@ -43,6 +43,7 @@ export default function ATCRadioWidget() {
     }
 
     const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
       // Trigger random comms transmission
       const msg = ATC_TRANSMISSIONS[Math.floor(Math.random() * ATC_TRANSMISSIONS.length)];
       setCurrentCallout(msg);

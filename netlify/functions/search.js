@@ -26,6 +26,20 @@ export async function handler(event, _context) {
   const date = params.date || new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0];
   const adults = Number(params.adults) || 1;
   const cabin = params.cabin || "economy";
+  const currency = (params.currency || "USD").toUpperCase();
+
+  const FX_RATES = {
+    USD: 1.0,
+    EUR: 0.92,
+    GBP: 0.79,
+    INR: 86.5,
+    AED: 3.67,
+    CHF: 0.90,
+    JPY: 154.2,
+    AUD: 1.54,
+    CAD: 1.39,
+    SGD: 1.35,
+  };
 
   // If DUFFEL_API_KEY is available in Netlify environment variables, try Duffel
   if (process.env.DUFFEL_API_KEY) {
@@ -39,21 +53,34 @@ export async function handler(event, _context) {
         return_offers: true,
       });
 
-      const formattedOffers = (response.data.offers || []).slice(0, 15).map((offer) => ({
-        id: offer.id,
-        itineraries: (offer.slices || []).map((slice) => ({
-          duration: slice.duration,
-          segments: (slice.segments || []).map((seg) => ({
-            departure: { iataCode: seg.origin.iata_code, at: seg.departing_at },
-            arrival: { iataCode: seg.destination.iata_code, at: seg.arriving_at },
-            carrierCode: seg.operating_carrier.iata_code,
-            number: seg.operating_carrier_flight_number,
-            aircraft: seg.aircraft?.name || null,
+      const formattedOffers = (response.data.offers || []).slice(0, 15).map((offer) => {
+        const rawAmount = parseFloat(offer.total_amount) || 0;
+        const offerCurr = (offer.total_currency || "EUR").toUpperCase();
+        const fromRate = FX_RATES[offerCurr] || (offerCurr === "EUR" ? 0.92 : offerCurr === "GBP" ? 0.79 : 1.0);
+        const toRate = FX_RATES[currency] || 1.0;
+        const usdVal = fromRate > 0 ? (rawAmount / fromRate) : rawAmount;
+        let convertedTotal = Math.round(usdVal * toRate);
+
+        if ((currency === "INR" || currency === "JPY") && convertedTotal < 200) {
+          convertedTotal = Math.round(convertedTotal * (FX_RATES[currency] || 86.5));
+        }
+
+        return {
+          id: offer.id,
+          itineraries: (offer.slices || []).map((slice) => ({
+            duration: slice.duration,
+            segments: (slice.segments || []).map((seg) => ({
+              departure: { iataCode: seg.origin.iata_code, at: seg.departing_at },
+              arrival: { iataCode: seg.destination.iata_code, at: seg.arriving_at },
+              carrierCode: seg.operating_carrier.iata_code,
+              number: seg.operating_carrier_flight_number,
+              aircraft: seg.aircraft?.name || null,
+            })),
           })),
-        })),
-        price: { total: offer.total_amount, currency: offer.total_currency },
-        airline: offer.owner.iata_code,
-      }));
+          price: { total: String(convertedTotal), currency: currency },
+          airline: offer.owner.iata_code,
+        };
+      });
 
       if (formattedOffers.length > 0) {
         return {

@@ -226,10 +226,29 @@ export async function searchAmadeusFlightOffers(params) {
             };
             
             const totalRaw = parseFloat(offer.price?.total) || 0;
-              const convertedTotal = Math.round(totalRaw);
+            const offerCurrency = (offer.price?.currency || "EUR").toUpperCase();
+            const targetCurr = (currency || "USD").toUpperCase();
+
+            let convertedTotal = totalRaw;
+            if (offerCurrency !== targetCurr) {
+              const fromRate = CURRENCY_MAP[offerCurrency]?.rate || (offerCurrency === "EUR" ? 0.92 : offerCurrency === "GBP" ? 0.79 : 1.0);
+              const toRate = CURRENCY_MAP[targetCurr]?.rate || 1.0;
+              const usdAmount = fromRate > 0 ? (totalRaw / fromRate) : totalRaw;
+              convertedTotal = Math.round(usdAmount * toRate);
+            } else {
+              convertedTotal = Math.round(totalRaw);
+            }
+
+            // Bulletproof guard: If target currency is INR or JPY and convertedTotal is < 200,
+            // the sandbox returned un-converted raw EUR/USD units under an INR tag
+            if ((targetCurr === "INR" || targetCurr === "JPY") && convertedTotal < 200) {
+              const targetRate = CURRENCY_MAP[targetCurr]?.rate || (targetCurr === "INR" ? 86.5 : 154.2);
+              convertedTotal = Math.round(convertedTotal * targetRate);
+            }
+
             const convertedBase = Math.round(convertedTotal * 0.78);
             const convertedTaxes = Math.round(convertedTotal * 0.14);
-            const convertedFuel = convertedTotal - convertedBase - convertedTaxes;
+            const convertedFuel = Math.max(0, convertedTotal - convertedBase - convertedTaxes);
 
             return {
               id: offer.id,
@@ -239,7 +258,7 @@ export async function searchAmadeusFlightOffers(params) {
               validatingAirlineLogo: airlineMeta.logo,
               baggageAllowance: airlineMeta.baggage,
               price: {
-                currency: currency,
+                currency: targetCurr,
                 currencySymbol: currConf.symbol,
                 total: convertedTotal,
                 base: convertedBase,
@@ -323,19 +342,29 @@ function normalizeAmadeusResponse(data, targetCurrency = "USD") {
       })),
     }));
 
-    const rawTotalUSD = parseFloat(offer.price?.grandTotal || offer.price?.total || "0");
-    let convertedTotal = Math.round(rawTotalUSD);
-    const apiCurrency = offer.price?.currency || "USD";
-    if (apiCurrency !== targetCurrency) {
-      if (apiCurrency === "EUR") {
-        convertedTotal = Math.round(rawTotalUSD * 1.08 * currConf.rate);
-      } else {
-        convertedTotal = Math.round(rawTotalUSD * currConf.rate);
-      }
+    const rawTotal = parseFloat(offer.price?.grandTotal || offer.price?.total || "0");
+    const apiCurrency = (offer.price?.currency || "EUR").toUpperCase();
+    const targetCurr = (targetCurrency || "USD").toUpperCase();
+
+    let convertedTotal = rawTotal;
+    if (apiCurrency !== targetCurr) {
+      const fromRate = CURRENCY_MAP[apiCurrency]?.rate || (apiCurrency === "EUR" ? 0.92 : apiCurrency === "GBP" ? 0.79 : 1.0);
+      const toRate = CURRENCY_MAP[targetCurr]?.rate || 1.0;
+      const usdAmount = fromRate > 0 ? (rawTotal / fromRate) : rawTotal;
+      convertedTotal = Math.round(usdAmount * toRate);
+    } else {
+      convertedTotal = Math.round(rawTotal);
     }
+
+    // Guard against un-converted EUR prices tagged under targetCurr in Sandbox
+    if ((targetCurr === "INR" || targetCurr === "JPY") && convertedTotal < 200) {
+      const targetRate = CURRENCY_MAP[targetCurr]?.rate || (targetCurr === "INR" ? 86.5 : 154.2);
+      convertedTotal = Math.round(convertedTotal * targetRate);
+    }
+
     const convertedBase = Math.round(convertedTotal * 0.78);
     const convertedTaxes = Math.round(convertedTotal * 0.14);
-    const convertedFuel = convertedTotal - convertedBase - convertedTaxes;
+    const convertedFuel = Math.max(0, convertedTotal - convertedBase - convertedTaxes);
 
     return {
       id: `amadeus-${offer.id}`,

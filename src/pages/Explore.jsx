@@ -782,6 +782,9 @@ export default function Explore() {
             destination={destination}
             activeFlight={selectedFlight}
             isDispatchMode={isDispatchMode}
+            isCockpitView={isCockpitView}
+            showWindVectors={showWindVectors}
+            onPlanePosChange={handlePlanePosChange}
           /></React.Suspense>
         )}
       </div>
@@ -815,7 +818,7 @@ export default function Explore() {
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.22 }}
             className="absolute left-4 z-20 pointer-events-auto hidden md:flex flex-col"
-            style={{ top: "188px", bottom: "24px", width: "min(480px, calc(100vw - 32px))" }}
+            style={{ top: "188px", bottom: "100px", width: "min(480px, calc(100vw - 32px))" }}
           >
             {/* Minimize toggle button bar */}
             <div className="flex justify-end pb-1 pr-1">
@@ -1101,6 +1104,39 @@ export default function Explore() {
           onExitCockpit={() => setIsCockpitView(false)}
         /></React.Suspense>
       )}
+
+      
+      {/* ── 8. SPATIAL AR WEBXR DIALOG ──────────────────────────────────── */}
+      <AnimatePresence>
+        {isARModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="max-w-md w-full p-6 rounded-3xl bg-slate-900 border border-purple-500/40 text-center space-y-4 shadow-2xl"
+            >
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-400">
+                <Box size={24} />
+              </div>
+              <h3 className="text-lg font-bold text-white">Spatial WebXR Hologram</h3>
+              <p className="text-xs text-slate-300">
+                Immersive WebXR AR mode projects the real-time flight vector onto your physical desk or room. Launch this mode from a WebXR-compatible browser or headset (Apple Vision Pro, Meta Quest 3, Chrome on Android with ARCore).
+              </p>
+              <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs text-purple-300 font-mono">
+                STATUS: WebXR Device Bridge Initialized
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsARModalOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs cursor-pointer transition-colors"
+              >
+                CLOSE AR VIEWER
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ── 9. COLLABORATIVE DISPATCH ROOM MODAL ──────────────────────── */}
       {showDispatchRoom && (

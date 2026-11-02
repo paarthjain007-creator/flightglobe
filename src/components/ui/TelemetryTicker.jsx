@@ -21,6 +21,7 @@ export default function TelemetryTicker() {
   // Subtle plane count jitter to simulate live transponder ingest
   useEffect(() => {
     const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
       setActivePlanes((prev) => prev + Math.floor((Math.random() - 0.48) * 5));
       setPing(Math.floor(16 + Math.random() * 6));
     }, 4000);

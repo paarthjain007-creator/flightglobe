@@ -40,24 +40,7 @@ export const useStore = create(
       emergencyAlert: null,      // Active Squawk 7700/7600 event or null
 
       // Passport stamps
-      stamps: [
-        {
-          id: "7041",
-          timestamp: Date.now() - 86400000 * 2,
-          date: "2026-09-02",
-          origin: { iata: "JFK", code: "JFK", city: "New York", country: "United States", lat: 40.6413, lng: -73.7781, lon: -73.7781 },
-          destination: { iata: "LHR", code: "LHR", city: "London", country: "United Kingdom", lat: 51.47, lng: -0.4543, lon: -0.4543 },
-          flightCode: "AA-1416",
-        },
-        {
-          id: "9218",
-          timestamp: Date.now() - 86400000 * 5,
-          date: "2026-08-30",
-          origin: { iata: "DEL", code: "DEL", city: "New Delhi", country: "India", lat: 28.5562, lng: 77.1, lon: 77.1 },
-          destination: { iata: "DXB", code: "DXB", city: "Dubai", country: "United Arab Emirates", lat: 25.2532, lng: 55.3657, lon: 55.3657 },
-          flightCode: "EK-511",
-        }
-      ],
+      stamps: [],
 
       // Saved Flights (Watchlist)
       savedFlights: [],
@@ -72,33 +55,7 @@ export const useStore = create(
       clearSavedFlights: () => set({ savedFlights: [] }),
 
       // Saved Trips & Boarding Passes
-      trips: [
-        {
-          id: "T-8842",
-          flight: {
-            code: "AI-805",
-            airline: "Air India",
-            from: "DEL",
-            to: "LHR",
-            dep: "09:45",
-            arr: "11:55",
-            dur: "8h 40m",
-            plane: "Boeing 787-9 Dreamliner",
-            price: 520,
-          },
-          origin: { iata: "DEL", code: "DEL", city: "New Delhi", country: "India", lat: 28.5562, lng: 77.1, lon: 77.1 },
-          destination: { iata: "LHR", code: "LHR", city: "London", country: "United Kingdom", lat: 51.47, lng: -0.4543, lon: -0.4543 },
-          totalPrice: 520,
-          currency: "USD",
-          currencySymbol: "$",
-          seat: "2B",
-          gate: "B14",
-          terminal: "T3",
-          group: "A (Priority)",
-          bookingRef: "FG-847291",
-          date: "2026-09-20",
-        }
-      ],
+      trips: [],
 
       // UI Interactivity
       hoveredFlightPath: null,

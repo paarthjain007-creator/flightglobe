@@ -9,6 +9,7 @@ import ThemeSelector from "./ui/ThemeSelector";
 import VolumeControl from "./ui/VolumeControl";
 import { useStore } from "../store/useStore";
 import { sound } from "../utils/soundFx";
+import { CURRENCY_MAP } from "../services/api/amadeusService";
 
 const CURRENCIES = ["USD", "EUR", "GBP", "INR", "AED", "JPY"];
 
@@ -207,7 +208,7 @@ export default function NavBar({ onOpenCommandPalette }) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-all bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-white/20"
             title="Switch active currency"
           >
-            <span className="text-sm">🇺🇸</span>
+            <span className="text-sm">{CURRENCY_MAP[currency]?.flag || "🌐"}</span>
             <span className="text-[13px] font-semibold text-[#f5f5f7] tracking-wide">{currency}</span>
             <ChevronDown size={11} className="text-[#86868b] ml-0.5" />
           </button>
